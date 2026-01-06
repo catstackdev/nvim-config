@@ -1,0 +1,224 @@
+return {
+	-- "mfussenegger/nvim-dap",
+	-- dependencies = {
+	-- 	"rcarriga/nvim-dap-ui",
+	-- 	"nvim-neotest/nvim-nio",
+	-- 	"theHamsta/nvim-dap-virtual-text",
+	-- 	"mxsdev/nvim-dap-vscode-js",
+	-- 	{
+	-- 		"microsoft/vscode-js-debug",
+	-- 		build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
+	-- 	},
+	-- },
+	-- keys = {
+	-- 	{
+	-- 		"<leader>db",
+	-- 		function()
+	-- 			require("dap").toggle_breakpoint()
+	-- 		end,
+	-- 		desc = "Toggle breakpoint",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dB",
+	-- 		function()
+	-- 			require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+	-- 		end,
+	-- 		desc = "Conditional breakpoint",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dc",
+	-- 		function()
+	-- 			require("dap").continue()
+	-- 		end,
+	-- 		desc = "Continue",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dC",
+	-- 		function()
+	-- 			require("dap").run_to_cursor()
+	-- 		end,
+	-- 		desc = "Run to cursor",
+	-- 	},
+	-- 	{
+	-- 		"<leader>di",
+	-- 		function()
+	-- 			require("dap").step_into()
+	-- 		end,
+	-- 		desc = "Step into",
+	-- 	},
+	-- 	{
+	-- 		"<leader>do",
+	-- 		function()
+	-- 			require("dap").step_over()
+	-- 		end,
+	-- 		desc = "Step over",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dO",
+	-- 		function()
+	-- 			require("dap").step_out()
+	-- 		end,
+	-- 		desc = "Step out",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dq",
+	-- 		function()
+	-- 			require("dap").terminate()
+	-- 		end,
+	-- 		desc = "Terminate",
+	-- 	},
+	-- 	{
+	-- 		"<leader>dr",
+	-- 		function()
+	-- 			require("dap").restart()
+	-- 		end,
+	-- 		desc = "Restart",
+	-- 	},
+	-- 	{
+	-- 		"<leader>du",
+	-- 		function()
+	-- 			require("dapui").toggle()
+	-- 		end,
+	-- 		desc = "Toggle DAP UI",
+	-- 	},
+	-- 	{
+	-- 		"<leader>de",
+	-- 		function()
+	-- 			require("dapui").eval()
+	-- 		end,
+	-- 		desc = "Eval under cursor",
+	-- 		mode = { "n", "v" },
+	-- 	},
+	-- },
+	--
+	-- config = function()
+	-- 	local dap = require("dap")
+	-- 	local dapui = require("dapui")
+	--
+	-- 	dapui.setup({
+	-- 		layouts = {
+	-- 			{
+	-- 				elements = {
+	-- 					{ id = "scopes", size = 0.25 },
+	-- 					{ id = "breakpoints", size = 0.25 },
+	-- 					{ id = "stacks", size = 0.25 },
+	-- 					{ id = "watches", size = 0.25 },
+	-- 				},
+	-- 				size = 40,
+	-- 				position = "left",
+	-- 			},
+	-- 			{
+	-- 				elements = {
+	-- 					{ id = "repl", size = 0.5 },
+	-- 					{ id = "console", size = 0.5 },
+	-- 				},
+	-- 				size = 10,
+	-- 				position = "bottom",
+	-- 			},
+	-- 		},
+	-- 	})
+	--
+	-- 	require("nvim-dap-virtual-text").setup({
+	-- 		enabled = true,
+	-- 		highlight_new_as_changed = true,
+	-- 	})
+	--
+	-- 	dap.listeners.after.event_initialized["dapui_config"] = function()
+	-- 		dapui.open()
+	-- 	end
+	-- 	dap.listeners.before.event_terminated["dapui_config"] = function()
+	-- 		dapui.close()
+	-- 	end
+	-- 	dap.listeners.before.event_exited["dapui_config"] = function()
+	-- 		dapui.close()
+	-- 	end
+	--
+	-- 	require("dap-vscode-js").setup({
+	-- 		debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
+	-- 		adapters = { "pwa-node", "pwa-chrome", "node-terminal", "pwa-extensionHost" },
+	-- 	})
+	--
+	-- 	for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
+	-- 		dap.configurations[language] = {
+	-- 			-- Node.js debugging
+	-- 			{
+	-- 				type = "pwa-node",
+	-- 				request = "launch",
+	-- 				name = "Launch file",
+	-- 				program = "${file}",
+	-- 				cwd = "${workspaceFolder}",
+	-- 			},
+	-- 			{
+	-- 				type = "pwa-node",
+	-- 				request = "attach",
+	-- 				name = "Attach",
+	-- 				processId = require("dap.utils").pick_process,
+	-- 				cwd = "${workspaceFolder}",
+	-- 			},
+	--
+	-- 			-- Chromium debugging (Angular)
+	-- 			{
+	-- 				type = "pwa-chrome",
+	-- 				request = "launch",
+	-- 				name = "Launch Chromium (Angular)",
+	-- 				url = "http://localhost:4200",
+	-- 				webRoot = "${workspaceFolder}",
+	-- 				runtimeExecutable = "/usr/bin/chromium", -- Adjust path if needed
+	-- 				runtimeArgs = {
+	-- 					"--remote-debugging-port=9222",
+	-- 					"--user-data-dir=/tmp/chromium-debug",
+	-- 				},
+	-- 				sourceMaps = true,
+	-- 			},
+	--
+	-- 			-- Chromium debugging (React)
+	-- 			{
+	-- 				type = "pwa-chrome",
+	-- 				request = "launch",
+	-- 				name = "Launch Chromium (React)",
+	-- 				url = "http://localhost:3000",
+	-- 				webRoot = "${workspaceFolder}",
+	-- 				runtimeExecutable = "/usr/bin/chromium",
+	-- 				runtimeArgs = {
+	-- 					"--remote-debugging-port=9222",
+	-- 					"--user-data-dir=/tmp/chromium-debug",
+	-- 				},
+	-- 				sourceMaps = true,
+	-- 			},
+	--
+	-- 			-- Attach to existing Chromium
+	-- 			{
+	-- 				type = "pwa-chrome",
+	-- 				request = "attach",
+	-- 				name = "Attach to Chromium",
+	-- 				port = 9222,
+	-- 				webRoot = "${workspaceFolder}",
+	-- 			},
+	--
+	-- 			-- Jest tests
+	-- 			{
+	-- 				type = "pwa-node",
+	-- 				request = "launch",
+	-- 				name = "Debug Jest Tests",
+	-- 				runtimeExecutable = "node",
+	-- 				runtimeArgs = {
+	-- 					"./node_modules/jest/bin/jest.js",
+	-- 					"--runInBand",
+	-- 				},
+	-- 				rootPath = "${workspaceFolder}",
+	-- 				cwd = "${workspaceFolder}",
+	-- 				console = "integratedTerminal",
+	-- 				internalConsoleOptions = "neverOpen",
+	-- 			},
+	-- 		}
+	-- 	end
+	--
+	-- 	-- Breakpoint signs
+	-- 	vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+	-- 	vim.fn.sign_define(
+	-- 		"DapBreakpointCondition",
+	-- 		{ text = "◆", texthl = "DapBreakpoint", linehl = "", numhl = "" }
+	-- 	)
+	-- 	vim.fn.sign_define("DapStopped", { text = "→", texthl = "DapStopped", linehl = "DapStoppedLine", numhl = "" })
+	-- end,
+}

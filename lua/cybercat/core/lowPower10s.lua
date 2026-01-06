@@ -1,0 +1,27 @@
+-- local group = vim.api.nvim_create_augroup("LowPowerModeOnSave", { clear = true })
+
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--
+-- 	group = group,
+-- 	pattern = "*",
+-- 	callback = function()
+-- 		if os.getenv("TMUX") then
+-- 			-- Check Low Power Mode status
+-- 			local handle = io.popen("pmset -g | grep lowpowermode | awk '{print $2}'")
+-- 			local result = handle:read("*a")
+-- 			handle:close()
+-- 			if result:match("1") then
+-- 				-- vim.cmd("echom 'Low Power Mode is ON. Running script...'")
+-- 				-- vim.fn.jobstart({ "~/.config/nvim/lua/cybercat/scripts/lowpower10s.sh" }, { detach = true })
+-- 				vim.fn.jobstart(
+-- 					{ "/Users/cybercat/.config/nvim/lua/cybercat/scripts/lowpower10s.sh" },
+-- 					{ detach = true }
+-- 				)
+-- 			else
+-- 				-- vim.cmd("echom 'Low Power Mode is OFF. Script not executed.'")
+-- 			end
+-- 		else
+-- 			-- vim.cmd("echom 'Not inside a tmux session. Script not executed.'")
+-- 		end
+-- 	end,
+-- })

@@ -1,0 +1,153 @@
+return {}
+-- return {
+-- 	"yetone/avante.nvim",
+-- 	enabled = function()
+-- 		-- Enable if any API key is available or Ollama is running
+-- 		return os.getenv("DEEPSEEK_API_KEY") ~= nil
+-- 			or os.getenv("OPENAI_API_KEY") ~= nil
+-- 			or vim.fn.executable("ollama") == 1
+-- 	end,
+-- 	-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+-- 	build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+-- 		or "make",
+-- 	event = "VeryLazy",
+-- 	version = false, -- Never set this value to "*"! Never!
+--
+-- 	opts = function()
+-- 		-- Determine provider based on available options
+-- 		local provider = "ollama"  -- Default to ollama since it's always available
+-- 		local providers = {}
+--
+-- 		-- Ollama (primary - always works locally)
+-- 		providers.ollama = {
+-- 			__inherited_from = "openai",
+-- 			api_key_name = "",
+-- 			endpoint = "http://127.0.0.1:11434/v1",
+-- 			model = "deepseek-coder:6.7b",
+-- 			max_tokens = 4096,
+-- 			temperature = 0.7,
+-- 			["local"] = true,
+-- 			disable_tools = true,  -- Important: Ollama models don't support function calling
+-- 		}
+--
+-- 		-- DeepSeek (secondary, but may have insufficient balance)
+-- 		if os.getenv("DEEPSEEK_API_KEY") then
+-- 			providers.deepseek = {
+-- 				__inherited_from = "openai",
+-- 				api_key_name = "DEEPSEEK_API_KEY",
+-- 				endpoint = "https://api.deepseek.com/v1",
+-- 				model = "deepseek-chat",
+-- 				max_tokens = 4096,
+-- 				temperature = 0.7,
+-- 				["local"] = false,
+-- 			}
+-- 		end
+--
+-- 		-- OpenAI (tertiary option)
+-- 		if os.getenv("OPENAI_API_KEY") then
+-- 			providers.openai = {
+-- 				api_key_name = "OPENAI_API_KEY",
+-- 				endpoint = "https://api.openai.com/v1",
+-- 				model = "gpt-4o-mini",
+-- 				max_tokens = 4096,
+-- 				temperature = 0.7,
+-- 			}
+-- 		end
+--
+-- 		return {
+-- 			-- Basic configuration
+-- 			provider = provider,
+-- 			providers = providers,
+--
+-- 			-- File configuration
+-- 			instructions_file = "avante.md",
+--
+-- 			-- Behavior settings
+-- 			auto_suggestions = true,
+-- 			auto_set_highlight_group = true,
+-- 			auto_set_keymaps = true,
+--
+-- 			-- Disable tools globally for compatibility
+-- 			tools = {
+-- 				enabled = false,
+-- 			},
+--
+-- 			-- Window configuration
+-- 			windows = {
+-- 				wrap = true,
+-- 				width = 30,
+-- 				sidebar_header = {
+-- 					align = "center",
+-- 					rounded = true,
+-- 				},
+-- 			},
+--
+-- 			-- Key mappings
+-- 			mappings = {
+-- 				ask = "<leader>aa",
+-- 				edit = "<leader>ae",
+-- 				refresh = "<leader>ar",
+-- 				diff = {
+-- 					ours = "co",
+-- 					theirs = "ct",
+-- 					all_theirs = "ca",
+-- 					both = "cb",
+-- 					cursor = "cc",
+-- 					next = "]x",
+-- 					prev = "[x",
+-- 				},
+-- 			},
+-- 		}
+-- 	end,
+--
+-- 	dependencies = {
+-- 		-- Core dependencies (required)
+-- 		"nvim-lua/plenary.nvim",
+-- 		"MunifTanjim/nui.nvim",
+--
+-- 		-- Optional dependencies (for enhanced functionality)
+-- 		{
+-- 			"nvim-telescope/telescope.nvim",
+-- 			optional = true,
+-- 		}, -- for file_selector provider telescope
+-- 		{
+-- 			"hrsh7th/nvim-cmp",
+-- 			optional = true,
+-- 		}, -- autocompletion for avante commands and mentions
+-- 		{
+-- 			"stevearc/dressing.nvim",
+-- 			optional = true,
+-- 		}, -- for input provider dressing
+-- 		{
+-- 			"nvim-tree/nvim-web-devicons",
+-- 			optional = true,
+-- 		}, -- for icons
+--
+-- 		-- Image support
+-- 		{
+-- 			"HakonHarnes/img-clip.nvim",
+-- 			event = "VeryLazy",
+-- 			opts = {
+-- 				default = {
+-- 					embed_image_as_base64 = false,
+-- 					prompt_for_file_name = false,
+-- 					drag_and_drop = {
+-- 						insert_mode = true,
+-- 					},
+-- 					use_absolute_path = true,
+-- 				},
+-- 			},
+-- 		},
+--
+-- 		-- Markdown rendering
+-- 		{
+-- 			"MeanderingProgrammer/render-markdown.nvim",
+-- 			optional = true,
+-- 			opts = {
+-- 				file_types = { "markdown", "Avante" },
+-- 			},
+-- 			ft = { "markdown", "Avante" },
+-- 		},
+-- 	},
+-- }
+

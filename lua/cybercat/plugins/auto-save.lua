@@ -1,0 +1,131 @@
+return {
+	"okuuva/auto-save.nvim",
+	event = "BufReadPost",
+	enabled = vim.g.neovim_mode == "skitty", -- only enable in Kitty mode
+	opts = {},
+}
+-- -- Auto-save configuration for Neovim using okuuva/auto-save.nvim
+-- -- Compatible with Neovim >=0.11.3
+--
+-- -- Autocommand group for general autosave events
+-- local autosave_group = vim.api.nvim_create_augroup("autosave", {})
+--
+-- -- Print a message after a buffer is auto-saved
+-- vim.api.nvim_create_autocmd("User", {
+-- 	pattern = "AutoSaveWritePost",
+-- 	group = autosave_group,
+-- 	callback = function(opts)
+-- 		if opts.data.saved_buffer ~= nil then
+-- 			print("AutoSaved")
+-- 		end
+-- 	end,
+-- })
+--
+-- -- Visual mode detection group
+-- local visual_group = vim.api.nvim_create_augroup("visual_event", { clear = true })
+--
+-- vim.api.nvim_create_autocmd("ModeChanged", {
+-- 	group = visual_group,
+-- 	pattern = { "*:[vV\x16]*" },
+-- 	callback = function()
+-- 		vim.api.nvim_exec_autocmds("User", { pattern = "VisualEnter" })
+-- 	end,
+-- })
+--
+-- vim.api.nvim_create_autocmd("ModeChanged", {
+-- 	group = visual_group,
+-- 	pattern = { "[vV\x16]*:*" },
+-- 	callback = function()
+-- 		vim.api.nvim_exec_autocmds("User", { pattern = "VisualLeave" })
+-- 	end,
+-- })
+--
+-- -- Flash.nvim integration
+-- local flash = require("flash")
+-- local original_jump = flash.jump
+-- flash.jump = function(opts)
+-- 	vim.api.nvim_exec_autocmds("User", { pattern = "FlashJumpStart" })
+-- 	original_jump(opts)
+-- 	vim.api.nvim_exec_autocmds("User", { pattern = "FlashJumpEnd" })
+-- end
+--
+-- -- Snacks.nvim input integration
+-- local function disable_autosave_on_snacks(ft_enter, ft_leave)
+-- 	vim.api.nvim_create_autocmd("FileType", {
+-- 		pattern = ft_enter,
+-- 		group = autosave_group,
+-- 		callback = function()
+-- 			vim.api.nvim_exec_autocmds("User", { pattern = ft_leave .. "Enter" })
+-- 		end,
+-- 	})
+-- 	vim.api.nvim_create_autocmd("BufLeave", {
+-- 		pattern = "*",
+-- 		group = autosave_group,
+-- 		callback = function(opts)
+-- 			local ft = vim.bo[opts.buf].filetype
+-- 			if ft == ft_enter then
+-- 				vim.api.nvim_exec_autocmds("User", { pattern = ft_leave .. "Leave" })
+-- 			end
+-- 		end,
+-- 	})
+-- end
+--
+-- disable_autosave_on_snacks("snacks_input", "SnacksInput")
+-- disable_autosave_on_snacks("snacks_picker_input", "SnacksPickerInput")
+--
+-- -- Return plugin spec for lazy loading
+-- return {
+-- 	{
+-- 		"okuuva/auto-save.nvim",
+-- 		enabled = true,
+-- 		cmd = "ASToggle",
+-- 		event = { "InsertLeave", "TextChanged" },
+-- 		opts = {
+-- 			enabled = true,
+-- 			trigger_events = {
+-- 				-- immediate save
+-- 				immediate_save = { "BufLeave", "FocusLost", "QuitPre", "VimSuspend" },
+-- 				-- deferred save
+-- 				defer_save = {
+-- 					"InsertLeave",
+-- 					"TextChanged",
+-- 					{ "User", pattern = "VisualLeave" },
+-- 					{ "User", pattern = "FlashJumpEnd" },
+-- 					{ "User", pattern = "SnacksInputLeave" },
+-- 					{ "User", pattern = "SnacksPickerInputLeave" },
+-- 				},
+-- 				-- cancel deferred save
+-- 				cancel_deferred_save = {
+-- 					"InsertEnter",
+-- 					{ "User", pattern = "VisualEnter" },
+-- 					{ "User", pattern = "FlashJumpStart" },
+-- 					{ "User", pattern = "SnacksInputEnter" },
+-- 					{ "User", pattern = "SnacksPickerInputEnter" },
+-- 				},
+-- 			},
+-- 			-- Only save buffer if condition returns true
+-- 			condition = function(buf)
+-- 				local mode = vim.fn.mode()
+-- 				if mode == "i" then
+-- 					return false
+-- 				end
+--
+-- 				local ft = vim.bo[buf].filetype
+-- 				if ft == "harpoon" or ft == "mysql" then
+-- 					return false
+-- 				end
+--
+-- 				if require("luasnip").in_snippet() then
+-- 					return false
+-- 				end
+--
+-- 				return true
+-- 			end,
+-- 			write_all_buffers = false,
+-- 			noautocmd = false,
+-- 			lockmarks = false,
+-- 			debounce_delay = 2000,
+-- 			debug = false,
+-- 		},
+-- 	},
+-- }

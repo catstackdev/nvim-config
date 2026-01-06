@@ -1,0 +1,21 @@
+return {
+	-- "folke/lazydev.nvim",
+	-- ft = "lua",
+	-- opts = {
+	-- 	library = {
+	-- 		{ path = "luvit-meta/library", words = { "vim%.uv" } },
+	-- 		{ path = "lazy.nvim", words = { "LazyVim" } },
+	-- 		-- Add plugin paths for better completions
+	-- 		{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+	-- 	},
+	-- 	-- Disable when editing files outside your config
+	-- 	enabled = function(root_dir)
+	-- 		return vim.loop.fs_stat(root_dir .. "/.luarc.json")
+	-- 			or vim.loop.fs_stat(root_dir .. "/.luarc.jsonc")
+	-- 			or vim.loop.fs_stat(root_dir .. "/lua")
+	-- 	end,
+	-- },
+	-- dependencies = {
+	-- 	{ "Bilal2453/luvit-meta", lazy = true },
+	-- },
+}

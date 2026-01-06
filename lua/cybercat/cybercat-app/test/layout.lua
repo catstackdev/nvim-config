@@ -1,0 +1,42 @@
+-- local M = {}
+--
+-- function M.create(config)
+-- 	config = config or {}
+--
+-- 	-- Calculate positions to prevent overlap
+-- 	local layout = {
+-- 		menu = require("cybercat.cybercat-app.chat-app.components.menu").create(vim.tbl_deep_extend("force", {
+-- 			relative = "editor",
+-- 			position = "left",
+-- 			size = config.menu_width or "25%",
+-- 		}, config.menu or {})),
+--
+-- 		body = require("cybercat.cybercat-app.chat-app.components.body").create(vim.tbl_deep_extend("force", {
+-- 			relative = "editor",
+-- 			position = "right",
+-- 			size = config.body_width or "75%",
+-- 		}, config.body or {})),
+--
+-- 		chat = require("cybercat.cybercat-app.chat-app.components.chat").create(vim.tbl_deep_extend("force", {
+-- 			-- Position is now properly defined in the component
+-- 		}, config.chat or {})),
+-- 	}
+--
+-- 	function layout:mount_all()
+-- 		-- Mount in proper z-order
+-- 		self.menu:mount()
+-- 		self.body:mount()
+-- 		self.chat:mount()
+--
+-- 		-- Adjust body width after menu is mounted
+-- 		if self.menu.mounted then
+-- 			self.body.split:update_layout({
+-- 				size = "calc(100% - " .. (config.menu_width or "25%") .. ")",
+-- 			})
+-- 		end
+-- 	end
+--
+-- 	return layout
+-- end
+--
+-- return M

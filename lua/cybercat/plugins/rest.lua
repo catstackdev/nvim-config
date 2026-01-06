@@ -1,0 +1,100 @@
+return {}
+-- return {
+-- 	"rest-nvim/rest.nvim",
+-- 	ft = { "http", "rest" }, -- Set filetypes for which this plugin is active
+-- 	dependencies = {
+-- 		-- Ensure treesitter is installed and configured to parse 'http' files
+-- 		{
+-- 			"nvim-treesitter/nvim-treesitter",
+-- 			opts = function(_, opts)
+-- 				-- Add 'http' to your ensure_installed list
+-- 				opts.ensure_installed = opts.ensure_installed or {}
+-- 				table.insert(opts.ensure_installed, "http")
+-- 			end,
+-- 			-- config = function(_, opts)
+-- 			--        require("nvim-treesitter.configs").setup(opts)
+-- 			--      end,
+-- 		},
+-- 		-- Optional: for `rest.nvim` to manage dependencies via Luarocks (recommended)
+-- 		"nvim-lua/plenary.nvim", -- A common dependency for many Lua plugins
+-- 	},
+-- 	config = function()
+-- 		require("rest-nvim").setup({
+-- 			-- Your configuration options go here
+-- 			-- See :h rest-nvim.config for full options
+--
+-- 			-- Global options for requests
+-- 			request = {
+-- 				-- Set `Content-Type` header when it is empty and body is provided
+-- 				set_content_type = true,
+-- 				-- Skip SSL verification, useful for unknown certificates (be cautious with this in production!)
+-- 				-- skip_ssl_verification = false,
+-- 			},
+--
+-- 			-- Response options
+-- 			response = {
+-- 				-- Default response hooks
+-- 				hooks = {
+-- 					-- Decode the request URL segments on response UI to improve readability
+-- 					decode_url_segments = true,
+-- 					-- Automatically format JSON responses
+-- 					format_json = true,
+-- 					-- Automatically format XML responses (requires `xml2lua` luarock)
+-- 					-- format_xml = true,
+-- 				},
+-- 				-- Highlight response JSON with tree-sitter
+-- 				highlight = {
+-- 					enabled = true, -- Enable highlighting of response bodies
+-- 					timeout = 150, -- Timeout in ms for highlighting
+-- 				},
+-- 			},
+--
+-- 			-- Environment options
+-- 			-- Define environment files (e.g., development.env, production.env)
+-- 			-- You can switch between them with :Rest env select
+-- 			env_file = ".env", -- Default .env file to load
+-- 			env_dir = vim.fn.stdpath("config") .. "/rest_envs", -- Directory to look for .env files
+--
+-- 			-- Custom dynamic variables (Lua functions that return a string)
+-- 			-- These can be used in your .http files like `{{my_custom_var}}`
+-- 			custom_dynamic_variables = {
+-- 				-- Example: Generate a timestamp
+-- 				-- timestamp = function()
+-- 				--   return os.date("%Y-%m-%dT%H:%M:%S")
+-- 				-- end,
+-- 			},
+--
+-- 			-- Add a Telescope extension for Browse requests
+-- 			extensions = {
+-- 				telescope = true,
+-- 			},
+-- 			-- Other options...
+-- 		})
+--
+-- 		-- Keybindings (optional but highly recommended)
+-- 		-- rest.nvim does not set keymaps by default to avoid conflicts
+-- 		local map = vim.keymap.set
+-- 		local opts = { noremap = true, silent = true }
+--
+-- 		-- You'll typically use these in a .http file
+-- 		vim.api.nvim_create_autocmd("FileType", {
+-- 			pattern = { "http", "rest" },
+-- 			callback = function()
+-- 				-- Run the request under the cursor
+-- 				map("n", "<leader>rr", "<cmd>Rest run<CR>", { desc = "Rest: Run Request", buffer = true })
+-- 				-- Run the last request
+-- 				map("n", "<leader>rl", "<cmd>Rest last<CR>", { desc = "Rest: Run Last Request", buffer = true })
+-- 				-- Open the result pane (if closed)
+-- 				map("n", "<leader>ro", "<cmd>Rest open<CR>", { desc = "Rest: Open Result Pane", buffer = true })
+-- 				-- Show available environment files and select one
+-- 				map("n", "<leader>re", "<cmd>Rest env select<CR>", { desc = "Rest: Select Environment", buffer = true })
+-- 				-- Copy the request as a cURL command
+-- 				map("n", "<leader>rc", "<cmd>Rest copy<CR>", { desc = "Rest: Copy as cURL", buffer = true })
+-- 				-- Show request/response logs
+-- 				map("n", "<leader>rL", "<cmd>Rest logs<CR>", { desc = "Rest: Show Logs", buffer = true })
+-- 				-- Toggle between response body and headers in the result window
+-- 				map("n", "<leader>rt", "<cmd>Rest toggle_view<CR>", { desc = "Rest: Toggle View", buffer = true })
+-- 			end,
+-- 		})
+-- 	end,
+-- }

@@ -1,0 +1,32 @@
+# Neovim lazy.nvim lock file
+lazy-lock.json
+
+# Compiled spell files
+*.spl
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Lua language server config
+.luarc.json
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+
+# Test/setup scripts (keep in private repo only)
+test-*.sh
+check-*.sh
+fix-*.sh
+setup-*.sh
+verify-*.sh
+force-*.sh
+
+# Internal documentation (keep in private repo only)
+AVANTE_*.md
+REFACTORING_SUMMARY.md
+AIDER_USAGE.md

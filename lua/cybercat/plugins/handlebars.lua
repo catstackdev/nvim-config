@@ -1,0 +1,13 @@
+return {}
+-- return {
+-- 	{
+-- 		"joukevandermaas/vim-ember-hbs",
+-- 		ft = { "handlebars", "hbs" },
+-- 		config = function()
+-- 			-- optional: treat .hbs files as HTML for Treesitter
+-- 			vim.cmd([[
+--         autocmd BufRead,BufNewFile *.hbs set filetype=handlebars
+--       ]])
+-- 		end,
+-- 	},
+-- }

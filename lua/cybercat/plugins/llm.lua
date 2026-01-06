@@ -1,0 +1,180 @@
+return {
+	-- "huggingface/llm.nvim",
+	-- dependencies = {
+	-- 	"nvim-lua/plenary.nvim",
+	-- 	"MunifTanjim/nui.nvim",
+	-- },
+	-- config = function()
+	-- 	require("cybercat.core.llm.init").setup()
+	-- end,
+}
+-- eoc
+--
+-- return {
+-- 	"huggingface/llm.nvim",
+-- 	dependencies = {
+-- 		"nvim-lua/plenary.nvim",
+-- 		"MunifTanjim/nui.nvim",
+-- 	},
+-- 	config = function()
+-- 		-- Customizable key mappings
+-- 		local keys = {
+-- 			open_chat = "<leader>lc", -- Open chat window
+-- 			close_chat = "q", -- Close chat window
+-- 		}
+--
+-- 		-- State management
+-- 		local chat_buf = nil
+-- 		local chat_win = nil
+-- 		local ns_id = vim.api.nvim_create_namespace("llm_chat")
+--
+-- 		-- Safe cursor positioning
+-- 		local function safe_set_cursor(win, line, col)
+-- 			local buf = vim.api.nvim_win_get_buf(win)
+-- 			local line_count = vim.api.nvim_buf_line_count(buf)
+-- 			line = math.min(math.max(1, line), line_count)
+-- 			col = math.max(0, col)
+-- 			vim.api.nvim_win_set_cursor(win, { line, col })
+-- 		end
+--
+-- 		-- Verify Ollama is running
+-- 		local function verify_ollama()
+-- 			local handle = io.popen("curl -s -o /dev/null -w '%{http_code}' http://localhost:11434 2>&1")
+-- 			local result = handle:read("*a")
+-- 			handle:close()
+-- 			return result:match("200") ~= nil
+-- 		end
+--
+-- 		-- Safe API request
+-- 		local function query_ollama(prompt, callback)
+-- 			if not prompt or prompt == "" then
+-- 				return
+-- 			end
+--
+-- 			local json_body = vim.json.encode({
+-- 				-- model = "deepseek-coder:6.7b",
+-- 				model = "codellama:13b-instruct",
+-- 				prompt = prompt,
+-- 				stream = false,
+-- 				options = { temperature = 0.3 },
+-- 			})
+--
+-- 			vim.fn.jobstart({
+-- 				"curl",
+-- 				"-s",
+-- 				"-X",
+-- 				"POST",
+-- 				"-H",
+-- 				"Content-Type: application/json",
+-- 				"-d",
+-- 				json_body,
+-- 				"http://localhost:11434/api/generate",
+-- 			}, {
+-- 				on_stdout = function(_, data)
+-- 					local response = table.concat(data, "")
+-- 					if response == "" then
+-- 						return
+-- 					end
+--
+-- 					local ok, decoded = pcall(vim.json.decode, response)
+-- 					if ok and decoded and decoded.response then
+-- 						vim.schedule(function()
+-- 							callback(decoded.response)
+-- 						end)
+-- 					end
+-- 				end,
+-- 				on_stderr = function(_, err)
+-- 					vim.schedule(function()
+-- 						callback(nil, "Error: " .. table.concat(err, " "))
+-- 					end)
+-- 				end,
+-- 			})
+-- 		end
+--
+-- 		-- Create chat window with cursor safety
+-- 		local function create_chat_window()
+-- 			local width = math.floor(vim.o.columns * 0.6)
+-- 			local height = math.floor(vim.o.lines * 0.4)
+-- 			local row = math.floor((vim.o.lines - height) / 2)
+-- 			local col = math.floor((vim.o.columns - width) / 2)
+-- 			chat_buf = vim.api.nvim_create_buf(false, true)
+-- 			chat_win = vim.api.nvim_open_win(chat_buf, true, {
+-- 				relative = "editor",
+-- 				width = width,
+-- 				height = height,
+-- 				row = row,
+-- 				col = col,
+-- 				style = "minimal",
+-- 				border = "rounded",
+-- 				title = "Cyberc Cat Chat",
+-- 				title_pos = "center",
+-- 				noautocmd = true,
+-- 			})
+--
+-- 			vim.api.nvim_buf_set_option(chat_buf, "filetype", "markdown") -- Enable syntax highlight for markdown
+-- 			vim.api.nvim_win_set_option(chat_win, "winhighlight", "Normal:NormalFloat,FloatBorder:FloatBorder")
+--
+-- 			-- Initial content
+-- 			vim.api.nvim_buf_set_lines(chat_buf, 0, -1, false, {
+-- 				"# Cyber Cat Chat - Press Enter anywhere",
+-- 				"> ",
+-- 			})
+--
+-- 			-- Enter key handler with cursor safety
+-- 			vim.keymap.set("n", "<CR>", function()
+-- 				local line_num = vim.api.nvim_win_get_cursor(chat_win)[1]
+-- 				local line = vim.api.nvim_buf_get_lines(chat_buf, line_num - 1, line_num, false)[1] or ""
+--
+-- 				if line:match("^%s*$") then
+-- 					safe_set_cursor(chat_win, line_num + 1, 0)
+-- 					return
+-- 				end
+--
+-- 				-- Add processing message at end
+-- 				vim.api.nvim_buf_set_lines(chat_buf, -1, -1, false, { "⌛ Processing..." })
+--
+-- 				query_ollama(line, function(response, err)
+-- 					-- Remove processing message
+-- 					vim.api.nvim_buf_set_lines(chat_buf, -2, -1, false, {})
+--
+-- 					if err then
+-- 						vim.api.nvim_buf_set_lines(chat_buf, -1, -1, false, { err })
+-- 					elseif response then
+-- 						vim.api.nvim_buf_set_lines(chat_buf, -1, -1, false, vim.split(response, "\n"))
+-- 					end
+--
+-- 					-- Add new prompt and position cursor
+-- 					vim.api.nvim_buf_set_lines(chat_buf, -1, -1, false, { "", "> " })
+-- 					safe_set_cursor(chat_win, vim.api.nvim_buf_line_count(chat_buf), 2)
+-- 				end)
+-- 			end, { buffer = chat_buf })
+--
+-- 			-- Close window
+-- 			vim.keymap.set("n", keys.close_chat, function()
+-- 				if chat_win and vim.api.nvim_win_is_valid(chat_win) then
+-- 					vim.api.nvim_win_close(chat_win, true)
+-- 				end
+-- 			end, { buffer = chat_buf })
+--
+-- 			-- Start at first prompt
+-- 			safe_set_cursor(chat_win, 6, 2)
+-- 		end
+--
+-- 		-- Toggle chat window
+-- 		local function toggle_chat()
+-- 			if chat_win and vim.api.nvim_win_is_valid(chat_win) then
+-- 				vim.api.nvim_win_close(chat_win, true)
+-- 				return
+-- 			end
+--
+-- 			if verify_ollama() then
+-- 				create_chat_window()
+-- 			else
+-- 				vim.notify("Ollama not running. Start with: ollama serve", vim.log.levels.ERROR)
+-- 			end
+-- 		end
+--
+-- 		-- Set up key mappings
+-- 		vim.keymap.set("n", keys.open_chat, toggle_chat, { desc = "Open LLM chat" })
+-- 	end,
+-- }

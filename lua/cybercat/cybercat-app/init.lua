@@ -1,0 +1,25 @@
+-- require("cybercat.cybercat-app.chat").setup()
+
+-- local ui = require("chat").setup({
+-- 	width = 45,
+-- 	position = "right",
+-- 	api = {
+-- 		endpoint = "https://your-api-endpoint.com",
+-- 		model = "gpt-4",
+-- 	},
+-- })
+-- local ui = require("cybercat.cybercat-app.chat-app.init").setup({
+-- 	sidebar = {
+-- 		size = 40,
+-- 		position = "right",
+-- 	},
+-- 	keymaps = {
+-- 		sidebar = {
+-- 			toggle = "<leader>zs",
+-- 		},
+-- 	},
+-- })
+
+-- Then use:
+-- ui.sidebar:toggle()
+-- ui.chatbox:show()

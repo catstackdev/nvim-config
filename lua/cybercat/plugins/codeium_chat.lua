@@ -1,0 +1,48 @@
+return {
+	-- "Exafunction/codeium.nvim",
+	-- dependencies = { "nvim-lua/plenary.nvim" },
+	-- config = function()
+	-- 	require("codeium").setup({
+	-- 		-- Enable chat
+	-- 		chat = false,
+	--
+	-- 		-- Configure filetypes (only for completions if you want)
+	-- 		filetypes = {
+	-- 			python = true,
+	-- 			javascript = true,
+	-- 			typescript = true,
+	-- 			lua = true,
+	-- 			go = true,
+	-- 			rust = true,
+	-- 			c = true,
+	-- 			cpp = true,
+	-- 			java = true,
+	-- 			php = true,
+	-- 			ruby = true,
+	-- 			sh = true,
+	-- 			sql = true,
+	-- 			yaml = true,
+	-- 			json = true,
+	-- 			html = true,
+	-- 			css = true,
+	-- 			markdown = true,
+	-- 		},
+	--
+	-- 		-- Optional: floating window for chat
+	-- 		chat_window = {
+	-- 			border = "single",
+	-- 			width = 80,
+	-- 			height = 20,
+	-- 		},
+	--
+	-- 		-- Optional: keymaps
+	-- 		keymaps = {
+	-- 			accept_completion = "<C-l>",
+	-- 			next_completion = "<C-j>",
+	-- 			prev_completion = "<C-k>",
+	-- 			trigger_completion = "<C-Space>",
+	-- 			open_chat = "<Leader>cc", -- open chat buffer
+	-- 		},
+	-- 	})
+	-- end,
+}

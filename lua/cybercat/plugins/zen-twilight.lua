@@ -1,0 +1,183 @@
+-- zen-web-dev.lua
+return {
+	-- -- Zen mode: fullscreen distraction-free coding
+	-- {
+	-- 	"folke/zen-mode.nvim",
+	-- 	cmd = "ZenMode",
+	-- 	keys = { { "<leader>z", ":ZenMode<CR>", desc = "Toggle Zen Mode" } },
+	-- 	config = function()
+	-- 		local zen = require("zen-mode")
+	-- 		zen.setup({
+	-- 			window = {
+	-- 				backdrop = 0.92, -- Dim background a bit
+	-- 				width = 120,
+	-- 				height = 0.9,
+	-- 				options = {
+	-- 					number = true,
+	-- 					relativenumber = false,
+	-- 					cursorline = false,
+	-- 					cursorcolumn = false,
+	-- 					signcolumn = "no",
+	-- 					foldcolumn = "0",
+	-- 					colorcolumn = "",
+	-- 				},
+	-- 			},
+	-- 			plugins = {
+	-- 				twilight = { enabled = true },
+	-- 				gitsigns = { enabled = true },
+	-- 				tmux = { enabled = false },
+	-- 				kitty = { enabled = false },
+	-- 			},
+	-- 			on_open = function()
+	-- 				require("twilight").enable()
+	-- 			end,
+	-- 			on_close = function()
+	-- 				require("twilight").disable()
+	-- 			end,
+	-- 		})
+	-- 	end,
+	-- },
+	--
+	-- -- Twilight: dims inactive code
+	-- {
+	-- 	"folke/twilight.nvim",
+	-- 	config = function()
+	-- 		require("twilight").setup({
+	-- 			dimming = { alpha = 0.4 },
+	-- 			expand = { "function", "method", "table", "if_statement", "for_loop", "block" },
+	-- 			exclude = { "markdown" },
+	-- 		})
+	-- 	end,
+	-- },
+	--
+	-- -- Smooth scrolling (optional but makes Zen mode feel nice)
+	-- {
+	-- 	"declancm/cinnamon.nvim",
+	-- 	event = "BufReadPost",
+	-- 	config = function()
+	-- 		require("cinnamon").setup({
+	-- 			default_delay = 0,
+	-- 			extra_scroll_off = 1,
+	-- 			centered = true,
+	-- 		})
+	-- 	end,
+	-- },
+	--
+	-- -- Visual column guide
+	-- {
+	-- 	"lukas-reineke/virt-column.nvim",
+	-- 	config = function()
+	-- 		require("virt-column").setup({
+	-- 			virtcolumn = "80",
+	-- 		})
+	-- 	end,
+	-- },
+	--
+	-- -- Tailwind inline colors
+	-- {
+	-- 	"roobert/tailwindcss-colorizer-cmp.nvim",
+	-- 	config = function()
+	-- 		require("tailwindcss-colorizer-cmp").setup({ color_square_width = 2 })
+	-- 	end,
+	-- },
+	--
+	-- -- Git signs for distraction-free visibility
+	-- {
+	-- 	"lewis6991/gitsigns.nvim",
+	-- 	event = "BufReadPre",
+	-- 	config = function()
+	-- 		require("gitsigns").setup({
+	-- 			signs = {
+	-- 				add = { text = "+" },
+	-- 				change = { text = "~" },
+	-- 				delete = { text = "_" },
+	-- 				topdelete = { text = "‾" },
+	-- 				changedelete = { text = "~" },
+	-- 			},
+	-- 			numhl = false,
+	-- 			linehl = false,
+	-- 			word_diff = true,
+	-- 			current_line_blame = true,
+	-- 		})
+	-- 	end,
+	-- },
+	--
+	-- -- nvim-cmp: all sources + AI, snippets, icons (Zen-ready)
+	-- {
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	event = "InsertEnter",
+	-- 	dependencies = {
+	-- 		"hrsh7th/cmp-buffer",
+	-- 		"hrsh7th/cmp-path",
+	-- 		"hrsh7th/cmp-nvim-lsp",
+	-- 		"hrsh7th/cmp-nvim-lsp-signature-help",
+	-- 		"hrsh7th/cmp-nvim-lua",
+	-- 		"f3fora/cmp-spell",
+	-- 		"uga-rosa/cmp-dictionary",
+	-- 		"saadparwaiz1/cmp_luasnip",
+	-- 		"zbirenbaum/copilot.lua",
+	-- 		"zbirenbaum/copilot-cmp",
+	-- 		"Exafunction/codeium.nvim",
+	-- 		"L3MON4D3/LuaSnip",
+	-- 		"rafamadriz/friendly-snippets",
+	-- 		"onsails/lspkind.nvim",
+	-- 		"nvim-tree/nvim-web-devicons",
+	-- 	},
+	-- 	config = function()
+	-- 		local cmp = require("cmp")
+	-- 		local luasnip = require("luasnip")
+	-- 		local lspkind = require("lspkind")
+	--
+	-- 		require("luasnip.loaders.from_vscode").lazy_load()
+	--
+	-- 		cmp.setup({
+	-- 			snippet = {
+	-- 				expand = function(args)
+	-- 					luasnip.lsp_expand(args.body)
+	-- 				end,
+	-- 			},
+	-- 			mapping = cmp.mapping.preset.insert({
+	-- 				["<C-j>"] = cmp.mapping.select_next_item(),
+	-- 				["<C-k>"] = cmp.mapping.select_prev_item(),
+	-- 				["<C-Space>"] = cmp.mapping.complete(),
+	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }),
+	-- 				["<Tab>"] = cmp.mapping(function(fallback)
+	-- 					if cmp.visible() then
+	-- 						cmp.select_next_item()
+	-- 					elseif require("copilot.suggestion").is_visible() then
+	-- 						require("copilot.suggestion").accept()
+	-- 					elseif luasnip.expand_or_jumpable() then
+	-- 						luasnip.expand_or_jump()
+	-- 					else
+	-- 						fallback()
+	-- 					end
+	-- 				end, { "i", "s" }),
+	-- 			}),
+	-- 			sources = cmp.config.sources({
+	-- 				{ name = "copilot" },
+	-- 				{ name = "codeium" },
+	-- 				{ name = "nvim_lsp" },
+	-- 				{ name = "nvim_lsp_signature_help" },
+	-- 				{ name = "luasnip" },
+	-- 				{ name = "tailwindcss-colorizer-cmp" },
+	-- 				{ name = "npm" },
+	-- 				{ name = "buffer" },
+	-- 				{ name = "path" },
+	-- 				{ name = "git" },
+	-- 				{ name = "emoji" },
+	-- 				{ name = "dictionary" },
+	-- 				{ name = "spell" },
+	-- 			}),
+	-- 			formatting = {
+	-- 				format = function(entry, vim_item)
+	-- 					local devicons = require("nvim-web-devicons")
+	-- 					local icon, hl = devicons.get_icon(entry:get_completion_item().label)
+	-- 					vim_item.kind = icon or ""
+	-- 					vim_item.kind_hl_group = hl
+	-- 					return vim_item
+	-- 				end,
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
+}
