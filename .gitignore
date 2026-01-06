@@ -28,5 +28,5 @@ force-*.sh
 
 # Internal documentation (keep in private repo only)
 AVANTE_*.md
-REFACTORING_SUMMARY.md
-AIDER_USAGE.md
+AGENTS.md
+
