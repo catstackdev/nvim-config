@@ -49,52 +49,31 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		opts.desc = "Restart LSP"
 		keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+
+		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		if client and client.supports_method("textDocument/formatting") then
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true }),
+				buffer = ev.buf,
+				callback = function()
+					vim.lsp.buf.format({ bufnr = ev.buf, timeout_ms = 5000 })
+				end,
+			})
+		end
 	end,
 })
 
--- Enable inlay hints globally (commented out by default)
--- Uncomment to enable inline type hints in supported languages
 -- vim.lsp.inlay_hint.enable(true)
 
--- Diagnostic configuration
 local severity = vim.diagnostic.severity
 
 vim.diagnostic.config({
-	-- Virtual text (inline diagnostics)
-	virtual_text = {
-		prefix = "●",
-		source = "if_many",
-	},
-	-- Signs in the gutter
 	signs = {
 		text = {
-			[severity.ERROR] = " ",
-			[severity.WARN] = " ",
+			[severity.ERROR] = " ",
+			[severity.WARN] = " ",
 			[severity.HINT] = "󰠠 ",
-			[severity.INFO] = " ",
+			[severity.INFO] = " ",
 		},
 	},
-	-- Underline diagnostics
-	underline = true,
-	-- Update diagnostics while in insert mode
-	update_in_insert = false,
-	-- Sort diagnostics by severity
-	severity_sort = true,
-	-- Floating window configuration
-	float = {
-		border = "rounded",
-		source = "always",
-		header = "",
-		prefix = "",
-	},
-})
-
--- Customize hover window
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-	border = "rounded",
-})
-
--- Customize signature help window
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-	border = "rounded",
 })

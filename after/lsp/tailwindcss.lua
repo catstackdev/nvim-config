@@ -12,15 +12,15 @@ return {
 		"vue",
 		"astro",
 	},
-	settings = {
-		tailwindCSS = {
-			experimental = {
-				classRegex = {
-					-- Support for various class attribute patterns
-					{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-					{ "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-				},
-			},
-		},
-	},
+	-- settings = {
+	-- 	tailwindCSS = {
+	-- 		experimental = {
+	-- 			classRegex = {
+	-- 				-- Support for various class attribute patterns
+	-- 				{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+	-- 				{ "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
 }

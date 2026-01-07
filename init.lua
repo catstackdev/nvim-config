@@ -3,6 +3,7 @@ vim.g.md_heading_bg = vim.env.MD_HEADING_BG
 
 require("cybercat.core")
 require("cybercat.lazy")
+require("cybercat.lsp")
 require("cybercat.cybercat-app")
 
 if vim.g.neovim_mode == "skitty" then

@@ -11,10 +11,19 @@ return {
 		"18.0.1",
 	},
 	filetypes = { "typescript", "html", "typescriptreact", "htmlangular" },
-	root_dir = require("lspconfig").util.root_pattern("angular.json", ".git"),
-	on_attach = function(client, bufnr)
-		print("✓ Angular Language Server attached to " .. vim.bo.filetype)
-		-- Disable formatting - use Conform/Prettier instead
-		client.server_capabilities.documentFormattingProvider = false
-	end,
+
+	-- root_dir = require("lspconfig").util.root_pattern("angular.json", ".git"),
+	-- on_attach = function(client, bufnr)
+	-- 	print("✓ Angular Language Server attached to " .. vim.bo.filetype)
+	-- 	-- Disable formatting - use Conform/Prettier instead
+	-- 	client.server_capabilities.documentFormattingProvider = false
+	-- end,
+	--
+	-- on_attach = function(client, bufnr)
+	-- 	print("Angular Language Server attached to " .. vim.bo.filetype)
+	-- 	-- Disable formatting if another formatter is used
+	-- 	client.server_capabilities.documentFormattingProvider = false
+	-- 	on_attach(client, bufnr)
+	-- end, --NOTE: enable this is delete below
+	root_dir = vim.fs.root(0, { "angular.json", ".git" }),
 }
