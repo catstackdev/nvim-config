@@ -18,7 +18,7 @@ return {
 			left_pad = 0,
 			right_pad = 0,
 			highlight = "RenderMarkdownBullet",
-			scope_highlight = {},
+			-- scope_highlight = {},
 		},
 
 		-- >> Checkboxes / Task Lists <<
@@ -87,17 +87,17 @@ return {
 			style = "normal",
 		},
 		-- Code block rendering (fence removed in newer versions, handled by code block)
-		code_block = {
-			enabled = true,
-			style = "full",
-			left_pad = 1,
-			right_pad = 1,
-			language = {
-				enabled = true,
-				highlight = "RenderMarkdownCodeBlockLang",
-			},
-			border = "thick",
-		},
+		-- code_block = {
+		-- 	enabled = true,
+		-- 	style = "full",
+		-- 	left_pad = 1,
+		-- 	right_pad = 1,
+		-- 	language = {
+		-- 		enabled = true,
+		-- 		highlight = "RenderMarkdownCodeBlockLang",
+		-- 	},
+		-- 	border = "thick",
+		-- },
 
 		-- >> Links & Images <<
 		link = {
@@ -117,7 +117,7 @@ return {
 				suffix = "",
 			},
 			-- Icon for general links (respects your custom skitty mode check)
-			icon = vim.g.neovim_mode == "skitty" and "" or "󰥶 ", -- Nerd Font: nf-md-link_variant
+			-- icon = vim.g.neovim_mode == "skitty" and "" or "󰥶 ", -- Nerd Font: nf-md-link_variant
 			-- Icon for images ![alt](src)
 			image = "󰈟 ", -- Nerd Font: nf-md-image
 			email = "󰀓 ",
@@ -153,10 +153,14 @@ return {
 
 		-- >> More Rendered Elements (Previously Disabled or Not Set) <<
 		-- For horizontal rules like --- or ***
-		rule = {
+		-- rule = {
+		-- 	enabled = true,
+		-- 	char = "─", -- Character to repeat for the line
+		-- 	highlight = "RenderMarkdownRule",
+		-- },//oldversion
+		dash = { -- //new with specific
 			enabled = true,
-			char = "─", -- Character to repeat for the line
-			highlight = "RenderMarkdownRule",
+			icon = "─",
 		},
 
 		-- For blockquotes >
@@ -164,13 +168,7 @@ return {
 			enabled = true,
 			icon = "▎", -- Icon to show at the start of the quote
 			highlight = "RenderMarkdownQuote",
-			scope_highlight = "RenderMarkdownQuoteScope",
-		},
-
-		-- For | Tables |
-		table = {
-			enabled = true,
-			highlight = "RenderMarkdownTableSeparator",
+			-- scope_highlight = "RenderMarkdownQuoteScope", //old version
 		},
 
 		-- Enable rendering for other filetypes embedded in Markdown
@@ -185,7 +183,8 @@ return {
 		-- Pipe tables (GitHub-style tables)
 		pipe_table = {
 			enabled = true,
-			preset = "round", -- "none" | "round" | "double" | "heavy"
+			preset = "round", -- "none" | "round" | "double" | "heavy" | "grouped"
+			style = "full",
 			alignment_indicator = "━",
 			head = "RenderMarkdownTableHead",
 			row = "RenderMarkdownTableRow",

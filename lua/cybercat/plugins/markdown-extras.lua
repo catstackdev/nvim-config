@@ -60,6 +60,7 @@ return {
 	-- Obsidian.nvim - Obsidian integration
 	{
 		"epwalsh/obsidian.nvim",
+		enabled = false, -- Disabled: causing healthcheck conflicts
 		ft = "markdown",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {
