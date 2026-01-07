@@ -2,7 +2,7 @@ return {
   "CopilotC-Nvim/CopilotChat.nvim",
   branch = "canary",
   dependencies = {
-    { "zbirenbaum/copilot.lua" },
+    { "zbirenbaum/copilot.lua" }, -- Main config in nvim-cmp.lua
     { "nvim-lua/plenary.nvim" },
   },
   opts = {
