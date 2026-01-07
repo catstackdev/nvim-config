@@ -53,15 +53,11 @@ keymap.set("n", "<leader>uk", '<cmd>lua require("kubectl").toggle()<cr>', { nore
 -- vim.keymap.set("n", "<leader>sd", function()
 -- 	require("snacks.dashboard").open()
 -- end, { desc = "Open Snacks Dashboard" })
--- NOTE: add forrce because myisp not work
-keymap.set("n", "gd", function()
-	local ok, _ = pcall(require("telescope.builtin").lsp_definitions)
-	if not ok then
-		vim.lsp.buf.definition()
-	end
-end, opts)
--- Put this in a general keymaps file or your init.lua
-keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Action" })
+-- NOTE: Removed global 'gd' keybinding - it conflicts with LSP-specific binding in lsp.lua
+-- The LspAttach autocmd in lsp.lua sets buffer-local gd when LSP attaches
+-- This ensures gd works correctly with LSP servers like angularls, ts_ls, etc.
+
+-- NOTE: Also removed global <leader>ca - it's already defined in lsp.lua with buffer scope
 
 keymap.set("n", "<leader>qf", function()
 	vim.lsp.buf.code_action({
