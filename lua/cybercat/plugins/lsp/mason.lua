@@ -40,7 +40,7 @@ return {
 				"pyright",
 				"terraformls", -- for terraform
 				"jsonls",
-				"luau_lsp",
+				-- "luau_lsp", -- Roblox / Luau language server (not for neovim config)
 				"dockerls",
 				"marksman", -- markdown lsp
 				"angularls",

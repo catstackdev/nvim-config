@@ -13,3 +13,4 @@ keymap.set("n", "x", '"_x')
 -- Increment/decrement numbers
 keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
+keymap.set("n", "<leader>ch", ":checkhealth<CR>", { desc = "Check health" })

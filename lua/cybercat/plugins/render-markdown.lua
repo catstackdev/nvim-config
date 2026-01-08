@@ -173,8 +173,8 @@ return {
 
 		-- Enable rendering for other filetypes embedded in Markdown
 		html = { enabled = true },
-		latex = {
-			enabled = true,
+		latex = { -- use for latex equations
+			enabled = false,
 			converter = "latex2text", -- or "latex2mathml"
 			highlight = "RenderMarkdownMath",
 		},

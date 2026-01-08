@@ -55,3 +55,8 @@ opt.undodir = vim.fn.stdpath("data") .. "/undo"
 
 opt.scrolloff = 2 -- Keep 2 lines visible above/below cursor
 opt.sidescrolloff = 2 -- Keep 2 columns visible left/right
+
+-- Disable unused providers to reduce warnings
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
