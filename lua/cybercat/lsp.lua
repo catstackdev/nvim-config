@@ -47,6 +47,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		opts.desc = "Show documentation for what is under cursor"
 		keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
 
+		-- opts.desc = "Show signature help"
+		-- keymap.set("i", "<M-h>", vim.lsp.buf.signature_help, opts)
+
 		opts.desc = "Restart LSP"
 		keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
 
@@ -63,7 +66,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- vim.lsp.inlay_hint.enable(true)
+vim.lsp.inlay_hint.enable(true)
 
 local severity = vim.diagnostic.severity
 

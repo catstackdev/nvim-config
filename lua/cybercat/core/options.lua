@@ -48,3 +48,10 @@ opt.swapfile = false
 
 opt.spelllang = "en_us"
 opt.spell = true
+
+-- Reason: You lose undo history when you close files. This is a game-changer for safety.
+opt.undofile = true
+opt.undodir = vim.fn.stdpath("data") .. "/undo"
+
+opt.scrolloff = 2 -- Keep 2 lines visible above/below cursor
+opt.sidescrolloff = 2 -- Keep 2 columns visible left/right
