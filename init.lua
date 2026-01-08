@@ -13,13 +13,12 @@ if vim.g.neovim_mode == "skitty" then
 end
 
 -- DEBUG: Test if gitcommit autocmd fires
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "gitcommit",
-	callback = function()
-		vim.notify("🔥 DEBUG: gitcommit filetype detected!", vim.log.levels.ERROR)
-	end,
-})
-
+-- vim.api.nvim_create_autocmd("FileType", {
+-- 	pattern = "gitcommit",
+-- 	callback = function()
+-- 		vim.notify("🔥 DEBUG: gitcommit filetype detected!", vim.log.levels.ERROR)
+-- 	end,
+-- })
 -- DEBUG: Show filetype for commit-related buffers
 vim.api.nvim_create_autocmd("BufEnter", {
 	pattern = { "COMMIT_EDITMSG", "*.git/COMMIT_EDITMSG", "*COMMIT_EDITMSG*" },
