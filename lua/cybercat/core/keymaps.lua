@@ -85,9 +85,9 @@ vim.keymap.set("n", "<leader>fi", imports.fix_all_imports, {
 	desc = "Fix all imports (add + remove + organize)",
 })
 
-vim.keymap.set("n", "<leader>fa", imports.fix_all, {
-	desc = "Fix all (imports + code issues)",
-})
+-- vim.keymap.set("n", "<leader>fa", imports.fix_all, {
+-- 	desc = "Fix all (imports + code issues)",
+-- })
 
 -- Debugging & stats
 vim.keymap.set("n", "<leader>ad", imports.debug_code_actions, {
@@ -163,9 +163,9 @@ end, { desc = "fix all including code" })
 
 -- Git commit with AI auto-generate (use terminal git commit which works)
 vim.keymap.set("n", "<leader>gc", function()
-  -- Close lazygit if open
-  vim.cmd("q")
-  -- Run git commit in terminal which triggers auto-generate
-  vim.cmd("terminal git commit")
-  vim.cmd("startinsert")
+	-- Close lazygit if open
+	vim.cmd("q")
+	-- Run git commit in terminal which triggers auto-generate
+	vim.cmd("terminal git commit")
+	vim.cmd("startinsert")
 end, { desc = "Git commit with AI (terminal)" })
