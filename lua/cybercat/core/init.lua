@@ -1,4 +1,4 @@
-require("cybercat.core.keymaps") -- Core keymaps (leader, save/quit, LSP imports)
+require("cybercat.core.keymaps-core") -- Core keymaps (leader, save/quit, LSP imports, window mgmt, plugins, git)
 require("cybercat.core.options")
 -- require("cybercat.core.options2")
 require("cybercat.core.filetype")

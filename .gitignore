@@ -21,6 +21,8 @@ lazy-lock.json
 # Backup files from refactoring
 *.backup
 lua/cybercat/core/keymapsPlugin.lua.backup
+lua/cybercat/core/keymaps.lua.backup
+lua/cybercat/utils/import.lua.backup
 
 # Test/setup scripts (keep in private repo only)
 test-*.sh
