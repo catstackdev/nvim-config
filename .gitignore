@@ -18,6 +18,10 @@ lazy-lock.json
 *.swp
 *.bak
 
+# Backup files from refactoring
+*.backup
+lua/cybercat/core/keymapsPlugin.lua.backup
+
 # Test/setup scripts (keep in private repo only)
 test-*.sh
 check-*.sh
@@ -29,3 +33,6 @@ force-*.sh
 # Internal documentation (keep in private repo only)
 AVANTE_*.md
 AGENTS.md
+
+# Backup directory
+backup/
