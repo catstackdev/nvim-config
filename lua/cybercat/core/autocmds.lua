@@ -14,6 +14,19 @@ local function augroup(name)
 	return vim.api.nvim_create_augroup("lazyvim_" .. name, { clear = true })
 end
 
+-- Reapply LspInlayHint highlight after colorscheme changes
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+-- 	group = augroup("lsp_inlay_hint_highlight"),
+-- 	callback = function()
+-- 		-- Use a subtle gray color for inlay hints
+-- 		vim.api.nvim_set_hl(0, "LspInlayHint", {
+-- 			fg = "#627E97", -- Subtle gray (adjust to your preference)
+-- 			bg = "NONE",
+-- 			italic = true,
+-- 		})
+-- 	end,
+-- })
+
 -- -- This is for dadbod-ui auto completion
 -- -- https://github.com/kristijanhusak/vim-dadbod-completion/issues/53#issuecomment-1705335855
 -- local cmp = require("cmp")
@@ -324,13 +337,13 @@ vim.api.nvim_create_autocmd("FileType", {
 				-- Wait for CopilotChat to be available
 				vim.defer_fn(function()
 					vim.notify("DEBUG: Checking CopilotChat...", vim.log.levels.WARN)
-					
+
 					local ok, chat = pcall(require, "CopilotChat")
 					if not ok then
 						vim.notify("❌ CopilotChat not loaded!", vim.log.levels.ERROR)
 						return
 					end
-					
+
 					vim.notify("✅ CopilotChat loaded! Calling API...", vim.log.levels.WARN)
 
 					local prompt = string.format(
@@ -363,22 +376,25 @@ Only describe what's actually in the diff above. Be thorough but accurate.]],
 					chat.ask(prompt, {
 						callback = function(response)
 							vim.notify("DEBUG: Got response from API!", vim.log.levels.WARN)
-							
+
 							-- Clean up response
 							local msg = response:gsub("^```[%w]*\n", ""):gsub("\n```$", ""):gsub("^```", "")
 							msg = msg:gsub("^%s+", ""):gsub("%s+$", "")
-							
+
 							vim.notify("DEBUG: Cleaned message: " .. msg:sub(1, 50), vim.log.levels.WARN)
 
 							-- Find the gitcommit buffer (might have changed)
 							local target_buf = nil
 							for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-								if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, 'filetype') == 'gitcommit' then
+								if
+									vim.api.nvim_buf_is_valid(buf)
+									and vim.api.nvim_buf_get_option(buf, "filetype") == "gitcommit"
+								then
 									target_buf = buf
 									break
 								end
 							end
-							
+
 							if not target_buf then
 								vim.notify("❌ Could not find gitcommit buffer!", vim.log.levels.ERROR)
 								return
@@ -388,7 +404,7 @@ Only describe what's actually in the diff above. Be thorough but accurate.]],
 							local msg_lines = vim.split(msg, "\n")
 							vim.api.nvim_buf_set_lines(target_buf, 0, 0, false, msg_lines)
 							vim.api.nvim_buf_set_lines(target_buf, #msg_lines, #msg_lines, false, { "" })
-							
+
 							-- Switch to the gitcommit buffer and move cursor
 							for _, win in ipairs(vim.api.nvim_list_wins()) do
 								if vim.api.nvim_win_get_buf(win) == target_buf then
@@ -409,7 +425,7 @@ Only describe what's actually in the diff above. Be thorough but accurate.]],
 		vim.keymap.set("n", "<leader>gcr", function()
 			local diff_names = vim.fn.system("git diff --cached --name-status")
 			local full_diff = vim.fn.system("git diff --cached")
-			
+
 			if diff_names ~= "" and vim.v.shell_error == 0 then
 				local ok, chat = pcall(require, "CopilotChat")
 				if not ok then

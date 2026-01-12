@@ -59,6 +59,13 @@ return {
 				--     TabLineSel = { bg = colors.pink },
 				--     CmpBorder = { fg = colors.surface2 },
 				--     Pmenu = { bg = colors.none },
+
+				-- LSP Inlay Hints (parameter names, type hints)
+				LspInlayHint = {
+					fg = colors.overlay0, -- Subtle gray color
+					bg = "NONE",
+					italic = true,
+				},
 			}
 		end,
 	},

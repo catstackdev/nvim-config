@@ -21,3 +21,9 @@ for i, bg in ipairs(bg_colors) do
 		bold = true,
 	})
 end
+
+-- NOTE: LSP Inlay Hints are configured in colorscheme.lua and autocmds.lua
+-- They must be set AFTER the colorscheme loads, otherwise they get overridden
+-- See:
+--   - lua/cybercat/plugins/colorscheme.lua (after vim.cmd("colorscheme"))
+--   - lua/cybercat/core/autocmds.lua (ColorScheme autocmd)

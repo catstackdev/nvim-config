@@ -94,6 +94,13 @@ return {
 				FloatBorder = { bg = colors["cybercat_color10"] },
 				FloatTitle = { bg = colors["cybercat_color10"] },
 				NotifyBackground = { bg = colors["cybercat_color10"] },
+
+				-- LSP Inlay Hints (parameter names, type hints)
+				LspInlayHint = {
+					fg = colors["cybercat_color09"], -- Comment color (subtle gray)
+					bg = "NONE",
+					italic = true,
+				},
 			}
 
 			for group, spec in pairs(hl) do

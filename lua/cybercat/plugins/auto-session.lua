@@ -4,8 +4,16 @@ return {
 		local auto_session = require("auto-session")
 
 		auto_session.setup({
-			auto_restore_enabled = false,
-			auto_session_suppress_dirs = { "~/", "~/work/", "~/Downloads/", "~/Documents/", "~/Desktop/" },
+			-- auto_restore_enabled = false,
+			-- auto_session_suppress_dirs = { "~/", "~/work/", "~/Downloads/", "~/Documents/", "~/Desktop/" },
+			auto_restore = false, -- Updated name
+			suppressed_dirs = { -- Updated name
+				"~/",
+				"~/work/",
+				"~/Downloads/",
+				"~/Documents/",
+				"~/Desktop/",
+			},
 		})
 
 		local keymap = vim.keymap
