@@ -29,24 +29,105 @@
 -- })
 --
 return {
-	-- 	"stevearc/conform.nvim",
-	-- 	optional = true,
-	-- 	opts = {
-	-- 		formatters_by_ft = {
-	-- 			-- I was having issues formatting .templ files, all the lines were aligned
-	-- 			-- to the left.
-	-- 			-- When I ran :ConformInfo I noticed that 2 formatters showed up:
-	-- 			-- "LSP: html, templ"
-	-- 			-- But none showed as `ready` This fixed that issue and now templ files
-	-- 			-- are formatted correctly and :ConformInfo shows:
-	-- 			-- "LSP: html, templ"
-	-- 			-- "templ ready (templ) /Users/linkarzu/.local/share/neobean/mason/bin/templ"
-	-- 			templ = { "templ" },
-	-- 			-- Not sure why I couldn't make ruff work, so I'll use ruff_format instead
-	-- 			-- it didn't work even if I added the pyproject.toml in the project or
-	-- 			-- root of my dots, I was getting the error [LSP][ruff] timeout
-	-- 			python = { "ruff_format" },
-	-- 			-- php = { nil },
-	-- 		},
-	-- 	},
+	"stevearc/conform.nvim",
+	event = { "BufReadPre", "BufNewFile" },
+	opts = {
+		formatters_by_ft = {
+			-- HTML files (including Angular templates)
+			html = { "prettier" },
+
+			-- Angular component templates
+			-- Use prettier for .component.html files
+			["html.angular"] = { "prettier" },
+
+			-- JavaScript/TypeScript
+			javascript = { "prettier" },
+			typescript = { "prettier" },
+			javascriptreact = { "prettier" },
+			typescriptreact = { "prettier" },
+
+			-- CSS/SCSS
+			css = { "prettier" },
+			scss = { "prettier" },
+
+			-- JSON/YAML
+			json = { "prettier" },
+			jsonc = { "prettier" },
+			yaml = { "prettier" },
+
+			-- Markdown
+			markdown = { "prettier" },
+
+			-- Other languages
+			templ = { "templ" },
+			python = { "ruff_format" },
+		},
+
+		-- Format on save with function (more reliable)
+		format_on_save = function(bufnr)
+			-- Disable if autoformat is disabled
+			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+				return
+			end
+
+			return {
+				timeout_ms = 3000,
+				lsp_fallback = true,
+			}
+		end,
+
+		-- Formatters configuration
+		formatters = {
+			prettier = {
+				prepend_args = {
+					"--single-attribute-per-line",
+					"--print-width=80",
+				},
+			},
+		},
+	},
+
+	-- Add autocmd as fallback
+	config = function(_, opts)
+		local conform = require("conform")
+		conform.setup(opts)
+
+		-- Additional autocmd for save (fallback)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			pattern = "*",
+			callback = function(args)
+				-- Don't format if disabled
+				if vim.g.disable_autoformat or vim.b[args.buf].disable_autoformat then
+					return
+				end
+
+				-- Format with conform
+				conform.format({
+					bufnr = args.buf,
+					timeout_ms = 3000,
+					lsp_fallback = true,
+				})
+			end,
+		})
+
+		-- Keybindings for manual format
+		vim.keymap.set({ "n", "v" }, "<leader>cf", function()
+			conform.format({
+				lsp_fallback = true,
+				async = false,
+				timeout_ms = 3000,
+			})
+		end, { desc = "Format file or range (in visual mode)" })
+
+		-- Toggle autoformat
+		vim.keymap.set("n", "<leader>tf", function()
+			if vim.g.disable_autoformat then
+				vim.g.disable_autoformat = false
+				print("Autoformat enabled")
+			else
+				vim.g.disable_autoformat = true
+				print("Autoformat disabled")
+			end
+		end, { desc = "Toggle autoformat" })
+	end,
 }

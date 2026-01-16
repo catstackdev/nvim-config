@@ -24,4 +24,8 @@ return {
 	--     return not (vim.g.neovide == true)
 	--   end,
 	-- },
+
+	-- Disabled because Neovim 0.10+ has native inlay hints (vim.lsp.inlay_hint)
+	-- Conflicts with other ghost text (Copilot, snippets)
+	{ "lvimuser/lsp-inlayhints.nvim", enabled = false },
 }

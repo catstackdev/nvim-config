@@ -10,6 +10,7 @@ return {
 		dependencies = {
 			-- "nvim-treesitter/nvim-treesitter-textobjects",
 			"windwp/nvim-ts-autotag",
+			"nvim-treesitter/nvim-treesitter-refactor",
 		},
 		config = function()
 			-- import nvim-treesitter plugin
@@ -117,6 +118,30 @@ return {
 						node_incremental = "<C-space>",
 						scope_incremental = false,
 						node_decremental = "<bs>",
+					},
+				},
+				-- Treesitter refactor module
+				refactor = {
+					highlight_definitions = {
+						enable = true,
+						-- Set to false if you have an `updatetime` of ~100
+						clear_on_cursor_move = true,
+					},
+					smart_rename = {
+						enable = true,
+						keymaps = {
+							smart_rename = "grr", -- Changed from gR to avoid conflict with LSP references
+						},
+					},
+					navigation = {
+						enable = true,
+						keymaps = {
+							goto_definition = "gnd",
+							list_definitions = "gnD",
+							list_definitions_toc = "gO",
+							goto_next_usage = "<a-*>",
+							goto_previous_usage = "<a-#>",
+						},
 					},
 				},
 			})

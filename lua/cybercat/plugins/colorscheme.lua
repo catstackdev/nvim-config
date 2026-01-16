@@ -40,6 +40,13 @@ return {
 
 		vim.cmd("colorscheme tokyonight")
 
+		-- Setup LSP Inlay Hints highlight (must be after colorscheme)
+		vim.api.nvim_set_hl(0, "LspInlayHint", {
+			fg = "#627E97", -- fg_gutter color (subtle gray)
+			bg = "NONE",
+			italic = true,
+		})
+
 		-- Setup transparency for various plugin windows
 		highlight_utils.setup_transparency_autocmd("NvimTree", highlight_utils.get_nvimtree_groups())
 		highlight_utils.setup_transparency_autocmd("neo-tree", highlight_utils.get_neotree_groups())

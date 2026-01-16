@@ -53,20 +53,29 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		opts.desc = "Restart LSP"
 		keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
 
+		opts.desc = "Toggle inlay hints"
+		keymap.set("n", "<leader>th", function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+		end, opts)
+
+		-- DISABLED: Conform.nvim handles format on save (with lsp_fallback)
+		-- Keeping this enabled causes conflicts with conform's format_on_save
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		if client and client.supports_method("textDocument/formatting") then
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true }),
-				buffer = ev.buf,
-				callback = function()
-					vim.lsp.buf.format({ bufnr = ev.buf, timeout_ms = 5000 })
-				end,
-			})
+		-- if client and client.supports_method("textDocument/formatting") then
+		-- 	vim.api.nvim_create_autocmd("BufWritePre", {
+		-- 		group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true }),
+		-- 		buffer = ev.buf,
+		-- 		callback = function()
+		-- 			vim.lsp.buf.format({ bufnr = ev.buf, timeout_ms = 5000 })
+		-- 		end,
+		-- 	})
+		-- end
+		-- Enable inlay hints if supported by the server
+		if client and client.supports_method("textDocument/inlayHint") then
+			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 		end
 	end,
 })
-
-vim.lsp.inlay_hint.enable(true)
 
 local severity = vim.diagnostic.severity
 
