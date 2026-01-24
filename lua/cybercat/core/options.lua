@@ -1,7 +1,16 @@
 vim.cmd("let g:netrw_liststyle = 3")
 
 vim.o.sessionoptions = vim.o.sessionoptions .. ",localoptions"
-vim.g.python3_host_prog = vim.fn.expand("~/.venv/neovim/bin/python")
+
+-- Python host program (pyenv-compatible)
+-- Use pyenv shims - 'python' points to pyenv global version
+local pyenv_python = vim.fn.expand("~/.pyenv/shims/python")
+if vim.fn.executable(pyenv_python) == 1 then
+	vim.g.python3_host_prog = pyenv_python
+else
+	-- Fallback: try python3 then python
+	vim.g.python3_host_prog = vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+end
 
 local opt = vim.opt
 

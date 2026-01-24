@@ -49,6 +49,13 @@ return {
       },
     }
 
+    -- Load distant statusline component
+    local distantStatusOk, distantStatus = pcall(require, "cybercat.plugins.distant-portal.statusline")
+    local distantComponent = nil
+    if distantStatusOk then
+      distantComponent = distantStatus.component()
+    end
+
     -- configure lualine with modified theme
     lualine.setup({
       options = {
@@ -56,6 +63,8 @@ return {
       },
       sections = {
         lualine_x = {
+          -- Distant connection status (if available)
+          distantComponent or {},
           {
             lazy_status.updates,
             cond = lazy_status.has_updates,

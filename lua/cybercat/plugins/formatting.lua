@@ -26,7 +26,9 @@ return {
 				prisma = { "prettier" }, -- Prisma schema files
 				-- handlebars = { "prettier" },
 				lua = { "stylua" },
-				python = { "isort", "black" },
+				python = { "ruff_format", "ruff_organize_imports" }, -- Ruff does both formatting + imports (faster than black+isort)
+				go = { "goimports", "gofumpt" },
+				rust = { "rustfmt" },
 				sql = { "sql_formatter" }, -- Fixed: use underscore not hyphen
 				shell = { "shfmt" },
 				-- terraform = { "terraform_fmt" }, -- Disabled: terraform CLI not installed

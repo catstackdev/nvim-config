@@ -10,3 +10,6 @@ require("cybercat.core.keymaps-plugin") -- Loads: navigation, files, images, img
 
 require("cybercat.core.command")
 require("cybercat.core.autocmds")
+
+-- Auto-start Claude socket for IDE integration
+require("cybercat.core.claude-socket").setup()

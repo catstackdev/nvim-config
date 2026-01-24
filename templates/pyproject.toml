@@ -1,0 +1,55 @@
+# Python AI Project Configuration (FastAPI + LangChain/LlamaIndex)
+# Place this file in your project root
+
+[project]
+name = "my-ai-project"
+version = "0.1.0"
+description = "AI Assistant with FastAPI"
+requires-python = ">=3.12"
+
+# Ruff - All-in-one linter and formatter (replaces black, isort, flake8, pylint)
+[tool.ruff]
+line-length = 88  # Black default (good for AI chains)
+target-version = "py312"
+
+# Auto-fix issues when possible
+fix = true
+
+# Lint rules (similar to ESLint configs)
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (undefined names, unused imports)
+    "I",   # isort (import sorting)
+    "B",   # flake8-bugbear (common bugs)
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade (use modern Python syntax)
+    "SIM", # flake8-simplify
+]
+
+# Ignore rules that conflict with AI framework patterns
+ignore = [
+    "E501",  # line too long (AI chains/prompts can be long)
+    "B008",  # function calls in argument defaults (FastAPI uses this)
+    "UP007", # Use X | Y for type annotations (not all libs support it yet)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# MyPy - Type checking (great for catching bugs in AI code)
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Relaxed for AI development
+ignore_missing_imports = true  # Many AI libs don't have types yet
+
+# Pytest - Testing configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

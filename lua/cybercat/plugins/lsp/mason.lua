@@ -46,6 +46,9 @@ return {
 				"angularls",
 				-- "handlebars_ls",
 				-- "ember", --for .hbs file for react template using plop
+				"ruff_lsp", -- Linting/formatting//python
+				"gopls", -- Go language server
+				"rust_analyzer", -- Rust language server
 			},
 			-- auto-install configured servers (with lspconfig)
 			automatic_installation = true, -- not the same as ensure_installed
@@ -55,9 +58,9 @@ return {
 			ensure_installed = {
 				"prettier", -- prettier formatter
 				"stylua", -- lua formatter
-				"isort", -- python formattemedmarkdown
-				"black", -- python formatter
-				"pylint", -- python linter
+				-- Python: using ruff for everything (replaces black, isort, pylint)
+				"ruff", -- Fast Python linter+formatter (Rust-based, all-in-one)
+				"mypy", -- Python type checker (great for AI frameworks)
 				"eslint_d", -- js linter
 				"cfn-lint", -- cloudformation linter
 				"mdx_analyzer",
@@ -65,11 +68,15 @@ return {
 				"bashls", -- bash .sh
 				"shfmt",
 				"beautysh", --formatter for zsh
-
+				"gofumpt", -- go formatter (stricter gofmt)
+				"goimports", -- go imports formatter
+				"golangci-lint", -- go linter
+				"rustfmt", -- rust formatter
 				"cspell", --check typo
 				-- "djlint", -- testing
 				"llm-ls", -- #lsp server for ai llm
 				"js-debug-adapter",
+				"debugpy", -- Python debugger (for FastAPI debugging)
 			},
 			run_on_start = true, -- run on startup
 		})
