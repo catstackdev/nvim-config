@@ -14,9 +14,35 @@ vim.opt.rtp:prepend(lazypath)
 vim.o.termguicolors = true
 require("lazy").setup(
 	{
-		{ import = "cybercat.plugins" },
+		-- Core plugins (telescope, treesitter, which-key, harpoon)
+		{ import = "cybercat.plugins.core" },
+		
+		-- UI plugins (statusline, dashboard, notifications, etc.)
+		{ import = "cybercat.plugins.ui" },
+		
+		-- Editing plugins (surround, autopairs, comment, motion)
+		{ import = "cybercat.plugins.editing" },
+		
+		-- Git plugins
+		{ import = "cybercat.plugins.git" },
+		
+		-- AI plugins (copilot, codeium, claude, avante)
+		{ import = "cybercat.plugins.ai" },
+		
+		-- Language-specific plugins (markdown, package-info, kubectl)
+		{ import = "cybercat.plugins.languages" },
+		
+		-- Tools (HTTP, testing, debugging, search/replace)
+		{ import = "cybercat.plugins.tools" },
+		
+		-- LSP & Mason (keep untouched)
 		{ import = "cybercat.plugins.lsp" },
+		
+		-- Colorschemes
 		{ import = "cybercat.plugins.colorscheme" },
+		
+		-- Legacy plugins (for compatibility during migration)
+		{ import = "cybercat.plugins" },
 	},
 	{
 		-- install = {

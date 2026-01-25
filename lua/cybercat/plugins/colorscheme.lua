@@ -2,7 +2,7 @@ return {
 	"folke/tokyonight.nvim",
 	priority = 1000,
 	config = function()
-		local highlight_utils = require("cybercat.core.highlights.utils")
+		local highlight_utils = require("cybercat.core.ui.utils")
 		
 		local bg = "#011628"
 		local bg_dark = "#011423"

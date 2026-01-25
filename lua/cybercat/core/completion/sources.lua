@@ -47,4 +47,12 @@ function M.get_gitcommit_sources()
 	}
 end
 
+function M.get_http_sources()
+	return {
+		{ name = "buffer" },
+		{ name = "path" },
+		{ name = "nvim_lsp" },
+	}
+end
+
 return M

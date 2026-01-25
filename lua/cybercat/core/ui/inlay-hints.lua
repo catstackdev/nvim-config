@@ -13,7 +13,7 @@
 local M = {}
 
 function M.setup()
-	local colors = require("cybercat.core.colors")
+	local colors = require("cybercat.core.ui.colors")
 
 	-- Default inlay hint style (subtle, italic, comment-like)
 	vim.api.nvim_set_hl(0, "LspInlayHint", {
@@ -44,7 +44,7 @@ function M.style_dimmed()
 end
 
 function M.style_colored()
-	local colors = require("cybercat.core.colors")
+	local colors = require("cybercat.core.ui.colors")
 	vim.api.nvim_set_hl(0, "LspInlayHint", {
 		fg = colors["cybercat_color03"], -- Cyan color
 		bg = "NONE",
@@ -53,7 +53,7 @@ function M.style_colored()
 end
 
 function M.style_subtle_bg()
-	local colors = require("cybercat.core.colors")
+	local colors = require("cybercat.core.ui.colors")
 	vim.api.nvim_set_hl(0, "LspInlayHint", {
 		fg = colors["cybercat_color09"],
 		bg = colors["cybercat_color13"], -- Very subtle background
@@ -62,7 +62,7 @@ function M.style_subtle_bg()
 end
 
 function M.style_bold()
-	local colors = require("cybercat.core.colors")
+	local colors = require("cybercat.core.ui.colors")
 	vim.api.nvim_set_hl(0, "LspInlayHint", {
 		fg = colors["cybercat_color09"],
 		bg = "NONE",

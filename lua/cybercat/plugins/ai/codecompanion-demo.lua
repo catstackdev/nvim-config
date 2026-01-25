@@ -1,0 +1,101 @@
+-- CodeCompanion with Claude 3.5 Sonnet
+-- This is MORE powerful than CopilotChat for complex tasks
+return {}
+-- return {
+-- 	"olimorris/codecompanion.nvim",
+-- 	dependencies = {
+-- 		"nvim-lua/plenary.nvim",
+-- 		"nvim-treesitter/nvim-treesitter",
+-- 		"nvim-telescope/telescope.nvim", -- Optional: For file picker
+-- 	},
+-- 	config = function()
+-- 		require("codecompanion").setup({
+-- 			-- AI model adapters
+-- 			adapters = {
+-- 				-- Claude 3.5 Sonnet (best for complex tasks)
+-- 				anthropic = {
+-- 					name = "anthropic",
+-- 					model = "claude-3-5-sonnet-20241022", -- Latest version
+-- 					api_key = "ANTHROPIC_API_KEY", -- Get from: https://console.anthropic.com/
+-- 				},
+-- 				-- OpenAI GPT-4o (good alternative)
+-- 				openai = {
+-- 					name = "openai",
+-- 					model = "gpt-4o",
+-- 					api_key = "OPENAI_API_KEY",
+-- 				},
+-- 				-- DeepSeek (FREE alternative!)
+-- 				deepseek = {
+-- 					name = "deepseek",
+-- 					model = "deepseek-chat",
+-- 					api_key = "DEEPSEEK_API_KEY",
+-- 				},
+-- 			},
+-- 			-- Default strategies for different modes
+-- 			strategies = {
+-- 				-- Chat mode: Use Claude for complex discussions
+-- 				chat = {
+-- 					adapter = "anthropic",
+-- 					slash_commands = {
+-- 						["buffer"] = {
+-- 							callback = "strategies.chat.slash_commands.buffer",
+-- 							description = "Add current buffer to chat",
+-- 							opts = { contains_code = true },
+-- 						},
+-- 						["file"] = {
+-- 							callback = "strategies.chat.slash_commands.file",
+-- 							description = "Add a file to chat",
+-- 						},
+-- 						["help"] = {
+-- 							callback = "strategies.chat.slash_commands.help",
+-- 							description = "Show available commands",
+-- 						},
+-- 					},
+-- 				},
+-- 				-- Inline mode: Quick edits with GPT-4o
+-- 				inline = {
+-- 					adapter = "openai",
+-- 				},
+-- 			},
+-- 			-- Display settings
+-- 			display = {
+-- 				chat = {
+-- 					window = {
+-- 						layout = "float", -- or "vertical" or "horizontal"
+-- 						width = 0.45,
+-- 						height = 0.8,
+-- 					},
+-- 					show_settings = true,
+-- 				},
+-- 				inline = {
+-- 					-- Show diff when replacing code
+-- 					diff = {
+-- 						enabled = true,
+-- 						provider = "mini_diff", -- or "default"
+-- 					},
+-- 				},
+-- 			},
+-- 		})
+-- 	end,
+--
+-- 	-- Keymaps for different actions
+-- 	keys = {
+-- 		-- Open chat
+-- 		{ "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "Toggle AI Chat" },
+--
+-- 		-- Quick actions menu
+-- 		{ "<leader>ca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "AI Actions Menu" },
+--
+-- 		-- Inline AI (asks AI to modify selected code)
+-- 		{ "<leader>ci", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "AI Inline Edit" },
+--
+-- 		-- Quick prompts
+-- 		{ "<leader>ce", "<cmd>CodeCompanion /explain<cr>", mode = "v", desc = "Explain Code" },
+-- 		{ "<leader>cf", "<cmd>CodeCompanion /fix<cr>", mode = "v", desc = "Fix Code" },
+-- 		{ "<leader>cr", "<cmd>CodeCompanion /refactor<cr>", mode = "v", desc = "Refactor Code" },
+-- 		{ "<leader>ct", "<cmd>CodeCompanion /tests<cr>", mode = "v", desc = "Generate Tests" },
+--
+-- 		-- Add buffer to chat
+-- 		{ "<leader>cb", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
+-- 	},
+-- }

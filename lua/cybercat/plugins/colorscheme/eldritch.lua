@@ -1,4 +1,4 @@
-local colors = require("cybercat.core.colors")
+local colors = require("cybercat.core.ui.colors")
 
 return {
 	"eldritch-theme/eldritch.nvim",
