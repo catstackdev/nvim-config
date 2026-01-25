@@ -5,6 +5,27 @@ return {
 	config = function()
 		local lint = require("lint")
 
+		-- Configure mypy to use virtual environment
+		lint.linters.mypy = require("lint.linters.mypy")
+		lint.linters.mypy.args = {
+			"--show-column-numbers",
+			"--show-error-end",
+			"--hide-error-codes",
+			"--hide-error-context",
+			"--no-color-output",
+			"--no-error-summary",
+			"--no-pretty",
+		}
+		-- Use python from virtual environment to run mypy
+		lint.linters.mypy.cmd = function()
+			local venv_python = vim.fn.getcwd() .. "/.venv/bin/python"
+			if vim.fn.executable(venv_python) == 1 then
+				return venv_python
+			end
+			return "python"
+		end
+		lint.linters.mypy.args = vim.list_extend({ "-m", "mypy" }, lint.linters.mypy.args)
+
 		-- lint.linters_by_ft = {
 		--   javascript = { "eslint_d" },
 		--   typescript = { "eslint_d" },

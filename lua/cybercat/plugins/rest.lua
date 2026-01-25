@@ -1,100 +1,162 @@
-return {}
--- return {
--- 	"rest-nvim/rest.nvim",
--- 	ft = { "http", "rest" }, -- Set filetypes for which this plugin is active
--- 	dependencies = {
--- 		-- Ensure treesitter is installed and configured to parse 'http' files
--- 		{
--- 			"nvim-treesitter/nvim-treesitter",
--- 			opts = function(_, opts)
--- 				-- Add 'http' to your ensure_installed list
--- 				opts.ensure_installed = opts.ensure_installed or {}
--- 				table.insert(opts.ensure_installed, "http")
--- 			end,
--- 			-- config = function(_, opts)
--- 			--        require("nvim-treesitter.configs").setup(opts)
--- 			--      end,
--- 		},
--- 		-- Optional: for `rest.nvim` to manage dependencies via Luarocks (recommended)
--- 		"nvim-lua/plenary.nvim", -- A common dependency for many Lua plugins
--- 	},
--- 	config = function()
--- 		require("rest-nvim").setup({
--- 			-- Your configuration options go here
--- 			-- See :h rest-nvim.config for full options
---
--- 			-- Global options for requests
--- 			request = {
--- 				-- Set `Content-Type` header when it is empty and body is provided
--- 				set_content_type = true,
--- 				-- Skip SSL verification, useful for unknown certificates (be cautious with this in production!)
--- 				-- skip_ssl_verification = false,
--- 			},
---
--- 			-- Response options
--- 			response = {
--- 				-- Default response hooks
--- 				hooks = {
--- 					-- Decode the request URL segments on response UI to improve readability
--- 					decode_url_segments = true,
--- 					-- Automatically format JSON responses
--- 					format_json = true,
--- 					-- Automatically format XML responses (requires `xml2lua` luarock)
--- 					-- format_xml = true,
--- 				},
--- 				-- Highlight response JSON with tree-sitter
--- 				highlight = {
--- 					enabled = true, -- Enable highlighting of response bodies
--- 					timeout = 150, -- Timeout in ms for highlighting
--- 				},
--- 			},
---
--- 			-- Environment options
--- 			-- Define environment files (e.g., development.env, production.env)
--- 			-- You can switch between them with :Rest env select
--- 			env_file = ".env", -- Default .env file to load
--- 			env_dir = vim.fn.stdpath("config") .. "/rest_envs", -- Directory to look for .env files
---
--- 			-- Custom dynamic variables (Lua functions that return a string)
--- 			-- These can be used in your .http files like `{{my_custom_var}}`
--- 			custom_dynamic_variables = {
--- 				-- Example: Generate a timestamp
--- 				-- timestamp = function()
--- 				--   return os.date("%Y-%m-%dT%H:%M:%S")
--- 				-- end,
--- 			},
---
--- 			-- Add a Telescope extension for Browse requests
--- 			extensions = {
--- 				telescope = true,
--- 			},
--- 			-- Other options...
--- 		})
---
--- 		-- Keybindings (optional but highly recommended)
--- 		-- rest.nvim does not set keymaps by default to avoid conflicts
--- 		local map = vim.keymap.set
--- 		local opts = { noremap = true, silent = true }
---
--- 		-- You'll typically use these in a .http file
--- 		vim.api.nvim_create_autocmd("FileType", {
--- 			pattern = { "http", "rest" },
--- 			callback = function()
--- 				-- Run the request under the cursor
--- 				map("n", "<leader>rr", "<cmd>Rest run<CR>", { desc = "Rest: Run Request", buffer = true })
--- 				-- Run the last request
--- 				map("n", "<leader>rl", "<cmd>Rest last<CR>", { desc = "Rest: Run Last Request", buffer = true })
--- 				-- Open the result pane (if closed)
--- 				map("n", "<leader>ro", "<cmd>Rest open<CR>", { desc = "Rest: Open Result Pane", buffer = true })
--- 				-- Show available environment files and select one
--- 				map("n", "<leader>re", "<cmd>Rest env select<CR>", { desc = "Rest: Select Environment", buffer = true })
--- 				-- Copy the request as a cURL command
--- 				map("n", "<leader>rc", "<cmd>Rest copy<CR>", { desc = "Rest: Copy as cURL", buffer = true })
--- 				-- Show request/response logs
--- 				map("n", "<leader>rL", "<cmd>Rest logs<CR>", { desc = "Rest: Show Logs", buffer = true })
--- 				-- Toggle between response body and headers in the result window
--- 				map("n", "<leader>rt", "<cmd>Rest toggle_view<CR>", { desc = "Rest: Toggle View", buffer = true })
--- 			end,
--- 		})
--- 	end,
--- }
+-- return {}
+return {
+	"rest-nvim/rest.nvim",
+	ft = { "http", "rest" },
+	dependencies = {
+		{
+			"nvim-treesitter/nvim-treesitter",
+			opts = function(_, opts)
+				opts.ensure_installed = opts.ensure_installed or {}
+				table.insert(opts.ensure_installed, "http")
+			end,
+		},
+		"nvim-lua/plenary.nvim",
+	},
+	config = function()
+		-- Helper function to check if environment files exist
+		local function check_env_files()
+			local cwd = vim.fn.getcwd()
+			local env_files = {
+				cwd .. "/.env.local",
+				cwd .. "/.env.dev",
+				cwd .. "/.env.prod",
+			}
+
+			local missing_files = {}
+			for _, file in ipairs(env_files) do
+				if vim.fn.filereadable(file) == 0 then
+					table.insert(missing_files, file)
+				end
+			end
+
+			return missing_files
+		end
+
+		-- Helper function to create example env files
+		local function create_example_env_files()
+			local cwd = vim.fn.getcwd()
+			local env_configs = {
+				[".env.local"] = "# Local Development Environment\nbaseUrl=http://localhost:3000\napiKey=local-dev-key\n",
+				[".env.dev"] = "# Development Environment\nbaseUrl=https://dev-api.example.com\napiKey=dev-api-key-here\n",
+				[".env.prod"] = "# Production Environment\nbaseUrl=https://api.example.com\napiKey=prod-api-key-here\n",
+			}
+
+			for filename, content in pairs(env_configs) do
+				local filepath = cwd .. "/" .. filename
+				if vim.fn.filereadable(filepath) == 0 then
+					local file = io.open(filepath, "w")
+					if file then
+						file:write(content)
+						file:close()
+						vim.notify("Created: " .. filename, vim.log.levels.INFO)
+					end
+				end
+			end
+		end
+
+		-- Show help box if env files don't exist
+		local function show_env_help()
+			local missing = check_env_files()
+			if #missing > 0 then
+				local help_lines = {
+					"",
+					"REST.nvim Environment Setup",
+					"─────────────────────────────────────",
+					"",
+					"Missing environment files:",
+				}
+
+				for _, file in ipairs(missing) do
+					table.insert(help_lines, "  • " .. vim.fn.fnamemodify(file, ":t"))
+				end
+
+				table.insert(help_lines, "")
+				table.insert(help_lines, "Quick Setup:")
+				table.insert(help_lines, "  1. Run :RestCreateEnvFiles")
+				table.insert(help_lines, "  2. Edit env files with your API details")
+				table.insert(help_lines, "  3. Use snippets: 'get', 'post', 'getauth', etc.")
+				table.insert(help_lines, "")
+				table.insert(help_lines, "Available keymaps:")
+				table.insert(help_lines, "  <leader>rr - Run request under cursor")
+				table.insert(help_lines, "  <leader>re - Select environment")
+				table.insert(help_lines, "")
+
+				vim.notify(table.concat(help_lines, "\n"), vim.log.levels.WARN)
+			end
+		end
+
+		-- Create user command
+		vim.api.nvim_create_user_command("RestCreateEnvFiles", create_example_env_files, {})
+
+		-- Check for env files when opening http files
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = { "http", "rest" },
+			callback = function()
+				vim.defer_fn(show_env_help, 500)
+			end,
+		})
+
+		require("rest-nvim").setup({
+			request = {
+				set_content_type = true,
+			},
+			response = {
+				hooks = {
+					decode_url_segments = true,
+					format_json = true,
+				},
+				highlight = {
+					enabled = true,
+					timeout = 150,
+				},
+			},
+			env_file = ".env.local",
+			env_dir = vim.fn.getcwd(),
+			custom_dynamic_variables = {
+				timestamp = function()
+					return os.date("%Y-%m-%dT%H:%M:%S")
+				end,
+			},
+			extensions = {
+				telescope = true,
+			},
+		})
+
+		-- Keybindings
+		local map = vim.keymap.set
+
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = { "http", "rest" },
+			callback = function()
+				map("n", "<leader>rr", "<cmd>Rest run<CR>", { desc = "Rest: Run Request", buffer = true })
+				map("n", "<leader>rl", "<cmd>Rest last<CR>", { desc = "Rest: Run Last Request", buffer = true })
+				map("n", "<leader>ro", "<cmd>Rest open<CR>", { desc = "Rest: Open Result Pane", buffer = true })
+				map("n", "<leader>re", "<cmd>Rest env select<CR>", { desc = "Rest: Select Environment", buffer = true })
+				map("n", "<leader>rc", "<cmd>Rest copy<CR>", { desc = "Rest: Copy as cURL", buffer = true })
+				map("n", "<leader>rL", "<cmd>Rest logs<CR>", { desc = "Rest: Show Logs", buffer = true })
+				map("n", "<leader>rt", "<cmd>Rest toggle_view<CR>", { desc = "Rest: Toggle View", buffer = true })
+			end,
+		})
+
+		-- Global keymaps (not filetype-specific)
+		map("n", "<leader>rf", "<cmd>Telescope rest select_env<CR>", { desc = "Rest: Find Requests" })
+		map("n", "<leader>rN", "<cmd>RestCreateEnvFiles<CR>", { desc = "Rest: Create Environment Files" })
+
+		-- Custom keymaps for REST result window (avoid H/L conflicts)
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "rest_nvim_result",
+			callback = function()
+				local buf = vim.api.nvim_get_current_buf()
+				-- Unmap H and L if they're set by the plugin
+				pcall(vim.keymap.del, "n", "H", { buffer = buf })
+				pcall(vim.keymap.del, "n", "L", { buffer = buf })
+				
+				-- Add alternative navigation keymaps
+				map("n", "<Tab>", "<cmd>Rest run last<CR>", { desc = "Rest: Run Last Request", buffer = buf })
+				map("n", "q", "<cmd>close<CR>", { desc = "Close result window", buffer = buf })
+				map("n", "<Esc>", "<cmd>close<CR>", { desc = "Close result window", buffer = buf })
+				map("n", "<leader>rc", "<cmd>Rest copy<CR>", { desc = "Rest: Copy as cURL", buffer = buf })
+			end,
+		})
+	end,
+}

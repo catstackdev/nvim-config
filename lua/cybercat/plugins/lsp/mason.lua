@@ -46,7 +46,7 @@ return {
 				"angularls",
 				-- "handlebars_ls",
 				-- "ember", --for .hbs file for react template using plop
-				"ruff_lsp", -- Linting/formatting//python
+				"ruff", -- Linting/formatting//python
 				"gopls", -- Go language server
 				"rust_analyzer", -- Rust language server
 			},

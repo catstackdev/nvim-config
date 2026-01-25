@@ -157,7 +157,42 @@ return {
 			vim.notify("Ghost text " .. (ghost_text_enabled and "enabled" or "disabled"))
 		end, {})
 
+		-- LuaSnip reload command
+		vim.api.nvim_create_user_command("LuaSnipReload", function()
+			require("luasnip.loaders.from_lua").load({ paths = vim.fn.stdpath("config") .. "/lua/luasnip" })
+			vim.notify("LuaSnip snippets reloaded")
+		end, {})
+
+		-- LuaSnip list command
+		vim.api.nvim_create_user_command("LuaSnipList", function()
+			local ft = vim.bo.filetype
+			local snippets = luasnip.get_snippets(ft)
+			if not snippets or vim.tbl_isempty(snippets) then
+				vim.notify("No snippets for filetype: " .. ft, vim.log.levels.WARN)
+				return
+			end
+			
+			local lines = { "Available snippets for '" .. ft .. "':" }
+			for trigger, snip_list in pairs(snippets) do
+				table.insert(lines, "  • " .. trigger .. " (" .. #snip_list .. " variant(s))")
+			end
+			vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO)
+		end, {})
+
+		-- Load VSCode-style snippets
 		require("luasnip.loaders.from_vscode").lazy_load()
+		
+		-- Load Lua snippets from lua/luasnip directory
+		require("luasnip.loaders.from_lua").lazy_load({ 
+			paths = vim.fn.stdpath("config") .. "/lua/luasnip" 
+		})
+		
+		-- LuaSnip configuration
+		luasnip.config.set_config({
+			history = true,
+			updateevents = "TextChanged,TextChangedI",
+			enable_autosnippets = true,
+		})
 
 		-- Main cmp setup
 		cmp.setup({

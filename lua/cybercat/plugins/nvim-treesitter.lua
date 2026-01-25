@@ -72,6 +72,7 @@ return {
 					"vue",
 					"svelte",
 					"graphql",
+					"http", -- for rest.nvim
 
 					-- 📦 Data / Config
 					"json",
