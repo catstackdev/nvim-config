@@ -36,17 +36,76 @@ return {
 	},
 	keys = {
 		-- Run requests (shows last response body only)
-		{ "<leader>hr", "<cmd>HurlRunner<CR>", desc = "Hurl: Run File (show last response)", ft = "hurl" },
-		{ "<leader>ha", "<cmd>HurlRunnerAt<CR>", desc = "Hurl: Run Request at Cursor", ft = "hurl" },
+		{ "<leader>hr", function()
+			local file = vim.fn.expand("%")
+			local env_file = vim.fn.findfile("hurl.env", ".;")
+			if env_file == "" then
+				env_file = vim.fn.findfile("test/api/hurl.env", ".;")
+			end
+			local cmd = "hurl"
+			if env_file ~= "" then
+				cmd = cmd .. " --variables-file " .. env_file
+			end
+			cmd = cmd .. " " .. file
+			vim.cmd("split | terminal " .. cmd)
+		end, desc = "Hurl: Run File (show last response)", ft = "hurl" },
+		
+		{ "<leader>ha", function()
+			local file = vim.fn.expand("%")
+			local line = vim.fn.line(".")
+			-- Find the request number by counting ### markers before cursor
+			local entry_num = 1
+			for i = 1, line do
+				local line_text = vim.fn.getline(i)
+				if string.match(line_text, "^###%s") then
+					if i <= line then
+						entry_num = entry_num + 1
+					end
+				end
+			end
+			entry_num = entry_num - 1 -- Adjust because we count from 0
+			if entry_num < 1 then entry_num = 1 end
+			
+			local env_file = vim.fn.findfile("hurl.env", ".;")
+			if env_file == "" then
+				env_file = vim.fn.findfile("test/api/hurl.env", ".;")
+			end
+			local cmd = "hurl --to-entry " .. entry_num
+			if env_file ~= "" then
+				cmd = cmd .. " --variables-file " .. env_file
+			end
+			cmd = cmd .. " " .. file
+			vim.cmd("split | terminal " .. cmd)
+		end, desc = "Hurl: Run Request at Cursor", ft = "hurl" },
 		
 		-- Test mode (shows pass/fail summary for ALL tests)
 		{ "<leader>ht", function()
-			vim.cmd("split | terminal hurl --test " .. vim.fn.expand("%"))
+			local file = vim.fn.expand("%")
+			local env_file = vim.fn.findfile("hurl.env", ".;") -- Search up for hurl.env
+			if env_file == "" then
+				env_file = vim.fn.findfile("test/api/hurl.env", ".;")
+			end
+			local cmd = "hurl --test"
+			if env_file ~= "" then
+				cmd = cmd .. " --variables-file " .. env_file
+			end
+			cmd = cmd .. " " .. file
+			vim.cmd("split | terminal " .. cmd)
 		end, desc = "Hurl: Test File (show all results)", ft = "hurl" },
 		
 		-- Test with verbose (shows ALL requests and responses)
 		{ "<leader>hT", function()
-			vim.cmd("split | terminal hurl --test --very-verbose " .. vim.fn.expand("%"))
+			local file = vim.fn.expand("%")
+			local env_file = vim.fn.findfile("hurl.env", ".;")
+			if env_file == "" then
+				env_file = vim.fn.findfile("test/api/hurl.env", ".;")
+			end
+			local cmd = "hurl --test --very-verbose"
+			if env_file ~= "" then
+				cmd = cmd .. " --variables-file " .. env_file
+			end
+			cmd = cmd .. " " .. file
+			vim.cmd("split | terminal " .. cmd)
 		end, desc = "Hurl: Test Verbose (show all details)", ft = "hurl" },
 		
 		-- Verbose mode (shows full HTTP details)
