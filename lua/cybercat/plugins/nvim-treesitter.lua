@@ -71,10 +71,11 @@ return {
 					"tsx",
 					"vue",
 					"svelte",
-					"graphql",
-					"http", -- for rest.nvim
+				"graphql",
+				"http", -- for rest.nvim
+				"hurl", -- for hurl.nvim
 
-					-- 📦 Data / Config
+				-- 📦 Data / Config
 					"json",
 					"json5",
 					"yaml",
