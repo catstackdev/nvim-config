@@ -1,0 +1,233 @@
+{
+  "GET with Assertions": {
+    "prefix": "get",
+    "body": [
+      "GET ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:200}",
+      "[Asserts]",
+      "jsonpath \"${4:$.key}\" ${5:==} ${6:\"value\"}",
+      "${0}"
+    ],
+    "description": "GET request with assertions"
+  },
+  "POST with Capture": {
+    "prefix": "post",
+    "body": [
+      "POST ${1:http://localhost:8000}${2:/endpoint}",
+      "Content-Type: application/json",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}",
+      "HTTP ${5:200}",
+      "[Captures]",
+      "${6:id}: jsonpath \"${7:$.id}\"",
+      "[Asserts]",
+      "jsonpath \"${8:$.key}\" ${9:==} ${10:\"value\"}",
+      "${0}"
+    ],
+    "description": "POST with capture and assertions"
+  },
+  "PUT with Assertions": {
+    "prefix": "put",
+    "body": [
+      "PUT ${1:http://localhost:8000}${2:/endpoint}",
+      "Content-Type: application/json",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}",
+      "HTTP ${5:200}",
+      "[Asserts]",
+      "jsonpath \"${6:$.key}\" ${7:==} ${8:\"value\"}",
+      "${0}"
+    ],
+    "description": "PUT request with assertions"
+  },
+  "DELETE with Status": {
+    "prefix": "delete",
+    "body": [
+      "DELETE ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:204}",
+      "${0}"
+    ],
+    "description": "DELETE request"
+  },
+  "Assert JSONPath": {
+    "prefix": "assert",
+    "body": "jsonpath \"${1:$.key}\" ${2|==,!=,>,<,>=,<=,contains,startsWith,endsWith,matches|} ${3:\"value\"}",
+    "description": "JSONPath assertion"
+  },
+  "Assert JSONPath Exists": {
+    "prefix": "assertexists",
+    "body": "jsonpath \"${1:$.key}\" exists",
+    "description": "Assert key exists"
+  },
+  "Assert JSONPath Type": {
+    "prefix": "asserttype",
+    "body": "jsonpath \"${1:$.key}\" isInteger",
+    "description": "Assert value type (isInteger, isFloat, isBoolean, isString, isCollection)"
+  },
+  "Assert JSONPath Count": {
+    "prefix": "assertcount",
+    "body": "jsonpath \"${1:$.array}\" count ${2:==} ${3:5}",
+    "description": "Assert array count"
+  },
+  "Capture JSONPath": {
+    "prefix": "capture",
+    "body": "${1:variable_name}: jsonpath \"${2:$.key}\"",
+    "description": "Capture value from response"
+  },
+  "Capture Header": {
+    "prefix": "captureheader",
+    "body": "${1:variable_name}: header \"${2:Location}\"",
+    "description": "Capture response header"
+  },
+  "Capture Cookie": {
+    "prefix": "capturecookie",
+    "body": "${1:variable_name}: cookie \"${2:session_id}\"",
+    "description": "Capture cookie value"
+  },
+  "Header Assert": {
+    "prefix": "header",
+    "body": "header \"${1:Content-Type}\" ${2:==} \"${3:application/json}\"",
+    "description": "Assert response header"
+  },
+  "Status Assert": {
+    "prefix": "status",
+    "body": "status ${1:200}",
+    "description": "Assert status code"
+  },
+  "Duration Assert": {
+    "prefix": "duration",
+    "body": "duration < ${1:1000}",
+    "description": "Assert response duration (ms)"
+  },
+  "Body Contains": {
+    "prefix": "bodycontains",
+    "body": "body contains \"${1:text}\"",
+    "description": "Assert body contains text"
+  },
+  "Authorization Bearer": {
+    "prefix": "auth",
+    "body": "Authorization: Bearer ${1:{{token}}}",
+    "description": "Authorization header with variable"
+  },
+  "Variable": {
+    "prefix": "var",
+    "body": "{{${1:variable_name}}}",
+    "description": "Insert variable"
+  },
+  "Query Block": {
+    "prefix": "query",
+    "body": [
+      "[QueryStringParams]",
+      "${1:param}: ${2:value}",
+      "${0}"
+    ],
+    "description": "Query string parameters block"
+  },
+  "Form Data Block": {
+    "prefix": "formdata",
+    "body": [
+      "[FormParams]",
+      "${1:key}: ${2:value}",
+      "${0}"
+    ],
+    "description": "Form data parameters block"
+  },
+  "Options Block": {
+    "prefix": "options",
+    "body": [
+      "[Options]",
+      "${1|verbose,insecure,location,max-redirs,retry,retry-interval|}: ${2:true}",
+      "${0}"
+    ],
+    "description": "Request options block"
+  },
+  "CRUD Test Suite": {
+    "prefix": "crud-test",
+    "body": [
+      "# Test ${1:Resource} CRUD operations",
+      "",
+      "### Create ${1:Resource}",
+      "POST ${2:http://localhost:8000}/${3:resources}",
+      "Content-Type: application/json",
+      "{",
+      "  \"${4:name}\": \"${5:Test Item}\"",
+      "}",
+      "HTTP 201",
+      "[Captures]",
+      "resource_id: jsonpath \"$.id\"",
+      "[Asserts]",
+      "jsonpath \"$.${4:name}\" == \"${5:Test Item}\"",
+      "",
+      "### Get ${1:Resource} by ID",
+      "GET ${2:http://localhost:8000}/${3:resources}/{{resource_id}}",
+      "HTTP 200",
+      "[Asserts]",
+      "jsonpath \"$.id\" == {{resource_id}}",
+      "jsonpath \"$.${4:name}\" == \"${5:Test Item}\"",
+      "",
+      "### Update ${1:Resource}",
+      "PUT ${2:http://localhost:8000}/${3:resources}/{{resource_id}}",
+      "Content-Type: application/json",
+      "{",
+      "  \"${4:name}\": \"${6:Updated Item}\"",
+      "}",
+      "HTTP 200",
+      "[Asserts]",
+      "jsonpath \"$.${4:name}\" == \"${6:Updated Item}\"",
+      "",
+      "### Delete ${1:Resource}",
+      "DELETE ${2:http://localhost:8000}/${3:resources}/{{resource_id}}",
+      "HTTP 204",
+      "${0}"
+    ],
+    "description": "Complete CRUD test suite with chained requests"
+  },
+  "Authentication Flow": {
+    "prefix": "auth-flow",
+    "body": [
+      "# Authentication flow",
+      "",
+      "### Login and capture token",
+      "POST ${1:http://localhost:8000}/auth/login",
+      "Content-Type: application/json",
+      "{",
+      "  \"username\": \"${2:user}\",",
+      "  \"password\": \"${3:pass}\"",
+      "}",
+      "HTTP 200",
+      "[Captures]",
+      "token: jsonpath \"$.token\"",
+      "[Asserts]",
+      "jsonpath \"$.token\" exists",
+      "",
+      "### Use authenticated request",
+      "GET ${1:http://localhost:8000}/protected",
+      "Authorization: Bearer {{token}}",
+      "HTTP 200",
+      "${0}"
+    ],
+    "description": "Login and authenticated request flow"
+  },
+  "Retry Block": {
+    "prefix": "retry",
+    "body": [
+      "[Options]",
+      "retry: ${1:3}",
+      "retry-interval: ${2:1000}",
+      "${0}"
+    ],
+    "description": "Retry configuration"
+  },
+  "localhost:8000": {
+    "prefix": "local8000",
+    "body": "http://localhost:8000",
+    "description": "localhost:8000 URL"
+  },
+  "localhost:3000": {
+    "prefix": "local3000",
+    "body": "http://localhost:3000",
+    "description": "localhost:3000 URL"
+  }
+}

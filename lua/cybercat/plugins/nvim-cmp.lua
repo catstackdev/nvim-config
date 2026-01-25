@@ -182,6 +182,11 @@ return {
 		-- Load VSCode-style snippets
 		require("luasnip.loaders.from_vscode").lazy_load()
 		
+		-- Load custom JSON snippets from snippets directory
+		require("luasnip.loaders.from_vscode").lazy_load({
+			paths = vim.fn.stdpath("config") .. "/snippets"
+		})
+		
 		-- Load Lua snippets from lua/luasnip directory
 		require("luasnip.loaders.from_lua").lazy_load({ 
 			paths = vim.fn.stdpath("config") .. "/lua/luasnip" 
@@ -242,6 +247,14 @@ return {
 		cmp.setup.filetype("gitcommit", {
 			sources = cmp.config.sources(sources.get_gitcommit_sources()),
 		})
+		
+		-- HTTP/REST/Hurl file completion
+		for _, ft in ipairs({ "http", "rest", "hurl" }) do
+			cmp.setup.filetype(ft, {
+				sources = cmp.config.sources(sources.get_http_sources()),
+			})
+		end
+		
 		-- Git completion setup
 		-- require("cmp_git").setup()
 	end,

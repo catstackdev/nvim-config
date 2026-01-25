@@ -1,0 +1,9 @@
+### Quick Test
+# Type 'get' and press Tab or Ctrl+Space to expand snippet
+
+### Test with actual API
+GET https://api.github.com/users/octocat
+
+### Test with environment variables (needs .env.local)
+# GET {{baseUrl}}/users
+# Authorization: Bearer {{apiKey}}

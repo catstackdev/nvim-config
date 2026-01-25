@@ -1,0 +1,300 @@
+{
+  "GET Request": {
+    "prefix": "get",
+    "body": [
+      "GET ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:200}",
+      "${0}"
+    ],
+    "description": "GET request"
+  },
+  "POST Request": {
+    "prefix": "post",
+    "body": [
+      "POST ${1:http://localhost:8000}${2:/endpoint}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}",
+      "HTTP ${5:200}",
+      "${0}"
+    ],
+    "description": "POST request with JSON body"
+  },
+  "PUT Request": {
+    "prefix": "put",
+    "body": [
+      "PUT ${1:http://localhost:8000}${2:/endpoint}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}",
+      "HTTP ${5:200}",
+      "${0}"
+    ],
+    "description": "PUT request"
+  },
+  "PATCH Request": {
+    "prefix": "patch",
+    "body": [
+      "PATCH ${1:http://localhost:8000}${2:/endpoint}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}",
+      "HTTP ${5:200}",
+      "${0}"
+    ],
+    "description": "PATCH request"
+  },
+  "DELETE Request": {
+    "prefix": "delete",
+    "body": [
+      "DELETE ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:200}",
+      "${0}"
+    ],
+    "description": "DELETE request"
+  },
+  "HEAD Request": {
+    "prefix": "head",
+    "body": [
+      "HEAD ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:200}",
+      "${0}"
+    ],
+    "description": "HEAD request"
+  },
+  "OPTIONS Request": {
+    "prefix": "options",
+    "body": [
+      "OPTIONS ${1:http://localhost:8000}${2:/endpoint}",
+      "HTTP ${3:200}",
+      "${0}"
+    ],
+    "description": "OPTIONS request"
+  },
+  "Authorization Bearer": {
+    "prefix": "auth",
+    "body": "Authorization: Bearer ${1:{{token}}}",
+    "description": "Authorization Bearer header"
+  },
+  "Authorization Basic": {
+    "prefix": "authbasic",
+    "body": "Authorization: Basic ${1:base64_credentials}",
+    "description": "Authorization Basic header"
+  },
+  "Content-Type JSON": {
+    "prefix": "json",
+    "body": "Content-Type: application/json",
+    "description": "JSON content type"
+  },
+  "Content-Type Form": {
+    "prefix": "form",
+    "body": "Content-Type: application/x-www-form-urlencoded",
+    "description": "Form content type"
+  },
+  "Content-Type Multipart": {
+    "prefix": "multipart",
+    "body": "Content-Type: multipart/form-data; boundary=${1:----WebKitFormBoundary}",
+    "description": "Multipart form data"
+  },
+  "Accept JSON": {
+    "prefix": "acceptjson",
+    "body": "Accept: application/json",
+    "description": "Accept JSON response"
+  },
+  "Accept HTML": {
+    "prefix": "accepthtml",
+    "body": "Accept: text/html",
+    "description": "Accept HTML response"
+  },
+  "User-Agent": {
+    "prefix": "useragent",
+    "body": "User-Agent: ${1:Mozilla/5.0}",
+    "description": "User-Agent header"
+  },
+  "Cookie": {
+    "prefix": "cookie",
+    "body": "Cookie: ${1:name}=${2:value}",
+    "description": "Cookie header"
+  },
+  "Custom Header": {
+    "prefix": "header",
+    "body": "${1:Header-Name}: ${2:value}",
+    "description": "Custom header"
+  },
+  "Variable": {
+    "prefix": "var",
+    "body": "{{${1:variable_name}}}",
+    "description": "Variable placeholder"
+  },
+  "Comment": {
+    "prefix": "comment",
+    "body": "# ${1:comment}",
+    "description": "Add comment"
+  },
+  "Section Divider": {
+    "prefix": "section",
+    "body": [
+      "### ${1:Section Name}",
+      "${0}"
+    ],
+    "description": "Section divider"
+  },
+  "GraphQL Query": {
+    "prefix": "graphql",
+    "body": [
+      "POST ${1:http://localhost:8000/graphql}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"query\": \"${2:query { __typename }}\"",
+      "}",
+      "HTTP ${3:200}",
+      "${0}"
+    ],
+    "description": "GraphQL query"
+  },
+  "File Upload": {
+    "prefix": "upload",
+    "body": [
+      "POST ${1:http://localhost:8000/upload}",
+      "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary",
+      "",
+      "------WebKitFormBoundary",
+      "Content-Disposition: form-data; name=\"file\"; filename=\"${2:file.txt}\"",
+      "Content-Type: ${3:text/plain}",
+      "",
+      "${4:file content}",
+      "------WebKitFormBoundary--",
+      "HTTP ${5:200}",
+      "${0}"
+    ],
+    "description": "File upload request"
+  },
+  "Query Parameters": {
+    "prefix": "query",
+    "body": "?${1:param}=${2:value}&${3:param2}=${4:value2}",
+    "description": "Query parameters"
+  },
+  "CRUD - Create": {
+    "prefix": "crud-create",
+    "body": [
+      "### Create ${1:Resource}",
+      "POST ${2:http://localhost:8000}/${3:resources}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${4:name}\": \"${5:value}\"",
+      "}",
+      "HTTP 201",
+      "${0}"
+    ],
+    "description": "CRUD Create operation"
+  },
+  "CRUD - Read All": {
+    "prefix": "crud-list",
+    "body": [
+      "### Get All ${1:Resources}",
+      "GET ${2:http://localhost:8000}/${3:resources}",
+      "HTTP 200",
+      "${0}"
+    ],
+    "description": "CRUD Read all operation"
+  },
+  "CRUD - Read One": {
+    "prefix": "crud-get",
+    "body": [
+      "### Get ${1:Resource} by ID",
+      "GET ${2:http://localhost:8000}/${3:resources}/${4:{{id}}}",
+      "HTTP 200",
+      "${0}"
+    ],
+    "description": "CRUD Read one operation"
+  },
+  "CRUD - Update": {
+    "prefix": "crud-update",
+    "body": [
+      "### Update ${1:Resource}",
+      "PUT ${2:http://localhost:8000}/${3:resources}/${4:{{id}}}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${5:name}\": \"${6:updated value}\"",
+      "}",
+      "HTTP 200",
+      "${0}"
+    ],
+    "description": "CRUD Update operation"
+  },
+  "CRUD - Delete": {
+    "prefix": "crud-delete",
+    "body": [
+      "### Delete ${1:Resource}",
+      "DELETE ${2:http://localhost:8000}/${3:resources}/${4:{{id}}}",
+      "HTTP 204",
+      "${0}"
+    ],
+    "description": "CRUD Delete operation"
+  },
+  "Full CRUD Suite": {
+    "prefix": "crud-all",
+    "body": [
+      "### Create ${1:Resource}",
+      "POST ${2:http://localhost:8000}/${3:resources}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${4:name}\": \"${5:value}\"",
+      "}",
+      "HTTP 201",
+      "",
+      "### Get All ${1:Resource}s",
+      "GET ${2:http://localhost:8000}/${3:resources}",
+      "HTTP 200",
+      "",
+      "### Get ${1:Resource} by ID",
+      "GET ${2:http://localhost:8000}/${3:resources}/{{id}}",
+      "HTTP 200",
+      "",
+      "### Update ${1:Resource}",
+      "PUT ${2:http://localhost:8000}/${3:resources}/{{id}}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${4:name}\": \"updated value\"",
+      "}",
+      "HTTP 200",
+      "",
+      "### Delete ${1:Resource}",
+      "DELETE ${2:http://localhost:8000}/${3:resources}/{{id}}",
+      "HTTP 204",
+      "${0}"
+    ],
+    "description": "Complete CRUD operations suite"
+  },
+  "localhost:3000": {
+    "prefix": "local3000",
+    "body": "http://localhost:3000",
+    "description": "localhost:3000 URL"
+  },
+  "localhost:8000": {
+    "prefix": "local8000",
+    "body": "http://localhost:8000",
+    "description": "localhost:8000 URL"
+  },
+  "localhost:8080": {
+    "prefix": "local8080",
+    "body": "http://localhost:8080",
+    "description": "localhost:8080 URL"
+  },
+  "localhost:5000": {
+    "prefix": "local5000",
+    "body": "http://localhost:5000",
+    "description": "localhost:5000 URL"
+  }
+}
