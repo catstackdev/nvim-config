@@ -1,7 +1,7 @@
 # Agent Guidelines for Neovim Configuration
 
 ## Overview
-Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager. Organized under `cybercat` namespace with 100+ plugins. Supports multiple modes via `NEOVIM_MODE` environment variable.
+Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager. Organized under `cybercat` namespace with 98 plugins in 8 categories. **Recently refactored** (January 2026) into a clean, modular structure. Supports multiple modes via `NEOVIM_MODE` environment variable.
 
 ## Build/Lint/Test Commands
 
@@ -76,8 +76,8 @@ local function getUserConfig() end
 local function setupKeymap() end
 
 -- Modules/Plugins: PascalCase or lowercase
-require("cybercat.core.options")
-require("cybercat.plugins.telescope")
+require("cybercat.core.config.options")
+require("cybercat.plugins.core.telescope")
 
 -- Constants: UPPER_CASE (rare in this codebase)
 local MAX_BUFFER_SIZE = 1024
@@ -187,26 +187,59 @@ Avoid excessive comments - prefer self-documenting code.
 lua/cybercat/
 ├── core/              # Core Neovim configuration
 │   ├── init.lua       # Loads all core modules
-│   ├── options.lua    # vim.opt settings
-│   ├── keymaps.lua    # Global keymaps
-│   ├── autocmds.lua   # Autocommands
-│   ├── command.lua    # Custom commands
-│   └── highlights/    # Color scheme customizations
-├── plugins/           # Plugin configurations (100+ files)
-│   ├── lsp/          # LSP-specific plugins
-│   │   ├── lsp.lua   # Main LSP config
-│   │   └── mason.lua # Mason setup
-│   └── *.lua         # Individual plugin configs
-├── cybercat-app/     # Custom applications
-│   └── test/         # Test modules
-├── lsp.lua           # LSP keymaps & autocmds
-└── lazy.lua          # Lazy.nvim bootstrap
+│   ├── config/        # Core configuration
+│   │   ├── init.lua   # Config loader
+│   │   ├── options.lua    # vim.opt settings (merged from 2 files)
+│   │   ├── autocmds.lua   # Autocommands
+│   │   └── commands.lua   # Custom commands
+│   ├── keymaps/       # All keymaps (10 organized modules)
+│   │   ├── init.lua   # Keymap loader
+│   │   ├── basic.lua, file-ops.lua, windows.lua
+│   │   ├── plugins.lua, lsp-imports.lua, git.lua
+│   │   └── navigation.lua, files.lua, spelling.lua
+│   ├── ui/            # UI configuration
+│   │   ├── highlights.lua  # Syntax highlighting
+│   │   ├── colors.lua      # Color definitions
+│   │   ├── utils.lua       # Highlight utilities
+│   │   └── inlay-hints.lua # LSP inlay hints
+│   └── completion/    # nvim-cmp configuration
+├── plugins/           # Plugin configurations (98 plugins)
+│   ├── core/          # Essential (7): telescope, treesitter, which-key, harpoon
+│   ├── ui/            # UI (28): lualine, alpha, noice, snacks, nvim-tree
+│   ├── editing/       # Editing (11): surround, autopairs, comment, flash
+│   ├── git/           # Git (4): gitsigns, lazygit, neogit, git-conflict
+│   ├── ai/            # AI (10): copilot, claude, aider, avante, codeium
+│   ├── languages/     # Languages (14): markdown (5), package-info, kubectl
+│   ├── tools/         # Tools (15): rest, hurl, neotest, debug, trouble
+│   ├── disabled/      # Disabled (5): oil, toggleterm, neotree
+│   ├── lsp/           # LSP-specific plugins
+│   │   ├── lsp.lua    # Main LSP config
+│   │   └── mason.lua  # Mason setup
+│   ├── colorscheme/   # Theme plugins
+│   ├── snacks/        # Modular snacks config
+│   │   ├── keymaps.lua (8.4KB - organized keybindings)
+│   │   └── opts.lua    (5.9KB - configuration)
+│   ├── nvim-cmp.lua   # Completion (stays in root)
+│   └── distant-portal/ # Remote editing module
+├── utils/             # Utility modules
+│   ├── http/          # HTTP testing utilities (4 modules)
+│   └── markdown/      # Markdown utilities (headings.lua 46KB)
+├── cybercat-app/      # Custom applications
+│   └── test/          # Test modules
+└── lazy.lua           # Lazy.nvim bootstrap
 ```
 
-**Plugin Loading** (lazy.lua:17-19):
-- `cybercat.plugins` - Main plugins
+**Plugin Loading** (lazy.lua - categorized imports):
+- `cybercat.plugins.core` - Essential plugins
+- `cybercat.plugins.ui` - UI enhancements
+- `cybercat.plugins.editing` - Editing tools
+- `cybercat.plugins.git` - Git integration
+- `cybercat.plugins.ai` - AI assistants
+- `cybercat.plugins.languages` - Language-specific
+- `cybercat.plugins.tools` - Development tools
 - `cybercat.plugins.lsp` - LSP plugins
-- `cybercat.plugins.colorscheme` - Theme plugins
+- `cybercat.plugins.colorscheme` - Themes
+- `cybercat.plugins` - Legacy compatibility
 
 ### LSP Configuration
 
@@ -282,6 +315,38 @@ dependencies = { "nvim-lua/plenary.nvim" }
 { "akinsho/bufferline.nvim", enabled = is_neovide }
 { "Rics-Dev/project-explorer.nvim", enabled = is_neovide }
 ```
+
+## Adding New Plugins
+
+### Quick Start (Use Templates)
+
+Plugin templates available in `templates/` directory:
+
+1. **plugin-template.lua** - Full template with all options
+2. **plugin-simple.lua** - Minimal template (just install)  
+3. **plugin-keymaps.lua** - Keymap-focused template
+
+**Steps:**
+```bash
+# 1. Copy template to correct category
+cp templates/plugin-template.lua lua/cybercat/plugins/ui/my-plugin.lua
+
+# 2. Edit file - change plugin name and config
+# 3. Test
+:Lazy sync
+```
+
+**Plugin Categories:**
+- `core/` - Essential tools (telescope, treesitter)
+- `ui/` - UI enhancements (lualine, dashboard)
+- `editing/` - Editing tools (surround, autopairs)
+- `git/` - Git integration
+- `ai/` - AI assistants
+- `languages/` - Language-specific
+- `tools/` - Development tools
+- `disabled/` - Inactive plugins
+
+**Auto-loading:** Plugins in categorized directories are automatically loaded via `lazy.lua` imports. No manual registration needed!
 
 ## Git Workflow
 

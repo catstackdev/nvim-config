@@ -4,13 +4,10 @@
 local M = {}
 
 function M.setup()
-	print("🔥 DEBUG: auto-session.lua")
 	-- Only in Neovim (not Neovide or other GUIs)
 	if not vim.fn.has("nvim") or vim.g.neovide then
 		return
 	end
-	--console
-	print("🔥 DEBUG2: auto-session.lua")
 
 	-- Auto-start server on VimEnter
 	vim.api.nvim_create_autocmd("VimEnter", {
