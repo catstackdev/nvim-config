@@ -11,3 +11,4 @@ require("cybercat.core.keymaps.windows")        -- Window/tab management
 require("cybercat.core.keymaps.plugins")        -- Lazy, Mason, LSP info
 require("cybercat.core.keymaps.lsp-imports")    -- LSP import management
 require("cybercat.core.keymaps.git")            -- Git operations
+require("cybercat.core.keymaps.files")          -- File permissions, bash execution
