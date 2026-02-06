@@ -55,4 +55,18 @@ function M.get_http_sources()
 	}
 end
 
+function M.get_go_sources()
+	return {
+		{ name = "nvim_lsp", group_index = 1, priority = 1000 },
+		{ name = "nvim_lsp_signature_help", group_index = 1 },
+		{ name = "luasnip", group_index = 2 },
+		{ name = "buffer", group_index = 3 },
+		{ name = "path", group_index = 3 },
+		-- AI disabled for Go to prioritize LSP
+		-- { name = "copilot", group_index = 4, keyword_length = 2 },
+		-- { name = "codeium", group_index = 4, keyword_length = 2 },
+		-- { name = "supermaven", group_index = 4, keyword_length = 2 },
+	}
+end
+
 return M

@@ -255,6 +255,14 @@ return {
 			})
 		end
 		
+		-- Go completion - prioritize LSP over AI
+		cmp.setup.filetype("go", {
+			sources = cmp.config.sources(sources.get_go_sources()),
+			performance = {
+				max_view_entries = 50, -- Show more items for Go
+			},
+		})
+		
 		-- Git completion setup
 		-- require("cmp_git").setup()
 	end,

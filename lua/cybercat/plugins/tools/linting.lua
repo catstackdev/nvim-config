@@ -78,6 +78,7 @@ return {
 			typescriptreact = { "eslint_d", "cspell" },
 			svelte = { "eslint_d", "cspell" },
 			-- Python: ruff is much faster than pylint (Rust-based)
+			-- go = { "golangci_lint" },
 			-- Good for AI development where you iterate quickly
 			python = { "ruff", "mypy" },
 			markdown = { "cspell" },

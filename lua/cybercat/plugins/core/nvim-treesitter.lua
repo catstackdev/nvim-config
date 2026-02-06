@@ -71,11 +71,11 @@ return {
 					"tsx",
 					"vue",
 					"svelte",
-				"graphql",
-				"http", -- for rest.nvim
-				"hurl", -- for hurl.nvim
+					"graphql",
+					"http", -- for rest.nvim
+					"hurl", -- for hurl.nvim
 
-				-- 📦 Data / Config
+					-- 📦 Data / Config
 					"json",
 					"json5",
 					"yaml",
@@ -104,14 +104,13 @@ return {
 					"bash",
 					"c",
 
-					-- 🚀 Optional extras (uncomment if you code in these)
-					-- "python",
-					-- "rust",
-					-- "go",
+					-- 🚀 Backend / Systems
+					"go",
+					"python",
+					"rust",
 					-- "java",
-					--
-					-- "handlebars",
-					-- "glimmer",
+					-- "handlebars",  -- no parser available
+					-- "glimmer",     -- no parser available
 				},
 				incremental_selection = {
 					enable = true,
