@@ -49,10 +49,8 @@ return {
 			},
 			stream = "stderr",
 			parser = function(output, bufnr)
-				print("CSpell Output: ", output) -- Add this line for debugging
 				local diagnostics = {}
 				for line in vim.gsplit(output, "\n") do
-					print("Line: ", line) -- Debugging individual lines
 					local filename, row, col, message = string.match(line, "^([^:]+):(%d+):(%d+)%s*%- (.+)$")
 					row = tonumber(row)
 					col = tonumber(col)
@@ -110,26 +108,28 @@ return {
 			end
 		end, {})
 
-		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+		-- Only lint on save — BufEnter/InsertLeave cause constant spawning (very expensive for cspell/mypy)
+		local lint_timer = vim.uv.new_timer()
+		vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 			group = lint_augroup,
 			callback = function()
-				if not cspell_enabled then
-					-- temporarily remove cspell from active linters
-					local buf_ft = vim.bo.filetype
-					local linters = lint.linters_by_ft[buf_ft] or {}
-					local active_linters = vim.tbl_filter(function(linter)
-						return linter ~= "cspell"
-					end, linters)
-
-					if #active_linters > 0 then
-						lint.try_lint(active_linters)
+				-- Debounce: cancel pending lint, fire 500ms after save
+				lint_timer:stop()
+				lint_timer:start(500, 0, vim.schedule_wrap(function()
+					if not cspell_enabled then
+						local buf_ft = vim.bo.filetype
+						local linters = lint.linters_by_ft[buf_ft] or {}
+						local active_linters = vim.tbl_filter(function(linter)
+							return linter ~= "cspell"
+						end, linters)
+						if #active_linters > 0 then
+							lint.try_lint(active_linters)
+						end
+					else
+						lint.try_lint()
 					end
-				else
-					-- normal
-					lint.try_lint()
-				end
+				end))
 			end,
 		})
-		--
 	end,
 }
