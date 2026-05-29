@@ -51,7 +51,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- keymap.set("i", "<M-h>", vim.lsp.buf.signature_help, opts)
 
 		opts.desc = "Restart LSP"
-		keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+		keymap.set("n", "<leader>rs", function()
+			vim.lsp.stop_client(vim.lsp.get_clients({ bufnr = 0 }))
+			vim.schedule(function()
+				vim.cmd("doautocmd FileType " .. vim.bo.filetype)
+			end)
+		end, opts) -- mapping to restart lsp if necessary
 
 		opts.desc = "Toggle inlay hints"
 		keymap.set("n", "<leader>th", function()
@@ -71,8 +76,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- 	})
 		-- end
 		-- Enable inlay hints if supported by the server
-		if client and client.supports_method("textDocument/inlayHint") then
-			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+		if client and client:supports_method("textDocument/inlayHint") then
+			pcall(vim.lsp.inlay_hint.enable, true, { bufnr = ev.buf })
 		end
 	end,
 })

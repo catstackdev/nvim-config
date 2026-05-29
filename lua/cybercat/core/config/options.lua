@@ -56,6 +56,7 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
+opt.smartindent = true
 
 -- ============================================================================
 -- Search Settings
@@ -252,7 +253,7 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = augroup("autoupdate"),
 	callback = function()
-		if require("lazy.status").has_updates then
+		if require("lazy.status").has_updates() then
 			require("lazy").update({ show = false })
 		end
 	end,

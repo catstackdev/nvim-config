@@ -1,0 +1,135 @@
+{
+  "Material": {
+    "fields": [
+      {
+        "name": "albedo",
+        "type": "vec3",
+        "detail": "base color, pre-lighting"
+      },
+      {
+        "name": "normal",
+        "type": "vec3",
+        "detail": "surface normal"
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "detail": "solid-surface mask (0 = sky/flat, 1 = solid)"
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "detail": "0 = mirror, 1 = matte. Drives spec exponent"
+      },
+      {
+        "name": "ao",
+        "type": "float",
+        "detail": "baked occlusion (0 = dark crevice, 1 = open)"
+      }
+    ]
+  },
+  "BrickConfig": {
+    "fields": [
+      {
+        "name": "noiseScale",
+        "type": "float",
+        "detail": "edge-noise frequency"
+      },
+      {
+        "name": "noiseAmount",
+        "type": "float",
+        "detail": "edge-noise strength (in SDF units)"
+      },
+      {
+        "name": "noiseBand",
+        "type": "float",
+        "detail": "SDF distance over which noise blends"
+      },
+      {
+        "name": "colorJitter",
+        "type": "float",
+        "detail": "0 = uniform, 1 = wild per-brick variance"
+      },
+      {
+        "name": "mortarColor",
+        "type": "vec3",
+        "detail": "grout color"
+      },
+      {
+        "name": "roughnessMortar",
+        "type": "float",
+        "detail": "roughness in mortar regions"
+      },
+      {
+        "name": "roughnessBrick",
+        "type": "float",
+        "detail": "roughness on brick surface"
+      },
+      {
+        "name": "aoStrength",
+        "type": "float",
+        "detail": "baked AO darkness at brick edges"
+      },
+      {
+        "name": "aoBand",
+        "type": "float",
+        "detail": "AO band width near edges"
+      },
+      {
+        "name": "ageScale",
+        "type": "float",
+        "detail": "weathered: fbm frequency for age wash"
+      },
+      {
+        "name": "ageStrength",
+        "type": "float",
+        "detail": "weathered: age-wash contrast"
+      },
+      {
+        "name": "mossScale",
+        "type": "float",
+        "detail": "weathered: moss noise frequency"
+      },
+      {
+        "name": "mossAmount",
+        "type": "float",
+        "detail": "weathered: moss tint strength"
+      },
+      {
+        "name": "mossColor",
+        "type": "vec3",
+        "detail": "weathered: moss tint"
+      },
+      {
+        "name": "crackScale",
+        "type": "float",
+        "detail": "weathered: crack turbulence frequency"
+      },
+      {
+        "name": "crackAmount",
+        "type": "float",
+        "detail": "weathered: crack darkness"
+      },
+      {
+        "name": "chipScale",
+        "type": "float",
+        "detail": "painted: chip noise frequency"
+      },
+      {
+        "name": "chipThreshold",
+        "type": "float",
+        "detail": "painted: chip density (lower = more chips)"
+      },
+      {
+        "name": "paintNoiseScale",
+        "type": "float",
+        "detail": "painted: brush-texture noise frequency"
+      },
+      {
+        "name": "paintRoughness",
+        "type": "float",
+        "detail": "painted: roughness of paint layer"
+      }
+    ]
+  }
+}

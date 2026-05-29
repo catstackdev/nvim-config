@@ -12,7 +12,77 @@ return {
 		-- vim.cmd([[ highlight NvimTreeFolderArrowClosed guifg=#3FC5FF ]])
 		-- vim.cmd([[ highlight NvimTreeFolderArrowOpen guifg=#3FC5FF ]])
 
+		local function get_node_path()
+			local api = require("nvim-tree.api")
+			local node = api.tree.get_node_under_cursor()
+			if not node or node.type == "directory" then
+				return nil, nil
+			end
+			local path = node.absolute_path
+			local ext = path:match("%.(%w+)$")
+			return path, ext and ext:lower() or ""
+		end
+
+		local function preview_node()
+			local path, ext = get_node_path()
+			if not path then
+				return
+			end
+
+			local images =
+				{ png = true, jpg = true, jpeg = true, gif = true, webp = true, svg = true, bmp = true, ico = true }
+			local videos = { mp4 = true, mov = true, avi = true, mkv = true, webm = true }
+			local audio = { mp3 = true, flac = true, wav = true, aac = true, ogg = true, m4a = true }
+			local ql = { pdf = true, ttf = true, otf = true, woff = true, zip = true, dmg = true }
+
+			local name = vim.fn.fnamemodify(path, ":t")
+
+			if images[ext] then
+				if os.getenv("TMUX") then
+					vim.fn.jobstart({ "qlmanage", "-p", path }, { detach = true })
+				else
+					vim.cmd("split | terminal wezterm imgcat " .. vim.fn.shellescape(path))
+				end
+			elseif videos[ext] then
+				vim.fn.jobstart({ "mpv", path }, { detach = true })
+				vim.notify("▶ mpv: " .. name, vim.log.levels.INFO)
+			elseif audio[ext] then
+				-- afplay is macOS built-in, no GUI window, plays in background
+				vim.fn.jobstart({ "afplay", path }, { detach = true })
+				vim.notify("♪ playing: " .. name, vim.log.levels.INFO)
+			elseif ql[ext] then
+				vim.fn.jobstart({ "qlmanage", "-p", path }, { detach = true })
+			else
+				vim.notify("No preview for ." .. ext, vim.log.levels.WARN)
+			end
+		end
+
+		local function stop_audio()
+			vim.fn.jobstart({ "pkill", "-x", "afplay" }, { detach = true })
+			vim.notify("♪ stopped", vim.log.levels.INFO)
+		end
+
+		local function open_system()
+			local path, _ = get_node_path()
+			if not path then
+				return
+			end
+			vim.fn.jobstart({ "open", path }, { detach = true })
+		end
+
+		local function on_attach(bufnr)
+			local api = require("nvim-tree.api")
+			api.config.mappings.default_on_attach(bufnr)
+			local map = function(key, fn, desc)
+				vim.keymap.set("n", key, fn, { buffer = bufnr, desc = desc, nowait = true })
+			end
+			map("v", preview_node, "Preview / Play file")
+			map("V", stop_audio, "Stop audio (afplay)")
+			map("O", open_system, "Open with system default app")
+		end
+
 		nvimtree.setup({
+			on_attach = on_attach,
 			view = {
 				-- width = 35,
 				width = 40,

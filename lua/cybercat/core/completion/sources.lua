@@ -2,20 +2,23 @@ local M = {}
 
 function M.get_default_sources()
 	return {
+		{ name = "nvim_lsp", group_index = 1 },
+		{ name = "nvim_lsp_signature_help", group_index = 1 },
+		-- GLSL struct-field completion. Only fires on `<var>.` when <var>
+		-- is declared as a known struct (Material, BrickConfig, …) in the
+		-- buffer above the cursor. No-op outside .frag/.vert/.glsl files.
+		{ name = "glsl_struct", group_index = 1 },
+		{ name = "luasnip", group_index = 1 },
 		{ name = "copilot", group_index = 1, keyword_length = 0 },
 		{ name = "codeium", group_index = 1, keyword_length = 0 },
 		{ name = "supermaven", group_index = 1, keyword_length = 0 },
-		{ name = "nvim_lsp", group_index = 2 },
-		{ name = "nvim_lsp_signature_help", group_index = 2 },
-		{ name = "lsp_sources", group_index = 2 },
-		{ name = "luasnip", group_index = 3 },
-		{ name = "tailwindcss-colorizer-cmp", group_index = 4 },
-		{ name = "npm", group_index = 4, keyword_length = 4 },
-		{ name = "buffer", group_index = 5 },
-		{ name = "path", group_index = 5 },
-		{ name = "git", group_index = 6 },
-		{ name = "emoji", group_index = 6 },
-		{ name = "spell", group_index = 7, keyword_length = 3 },
+		{ name = "tailwindcss-colorizer-cmp", group_index = 2 },
+		{ name = "npm", group_index = 2, keyword_length = 4 },
+		{ name = "buffer", group_index = 3 },
+		{ name = "path", group_index = 3 },
+		{ name = "git", group_index = 4 },
+		{ name = "emoji", group_index = 4 },
+		{ name = "spell", group_index = 5, keyword_length = 3 },
 	}
 end
 

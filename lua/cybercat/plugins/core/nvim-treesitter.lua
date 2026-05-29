@@ -22,8 +22,11 @@ return {
 					enable = true,
 					additional_vim_regex_highlighting = false, -- avoid conflicts with Vim syntax
 				},
-				-- enable indentation
-				indent = { enable = true },
+				-- enable indentation (disabled for ts/js — known buggy indent queries)
+				indent = {
+					enable = true,
+					disable = { "typescript", "tsx", "javascript", "typescriptreact", "javascriptreact" },
+				},
 				-- enable autotagging (w/ nvim-ts-autotag plugin)
 				-- autotag = { // NOTE: disabled by bc
 				-- 	enable = true,
@@ -103,6 +106,8 @@ return {
 					-- 🔧 Systems / Misc
 					"bash",
 					"c",
+					"glsl",
+					"wgsl",
 
 					-- 🚀 Backend / Systems
 					"go",
@@ -124,14 +129,14 @@ return {
 				-- Treesitter refactor module
 				refactor = {
 					highlight_definitions = {
-						enable = true,
+						enable = false, -- disabled: nil parent crash (nvim-treesitter-refactor bug)
 						-- Set to false if you have an `updatetime` of ~100
 						clear_on_cursor_move = true,
 					},
 					smart_rename = {
 						enable = true,
 						keymaps = {
-							smart_rename = "grr", -- Changed from gR to avoid conflict with LSP references
+							smart_rename = "<leader>tr", -- gr* family reserved by Neovim 0.11+ (grr=refs, grn=rename, gra=action, gri=impl)
 						},
 					},
 					navigation = {
@@ -149,6 +154,12 @@ return {
 
 			-- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
 			-- require("ts_context_commentstring").setup({})
+		end,
+		init = function()
+			-- Disable markdown injections: plain ``` blocks (no language tag) produce
+			-- a nil info_string node that crashes nvim-treesitter's query predicates
+			-- on Neovim 0.12. Remove once upstream fixes the nil-check.
+			vim.treesitter.query.set("markdown", "injections", "")
 		end,
 	},
 

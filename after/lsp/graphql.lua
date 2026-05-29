@@ -1,3 +1,4 @@
 return {
-	filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+	filetypes = { "graphql", "gql" },
+	-- filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
 }

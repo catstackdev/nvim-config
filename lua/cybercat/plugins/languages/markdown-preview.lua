@@ -9,7 +9,9 @@ return {
 		},
 	},
 	init = function()
-		-- The default filename is 「${name}」and I just hate those symbols
 		vim.g.mkdp_page_title = "${name}"
+		vim.g.mkdp_browser = "chromium"
+		vim.g.mkdp_auto_close = 0   -- keep preview open when leaving buffer
+		vim.g.mkdp_echo_preview_url = 1  -- print URL in cmdline so you know the port
 	end,
 }

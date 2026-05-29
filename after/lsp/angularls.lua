@@ -10,7 +10,10 @@ return {
 		"--angularCoreVersion",
 		"18.0.1",
 	},
-	filetypes = { "typescript", "html", "typescriptreact", "htmlangular" },
+	filetypes = { "typescript", "html", "htmlangular" },
+	-- filetypes = { "typescript", "html", "typescriptreact", "htmlangular" }, //
+	-- root_dir = vim.fs.root(0, { "angular.json" }),
+	-- for angular bug open it again
 
 	-- root_dir = require("lspconfig").util.root_pattern("angular.json", ".git"),
 	-- on_attach = function(client, bufnr)
@@ -25,5 +28,4 @@ return {
 	-- 	client.server_capabilities.documentFormattingProvider = false
 	-- 	on_attach(client, bufnr)
 	-- end, --NOTE: enable this is delete below
-	root_dir = vim.fs.root(0, { "angular.json", ".git" }),
 }

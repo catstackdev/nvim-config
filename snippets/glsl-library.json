@@ -1,0 +1,767 @@
+{
+  "rgb2hsv": {
+    "prefix": "rgb2hsv",
+    "body": "rgb2hsv(${1:c})$0",
+    "description": "```glsl\nvec3 rgb2hsv(vec3 c)\n```\n\nConvert sRGB to HSV. PERF: CHEAP — Sam Hocevar branchless trick.\n\n*Auto-imports* `/core/color/rgb2hsv.glsl`"
+  },
+  "hsv2rgb": {
+    "prefix": "hsv2rgb",
+    "body": "hsv2rgb(${1:c})$0",
+    "description": "```glsl\nvec3 hsv2rgb(vec3 c)\n```\n\nConvert HSV to sRGB. PERF: CHEAP — branchless.\n\n*Auto-imports* `/core/color/hsv2rgb.glsl`"
+  },
+  "palette": {
+    "prefix": "palette",
+    "body": "palette(${1:t}, ${2:a}, ${3:b}, ${4:c}, ${5:d})$0",
+    "description": "```glsl\nvec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d)\n```\n\nInigo Quilez's cosine palette. `a` = bias, `b` = amplitude, `c` = frequency, `d` = phase. PERF: FREE — one cos per channel.\n\n**Example:**\n```glsl\nvec3 col = palette(uv.x,\n  vec3(0.5), vec3(0.5),\n  vec3(1.0), vec3(0.0, 0.33, 0.67));\n```\n\n*Auto-imports* `/core/color/palette.glsl`"
+  },
+  "tonemapACES": {
+    "prefix": "tonemapACES",
+    "body": "tonemapACES(${1:[}, ${2:exposure]})$0",
+    "description": "```glsl\nvec3 tonemapACES(vec3 col [, float exposure])\n```\n\nNarkowicz's fast ACES filmic curve. Inputs in linear HDR, outputs in [0,1]. Default exposure 0.6 is the sweet spot for typical lit scenes.\nPERF: CHEAP — one rational polynomial.\n\n**Example:**\n```glsl\ncol = tonemapACES(col);          // default exposure 0.6\ncol = tonemapACES(col, 0.4);      // dimmer\n```\n\n*Auto-imports* `/core/color/tonemap.glsl`"
+  },
+  "multiplyBlend": {
+    "prefix": "multiplyBlend",
+    "body": "multiplyBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 multiplyBlend(vec3 base, vec3 blend)\n```\n\nPhotoshop-style multiply. Darkens — use for shadow layers, dirt passes, tinted overlays.\nPERF: FREE — one component-wise multiply.\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "screenBlend": {
+    "prefix": "screenBlend",
+    "body": "screenBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 screenBlend(vec3 base, vec3 blend)\n```\n\nPhotoshop-style screen blend. Brightens — the mathematical inverse of multiply.\n\nUse for additive light effects (sun haze, glow halos, lens flare, fire) where straight `base + blend` would blow out, but you still want the blend to lift the base.\nPERF: FREE.\n\n**Example:**\n```glsl\ncol = screenBlend(col, glowColor * glow * 0.8);\n```\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "overlayBlend": {
+    "prefix": "overlayBlend",
+    "body": "overlayBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 overlayBlend(vec3 base, vec3 blend)\n```\n\nMultiply where base is dark, screen where base is bright. Increases contrast while preserving midtones — good for grading passes.\nPERF: CHEAP.\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "softLightBlend": {
+    "prefix": "softLightBlend",
+    "body": "softLightBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 softLightBlend(vec3 base, vec3 blend)\n```\n\nGentler than overlay — common in photo color grading.\nPERF: CHEAP (one sqrt per channel).\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "addBlend": {
+    "prefix": "addBlend",
+    "body": "addBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 addBlend(vec3 base, vec3 blend)\n```\n\nLinear dodge — straight addition. Can clip to white, by design.\nUse for: hot glow cores, fire centers, lens-flare hot spots, explosion peaks.\nPERF: FREE.\n\n**Example:**\n```glsl\ncol = addBlend(col, vec3(1.0, 0.7, 0.3) * sparkMask);\n```\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "darkenBlend": {
+    "prefix": "darkenBlend",
+    "body": "darkenBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 darkenBlend(vec3 base, vec3 blend)\n```\n\nPer-channel min. Keeps the darker of the two layers.\nUse for: shadow compositing, masking by intersection, vignette stacking.\nPERF: FREE.\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "lightenBlend": {
+    "prefix": "lightenBlend",
+    "body": "lightenBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 lightenBlend(vec3 base, vec3 blend)\n```\n\nPer-channel max. Keeps the brighter of the two layers.\nUse for: fire / sparks / bright highlights composited over a base — the bright layer shows through without dimming areas where the base is already brighter.\nPERF: FREE.\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "differenceBlend": {
+    "prefix": "differenceBlend",
+    "body": "differenceBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 differenceBlend(vec3 base, vec3 blend)\n```\n\nAbsolute difference per channel. Symmetric, XOR-like.\nUse for: motion graphics transitions, color-cycle effects, hot/cold heat maps, any \"show where two signals diverge\" visualization.\nPERF: FREE.\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "colorDodgeBlend": {
+    "prefix": "colorDodgeBlend",
+    "body": "colorDodgeBlend(${1:base}, ${2:blend})$0",
+    "description": "```glsl\nvec3 colorDodgeBlend(vec3 base, vec3 blend)\n```\n\nExtreme brightening — base / (1 - blend). As `blend` approaches 1, output blows out to white very fast. Strongest \"intense light\" effect.\nUse for: lens flares, magic sparkles, glints, intense highlights.\nGuarded with epsilon so the 1/0 case stays finite.\nPERF: CHEAP (3 divides).\n\n*Auto-imports* `/core/color/blend.glsl`"
+  },
+  "clamp01": {
+    "prefix": "clamp01",
+    "body": "clamp01(${1:x})$0",
+    "description": "```glsl\nT clamp01(T x) — clamp to [0, 1]\n```\n\nPERF: FREE.\n\n*Auto-imports* `/core/math/clamp.glsl`"
+  },
+  "saturate": {
+    "prefix": "saturate",
+    "body": "saturate(${1:x})$0",
+    "description": "```glsl\nfloat|vec3 saturate(T x) — clamp to [0, 1] (HLSL alias)\n```\n\nHLSL/Unity-style alias for `clamp(x, 0.0, 1.0)`. PERF: FREE.\n\n*Auto-imports* `/core/math/saturate.glsl`"
+  },
+  "lerp": {
+    "prefix": "lerp",
+    "body": "lerp(${1:a}, ${2:b}, ${3:t})$0",
+    "description": "```glsl\nT lerp(T a, T b, float t) — HLSL alias for mix\n```\n\nPERF: FREE — delegates to `mix`.\n\n*Auto-imports* `/core/math/lerp.glsl`"
+  },
+  "min3": {
+    "prefix": "min3",
+    "body": "min3(${1:v})$0",
+    "description": "```glsl\nfloat min3(vec3 v) — minimum of three components\n```\n\nPERF: FREE.\n\n*Auto-imports* `/core/math/minmax.glsl`"
+  },
+  "max3": {
+    "prefix": "max3",
+    "body": "max3(${1:v})$0",
+    "description": "```glsl\nfloat max3(vec3 v) — maximum of three components\n```\n\nPERF: FREE.\n\n*Auto-imports* `/core/math/minmax.glsl`"
+  },
+  "remap": {
+    "prefix": "remap",
+    "body": "remap(${1:value}, ${2:inMin}, ${3:inMax}, ${4:outMin}, ${5:outMax})$0",
+    "description": "```glsl\nfloat remap(value, inMin, inMax, outMin, outMax)\n```\n\nLinear remap from one range to another.\nPERF: FREE.\n\n**Example:**\n```glsl\nfloat x = remap(u_time, 0.0, 10.0, -1.0, 1.0);  // time → [-1, 1]\n```\n\n*Auto-imports* `/core/math/remap.glsl`"
+  },
+  "remap01": {
+    "prefix": "remap01",
+    "body": "remap01(${1:value}, ${2:inMin}, ${3:inMax})$0",
+    "description": "```glsl\nfloat remap01(value, inMin, inMax) — remap into [0, 1], clamped\n```\n\nRemaps to [0,1] with hard clamp at edges. PERF: FREE.\n\n*Auto-imports* `/core/math/remap.glsl`"
+  },
+  "fit": {
+    "prefix": "fit",
+    "body": "fit(${1:x}, ${2:a}, ${3:b}, ${4:c}, ${5:d})$0",
+    "description": "```glsl\nfloat fit(x, a, b, c, d) — alias for remap\n```\n\n*Auto-imports* `/core/math/range.glsl`"
+  },
+  "fit01": {
+    "prefix": "fit01",
+    "body": "fit01(${1:x}, ${2:a}, ${3:b})$0",
+    "description": "```glsl\nfloat fit01(x, a, b) — alias for remap01\n```\n\n*Auto-imports* `/core/math/range.glsl`"
+  },
+  "signNoZero": {
+    "prefix": "signNoZero",
+    "body": "signNoZero(${1:x})$0",
+    "description": "```glsl\nfloat signNoZero(float x) — sign that never returns 0\n```\n\nLike `sign()` but +1 for x>=0. Useful when you need a hard +/-1 direction.\nPERF: FREE.\n\n*Auto-imports* `/core/math/sign.glsl`"
+  },
+  "smoothstep01": {
+    "prefix": "smoothstep01",
+    "body": "smoothstep01(${1:x})$0",
+    "description": "```glsl\nfloat smoothstep01(float x) — smoothstep(0, 1, x)\n```\n\nConvenience for the common smoothstep(0, 1, x) case.\nPERF: FREE.\n\n*Auto-imports* `/core/math/smoothstep.glsl`"
+  },
+  "stepIn": {
+    "prefix": "stepIn",
+    "body": "stepIn(${1:edge}, ${2:x})$0",
+    "description": "```glsl\nfloat stepIn(float edge, float x) — step rising at edge\n```\n\n*Auto-imports* `/core/math/step.glsl`"
+  },
+  "stepOut": {
+    "prefix": "stepOut",
+    "body": "stepOut(${1:edge}, ${2:x})$0",
+    "description": "```glsl\nfloat stepOut(float edge, float x) — step falling at edge\n```\n\n*Auto-imports* `/core/math/step.glsl`"
+  },
+  "rot2": {
+    "prefix": "rot2",
+    "body": "rot2(${1:a})$0",
+    "description": "```glsl\nmat2 rot2(float a) — CCW rotation matrix\n```\n\nPERF: FREE — one cos + one sin + matrix build.\n\n*Auto-imports* `/core/math/math.glsl`"
+  },
+  "PI": {
+    "prefix": "PI",
+    "body": "PI()$0",
+    "description": "```glsl\nπ = 3.14159...\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "TWO_PI": {
+    "prefix": "TWO_PI",
+    "body": "TWO_PI()$0",
+    "description": "```glsl\n2π\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "TAU": {
+    "prefix": "TAU",
+    "body": "TAU()$0",
+    "description": "```glsl\nτ = 2π\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "HALF_PI": {
+    "prefix": "HALF_PI",
+    "body": "HALF_PI()$0",
+    "description": "```glsl\nπ / 2\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "QUARTER_PI": {
+    "prefix": "QUARTER_PI",
+    "body": "QUARTER_PI()$0",
+    "description": "```glsl\nπ / 4\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "INV_PI": {
+    "prefix": "INV_PI",
+    "body": "INV_PI()$0",
+    "description": "```glsl\n1 / π\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "INV_TWO_PI": {
+    "prefix": "INV_TWO_PI",
+    "body": "INV_TWO_PI(${1:2π})$0",
+    "description": "```glsl\n1 / (2π)\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "SQRT_2": {
+    "prefix": "SQRT_2",
+    "body": "SQRT_2()$0",
+    "description": "```glsl\n√2\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "SQRT_3": {
+    "prefix": "SQRT_3",
+    "body": "SQRT_3()$0",
+    "description": "```glsl\n√3\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "INV_SQRT_3": {
+    "prefix": "INV_SQRT_3",
+    "body": "INV_SQRT_3()$0",
+    "description": "```glsl\n1 / √3\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "DEG_TO_RAD": {
+    "prefix": "DEG_TO_RAD",
+    "body": "DEG_TO_RAD()$0",
+    "description": "```glsl\ndegrees → radians\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "RAD_TO_DEG": {
+    "prefix": "RAD_TO_DEG",
+    "body": "RAD_TO_DEG()$0",
+    "description": "```glsl\nradians → degrees\n```\n\n*Auto-imports* `/core/math/constants.glsl`"
+  },
+  "rotate": {
+    "prefix": "rotate",
+    "body": "rotate(${1:p}, ${2:[}, ${3:axes]})$0",
+    "description": "```glsl\nvec2|vec3 rotate(p, angle [, center | axes])\n```\n\n2D rotation around center (or origin); 3D combined XYZ rotation via an angles vec3.\nPERF: FREE — sin/cos + small matrix product.\n\n*Auto-imports* `/core/transform/rotate.glsl`"
+  },
+  "rotateX": {
+    "prefix": "rotateX",
+    "body": "rotateX(${1:p}, ${2:angle})$0",
+    "description": "```glsl\nvec3 rotateX(vec3 p, float angle)\n```\n\nRotate around the X axis. PERF: FREE.\n\n*Auto-imports* `/core/transform/rotate.glsl`"
+  },
+  "rotateY": {
+    "prefix": "rotateY",
+    "body": "rotateY(${1:p}, ${2:angle})$0",
+    "description": "```glsl\nvec3 rotateY(vec3 p, float angle)\n```\n\nRotate around the Y axis. PERF: FREE.\n\n*Auto-imports* `/core/transform/rotate.glsl`"
+  },
+  "rotateZ": {
+    "prefix": "rotateZ",
+    "body": "rotateZ(${1:p}, ${2:angle})$0",
+    "description": "```glsl\nvec3 rotateZ(vec3 p, float angle)\n```\n\nRotate around the Z axis. PERF: FREE.\n\n*Auto-imports* `/core/transform/rotate.glsl`"
+  },
+  "scale": {
+    "prefix": "scale",
+    "body": "scale(${1:p}, ${2:[}, ${3:center]})$0",
+    "description": "```glsl\nvec2|vec3 scale(p, factor [, center])\n```\n\nInverse scale (divides by factor) so SDF distances stay correct.\nPERF: FREE.\n\n*Auto-imports* `/core/transform/scale.glsl`"
+  },
+  "translate": {
+    "prefix": "translate",
+    "body": "translate(${1:p}, ${2:offset})$0",
+    "description": "```glsl\nvec2|vec3 translate(p, offset) — subtract offset\n```\n\nPERF: FREE — one subtract.\n\n*Auto-imports* `/core/transform/translate.glsl`"
+  },
+  "tile": {
+    "prefix": "tile",
+    "body": "tile(${1:p}, ${2:[}, ${3:cellId]})$0",
+    "description": "```glsl\nvec2 tile(vec2 p, vec2 count [, out vec2 cellId])\n```\n\nRepeat-tile UVs by `count`. Optional `cellId` out-param gives integer cell coords for per-cell variation.\nPERF: FREE — one fract + floor.\n\n**Example:**\n```glsl\nvec2 cell;\nvec2 q = tile(uv, vec2(4.0, 4.0), cell);\n// q is [0,1] within each tile; cell.x in {0,1,2,3}\n```\n\n*Auto-imports* `/core/transform/tile.glsl`"
+  },
+  "smootherstep": {
+    "prefix": "smootherstep",
+    "body": "smootherstep(${1:edge0}, ${2:edge1}, ${3:x})$0",
+    "description": "```glsl\nfloat smootherstep(float edge0, float edge1, float x)\n```\n\nPerlin quintic: `6t⁵ − 15t⁴ + 10t³`. Smoother than the cubic `smoothstep` at edges — both first AND second derivative are zero at endpoints. Use for noise interpolation and animation curves where the cubic discontinuity shows.\nPERF: CHEAP — same family as smoothstep, ~2 extra muls.\n\n*Auto-imports* `/core/util/smoothstep2.glsl`"
+  },
+  "invSmoothstep": {
+    "prefix": "invSmoothstep",
+    "body": "invSmoothstep(${1:x})$0",
+    "description": "```glsl\nfloat invSmoothstep(float x) — inverse of smoothstep(0,1,x)\n```\n\nMaps a smoothstep output back to its input. Useful when chaining ease curves.\nPERF: CHEAP — one asin/sin.\n\n*Auto-imports* `/core/util/smoothstep2.glsl`"
+  },
+  "stepmap": {
+    "prefix": "stepmap",
+    "body": "stepmap(${1:edge}, ${2:value}, ${3:outMin}, ${4:outMax})$0",
+    "description": "```glsl\nT stepmap(T edge, T value, T outMin, T outMax)\n```\n\nHard step then linear remap to a target range. Like `mix(outMin, outMax, step(edge, value))` but in one call.\nPERF: FREE.\n\n*Auto-imports* `/core/util/stepmap.glsl`"
+  },
+  "hash11": {
+    "prefix": "hash11",
+    "body": "hash11(${1:p})$0",
+    "description": "```glsl\nfloat hash11(float p) — 1D → 1D, output in [0, 1]\n```\n\nHoskins hash. Hashes a float to a float in [0, 1]. PERF: CHEAP — branchless mul/fract.\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash12": {
+    "prefix": "hash12",
+    "body": "hash12(${1:p})$0",
+    "description": "```glsl\nfloat hash12(vec2 p) — 2D → 1D\n```\n\nHashes a vec2 to a float in [0, 1]. Use for grid-cell random values, dithering, grain.\nPERF: CHEAP.\n\n**Example:**\n```glsl\nfloat r = hash12(floor(uv * 10.0));  // random value per 10×10 grid cell\n```\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash13": {
+    "prefix": "hash13",
+    "body": "hash13(${1:p})$0",
+    "description": "```glsl\nfloat hash13(vec3 p) — 3D → 1D\n```\n\nHashes a vec3 to a float in [0, 1]. For 3D voxel grids.\nPERF: CHEAP.\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash21": {
+    "prefix": "hash21",
+    "body": "hash21(${1:p})$0",
+    "description": "```glsl\nvec2 hash21(float p) — 1D → 2D\n```\n\nHashes a float to a vec2 (each component in [0, 1]).\nPERF: CHEAP.\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash22": {
+    "prefix": "hash22",
+    "body": "hash22(${1:p})$0",
+    "description": "```glsl\nvec2 hash22(vec2 p) — 2D → 2D\n```\n\nHashes a vec2 to a vec2. Commonly used for grid-cell offset generation in Worley/cellular noise.\nPERF: CHEAP.\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash23": {
+    "prefix": "hash23",
+    "body": "hash23(${1:p})$0",
+    "description": "```glsl\nvec2 hash23(vec3 p) — 3D → 2D\n```\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash31": {
+    "prefix": "hash31",
+    "body": "hash31(${1:p})$0",
+    "description": "```glsl\nvec3 hash31(float p) — 1D → 3D\n```\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash32": {
+    "prefix": "hash32",
+    "body": "hash32(${1:p})$0",
+    "description": "```glsl\nvec3 hash32(vec2 p) — 2D → 3D\n```\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "hash33": {
+    "prefix": "hash33",
+    "body": "hash33(${1:p})$0",
+    "description": "```glsl\nvec3 hash33(vec3 p) — 3D → 3D\n```\n\nHashes a vec3 to a vec3. Used for 3D random direction vectors (gradient noise, particle dispersal).\nPERF: CHEAP.\n\n*Auto-imports* `/noise/hash.glsl`"
+  },
+  "valueNoise2D": {
+    "prefix": "valueNoise2D",
+    "body": "valueNoise2D(${1:p})$0",
+    "description": "```glsl\nfloat valueNoise2D(vec2 p) — output in [0, 1]\n```\n\nValue noise: hashes 4 corner values of the unit cell containing p, smoothly interpolates with a Hermite curve.\nLook: soft, \"blurry\", organic. Cheapest of the smooth noises.\nPERF: CHEAP — 4 hashes + bilinear.\nFor sharper detail use simplexNoise2D; for cellular look use worleyNoise2D.\n\n**Example:**\n```glsl\nfloat n = valueNoise2D(uv * 5.0);  // 5 cells across the screen\n```\n\n*Auto-imports* `/noise/value.glsl`"
+  },
+  "valueNoise3D": {
+    "prefix": "valueNoise3D",
+    "body": "valueNoise3D(${1:p})$0",
+    "description": "```glsl\nfloat valueNoise3D(vec3 p) — output in [0, 1]\n```\n\nValue noise in 3D — 8 corner hashes + trilinear blend. PERF: CHEAP — 8 hashes + trilinear.\n2x cost of valueNoise2D.\n\n*Auto-imports* `/noise/value.glsl`"
+  },
+  "simplexNoise2D": {
+    "prefix": "simplexNoise2D",
+    "body": "simplexNoise2D(${1:p})$0",
+    "description": "```glsl\nfloat simplexNoise2D(vec2 p) — output in [-1, 1]\n```\n\nSimplex noise (Ken Perlin's 2001 update of Perlin noise). Uses tetrahedral simplices instead of cubic cells — no axis-aligned banding artifacts. Output range [-1, 1] (zero mean).\nPERF: MODERATE — ~5× valueNoise2D cost. Worth it for sharp detail.\nUse for: terrain, organic patterns, sharper FBM than value-based.\n\n**Example:**\n```glsl\nfloat n = simplexNoise2D(uv * 3.0 + u_time * 0.2);  // animated drift\n```\n\n*Auto-imports* `/noise/simplex.glsl`"
+  },
+  "simplexNoise3D": {
+    "prefix": "simplexNoise3D",
+    "body": "simplexNoise3D(${1:p})$0",
+    "description": "```glsl\nfloat simplexNoise3D(vec3 p) — output in [-1, 1]\n```\n\nSimplex noise in 3D. Significantly faster than 3D Perlin (5 tetrahedra vs 8 cubes).\nPERF: MODERATE.\nUse for: volumetric noise, 3D terrain, time-as-Z animated 2D patterns.\n\n*Auto-imports* `/noise/simplex.glsl`"
+  },
+  "perlinNoise2D": {
+    "prefix": "perlinNoise2D",
+    "body": "perlinNoise2D(${1:p})$0",
+    "description": "```glsl\nfloat perlinNoise2D(vec2 p) — output in roughly [-1, 1]\n```\n\nClassic Perlin gradient noise (1983). Axis-aligned cubic grid, dot-product gradients at corners. Subtly different \"feel\" from simplex — slightly more axis bias.\nPERF: MODERATE — similar cost to simplex in 2D.\nIn most cases prefer `simplexNoise2D` (faster in 3D + no axis artifacts).\n\n*Auto-imports* `/noise/perlin.glsl`"
+  },
+  "perlinNoise3D": {
+    "prefix": "perlinNoise3D",
+    "body": "perlinNoise3D(${1:p})$0",
+    "description": "```glsl\nfloat perlinNoise3D(vec3 p) — output in roughly [-1, 1]\n```\n\nPerlin gradient noise in 3D. PERF: MODERATE. Prefer simplexNoise3D unless you specifically want the cubic-grid look.\n\n*Auto-imports* `/noise/perlin.glsl`"
+  },
+  "worleyNoise2D": {
+    "prefix": "worleyNoise2D",
+    "body": "worleyNoise2D(${1:p})$0",
+    "description": "```glsl\nvec2 worleyNoise2D(vec2 p) — returns (F1, F2): nearest and 2nd-nearest distances\n```\n\nCellular noise (Steven Worley, 1996). Returns the distance to the nearest feature point (F1) and the 2nd-nearest (F2). Many effects use combinations:\n- F1: classic cellular pattern (rocks, scales, cells)\n- F2 − F1: sharp edges between cells (great for cracked-mud, stained-glass)\n- F1 × F2: pebble-like\nPERF: MODERATE — examines 9 neighboring cells (2D) for accurate F1/F2.\n\n**Example:**\n```glsl\nvec2 wf = worleyNoise2D(uv * 8.0);\nfloat edges = smoothstep(0.0, 0.05, wf.y - wf.x);  // crack pattern\n```\n\n*Auto-imports* `/noise/worley.glsl`"
+  },
+  "worleyNoise3D": {
+    "prefix": "worleyNoise3D",
+    "body": "worleyNoise3D(${1:p})$0",
+    "description": "```glsl\nvec2 worleyNoise3D(vec3 p) — (F1, F2) for volumetric cellular\n```\n\nCellular noise in 3D. Examines 27 neighbor cells.\nPERF: EXPENSIVE — significantly more cost than 2D variants. Use sparingly in raymarch loops.\n\n*Auto-imports* `/noise/worley.glsl`"
+  },
+  "fbm": {
+    "prefix": "fbm",
+    "body": "fbm(${1:p}, ${2:[}, ${3:lacunarity}, ${4:gain]})$0",
+    "description": "```glsl\nfloat fbm(vec2|vec3 p, int octaves [, float lacunarity, float gain])\n```\n\nFractal Brownian Motion — sums multiple octaves of **simplex noise** at increasing frequencies and decreasing amplitudes. The workhorse for natural-looking textures.\n\n- `octaves` — number of layers (typical 3–8). Cost scales linearly.\n- `lacunarity` — frequency multiplier per octave (default 2.0 = each octave is double frequency).\n- `gain` — amplitude multiplier per octave (default 0.5 = each octave half as strong).\n\nOutput is approximately in [-1, 1].\n\nPERF: MODERATE × octaves — each octave is one simplex evaluation. 5-octave fbm = ~5× simplex cost.\n\nUse for: sharp/detailed natural patterns (terrain, marble, fire).\nFor cloudier/softer look use `fbmSoft` (value-noise based).\n\n**Example:**\n```glsl\nfloat t = u_time * 0.2;\nvec2  q = uv * 3.0 + vec2(t, -t);\nfloat n = fbm(q, 5);  // 5 octaves, default lacunarity/gain\n```\n\n*Auto-imports* `/noise/fbm.glsl`"
+  },
+  "fbmSoft": {
+    "prefix": "fbmSoft",
+    "body": "fbmSoft(${1:p}, ${2:[}, ${3:lacunarity}, ${4:gain]})$0",
+    "description": "```glsl\nfloat fbmSoft(vec2 p, int octaves [, float lacunarity, float gain])\n```\n\nLike `fbm` but uses **value noise** instead of simplex. Output is softer and cloudier — better for organic blob shapes (clouds, mist, smoke) than for sharp detail.\nPERF: CHEAPER than `fbm` — value noise is ~5× cheaper than simplex per octave.\nUse when you want a \"puffy\" look or to optimize a heavy fbm chain.\n\n**Example:**\n```glsl\nfloat n = fbmSoft(uv + warp, 5, 2.5, 0.5);  // wider lacunarity for fluffier output\n```\n\n*Auto-imports* `/noise/fbm.glsl`"
+  },
+  "turbulence": {
+    "prefix": "turbulence",
+    "body": "turbulence(${1:p}, ${2:[}, ${3:lacunarity}, ${4:gain]})$0",
+    "description": "```glsl\nfloat turbulence(vec2|vec3 p, int octaves [, float lacunarity, float gain])\n```\n\nTurbulence — sums octaves of **|simplexNoise|**. The abs() fold creates sharp creases at zero-crossings of the underlying noise; stacking them builds \"billowy\" structure.\n\nDifferent visual primitive from `fbm` — not derivable cheaply at the call site because `abs()` must happen *inside* the octave loop.\n\nOutput range: ~[0, 1] (strictly non-negative, zero mean).\n\nPERF: MODERATE × octaves — same cost as `fbm` (`abs()` is free).\n\nUse for: fire, smoke wisps, marble veins, water caustics, cloth folds.\n\n**Example:**\n```glsl\nfloat t = u_time * 0.3;\nfloat n = turbulence(uv * 4.0 + vec2(0.0, t), 5);\nvec3 col = mix(vec3(0.1, 0.0, 0.0), vec3(1.0, 0.7, 0.2), n);  // fire\n```\n\n*Auto-imports* `/noise/turbulence.glsl`"
+  },
+  "ridged": {
+    "prefix": "ridged",
+    "body": "ridged(${1:p}, ${2:[}, ${3:sharpness=2.0]})$0",
+    "description": "```glsl\nfloat ridged(vec2|vec3 p, int octaves [, float sharpness=2.0])\n```\n\nRidged multifractal — sums octaves of `(1 - |simplexNoise|)^sharpness`. Sharp peaks form at zero-crossings of the underlying noise, then `pow` pinches them into ridges.\n\n**sharpness guide:**\n- `1.0` → soft, rolling ridges (almost-fbm)\n- `2.0` → standard mountain ridges (default — uses cheap `n*n` instead of `pow`)\n- `4.0+` → razor-sharp veins, lightning\n\nOutput range: ~[0, 1].\nPERF: MODERATE × octaves. Default 2.0 path avoids `pow` for speed.\n\nUse for: mountain ridges, lightning veins, cracked terrain, alien skin patterns.\n\n**Example:**\n```glsl\nfloat h = ridged(uv * 2.0, 6);          // default sharpness = 2.0\nfloat h2 = ridged(uv * 2.0, 6, 4.0);     // sharper, lightning-like\n```\n\n*Auto-imports* `/noise/ridged.glsl`"
+  },
+  "sdCircle": {
+    "prefix": "sdCircle",
+    "body": "sdCircle(${1:p}, ${2:r})$0",
+    "description": "```glsl\nfloat sdCircle(vec2 p, float r)\n```\n\nSigned distance to a circle of radius `r` centered at the origin.\n\n- **< 0** → inside the disk\n- **= 0** → on the boundary\n- **> 0** → outside\n\nThe simplest 2D SDF. Translate by offsetting `p` before the call.\n\n**Example:**\n```glsl\nvec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution) / min(u_resolution.x, u_resolution.y);\nfloat d = sdCircle(uv - vec2(0.2, 0.0), 0.3);\nvec3 col = vec3(smoothstep(0.005, 0.0, d));\n```\n\n*Auto-imports* `/sdf/2d/circle.glsl`"
+  },
+  "sdBox": {
+    "prefix": "sdBox",
+    "body": "sdBox(${1:p}, ${2:b})$0",
+    "description": "```glsl\nfloat sdBox(vec2|vec3 p, vec2|vec3 b) — half-extents\n```\n\n*Auto-imports* `/sdf/2d/box.glsl, /sdf/3d/box.glsl`"
+  },
+  "sdSegment": {
+    "prefix": "sdSegment",
+    "body": "sdSegment(${1:p}, ${2:a}, ${3:b})$0",
+    "description": "```glsl\nfloat sdSegment(vec2 p, vec2 a, vec2 b)\n```\n\n*Auto-imports* `/sdf/2d/segment.glsl`"
+  },
+  "sdRoundedBox": {
+    "prefix": "sdRoundedBox",
+    "body": "sdRoundedBox(${1:p}, ${2:b}, ${3:r})$0",
+    "description": "```glsl\nfloat sdRoundedBox(vec2|vec3 p, vec2|vec3 b, float r)\n```\n\nBox with rounded corners. PERF: FREE — same cost as sdBox + one subtract.\n\nFor per-corner radii (2D only), use `sdRoundedBox4(p, b, vec4(tr, br, tl, bl))`.\n\n**Example:**\n```glsl\nfloat d = sdRoundedBox(uv, vec2(0.4, 0.25), 0.08);\n```\n\n*Auto-imports* `/sdf/2d/rounded_box.glsl, /sdf/3d/rounded_box.glsl`"
+  },
+  "sdRoundedBox4": {
+    "prefix": "sdRoundedBox4",
+    "body": "sdRoundedBox4(${1:p}, ${2:b}, ${3:r})$0",
+    "description": "```glsl\nfloat sdRoundedBox4(vec2 p, vec2 b, vec4 r) — per-corner radii (tr, br, tl, bl)\n```\n\n*Auto-imports* `/sdf/2d/rounded_box.glsl`"
+  },
+  "sdTriangle": {
+    "prefix": "sdTriangle",
+    "body": "sdTriangle(${1:p}, ${2:a}, ${3:b}, ${4:c})$0",
+    "description": "```glsl\nfloat sdTriangle(vec2 p, vec2 a, vec2 b, vec2 c)\n```\n\nTriangle from three vertices. PERF: MODERATE — three per-edge clamps + sqrt. Use sparingly; for many triangles, batch via a polygon SDF.\n\n*Auto-imports* `/sdf/2d/triangle.glsl`"
+  },
+  "sdEquilateralTriangle": {
+    "prefix": "sdEquilateralTriangle",
+    "body": "sdEquilateralTriangle(${1:p}, ${2:r})$0",
+    "description": "```glsl\nfloat sdEquilateralTriangle(vec2 p, float r) — pointing up, circumradius r\n```\n\nEquilateral triangle. PERF: FREE — much cheaper than the general sdTriangle.\n\n*Auto-imports* `/sdf/2d/triangle.glsl`"
+  },
+  "sdSphere": {
+    "prefix": "sdSphere",
+    "body": "sdSphere(${1:p}, ${2:r})$0",
+    "description": "```glsl\nfloat sdSphere(vec3 p, float r)\n```\n\n*Auto-imports* `/sdf/3d/sphere.glsl`"
+  },
+  "sdTorus": {
+    "prefix": "sdTorus",
+    "body": "sdTorus(${1:p}, ${2:t})$0",
+    "description": "```glsl\nfloat sdTorus(vec3 p, vec2 t) — (major, minor) radii\n```\n\n*Auto-imports* `/sdf/3d/torus.glsl`"
+  },
+  "sdCapsule": {
+    "prefix": "sdCapsule",
+    "body": "sdCapsule(${1:p}, ${2:a}, ${3:b}, ${4:r})$0",
+    "description": "```glsl\nfloat sdCapsule(vec3 p, vec3 a, vec3 b, float r)\n```\n\n*Auto-imports* `/sdf/3d/capsule.glsl`"
+  },
+  "sdPlane": {
+    "prefix": "sdPlane",
+    "body": "sdPlane(${1:p}, ${2:n}, ${3:h})$0",
+    "description": "```glsl\nfloat sdPlane(vec3 p, vec3 n, float h) — n normalized\n```\n\n*Auto-imports* `/sdf/3d/plane.glsl`"
+  },
+  "sdCylinder": {
+    "prefix": "sdCylinder",
+    "body": "sdCylinder(${1:p}, ${2:h}, ${3:r})$0",
+    "description": "```glsl\nfloat sdCylinder(vec3 p, float h, float r) — Y-axis, h=half-height\n```\n\nCapped cylinder along Y axis. PERF: FREE — cheaper than sdCapsule.\n\nThere is also a 4-arg overload `sdCylinder(p, vec3 a, vec3 b, float r)` for arbitrary-axis cylinders.\n\n*Auto-imports* `/sdf/3d/cylinder.glsl`"
+  },
+  "sdOctahedron": {
+    "prefix": "sdOctahedron",
+    "body": "sdOctahedron(${1:p}, ${2:s})$0",
+    "description": "```glsl\nfloat sdOctahedron(vec3 p, float s)\n```\n\nOctahedron. PERF: FREE — L1-norm approximation, very fast.\nFor a true Lipschitz=1 SDF (matters for thin detail / accurate shadows) use `sdOctahedronExact`.\n\n*Auto-imports* `/sdf/3d/octahedron.glsl`"
+  },
+  "sdOctahedronExact": {
+    "prefix": "sdOctahedronExact",
+    "body": "sdOctahedronExact(${1:p}, ${2:s})$0",
+    "description": "```glsl\nfloat sdOctahedronExact(vec3 p, float s) — exact, CHEAP\n```\n\n*Auto-imports* `/sdf/3d/octahedron.glsl`"
+  },
+  "sdCone": {
+    "prefix": "sdCone",
+    "body": "sdCone(${1:p}, ${2:h}, ${3:r})$0",
+    "description": "```glsl\nfloat sdCone(vec3 p, float h, float r) — apex at +Y h, base radius r at y=0\n```\n\nCone standing on the XZ plane with apex pointing up. PERF: CHEAP (3 clamps + sqrt). For a rounded-cap cone, see `sdRoundCone`.\n\n**Example:**\n```glsl\nfloat d = sdCone(p, 1.0, 0.5);  // 1 tall, 0.5 base radius\n```\n\n*Auto-imports* `/sdf/3d/cone.glsl`"
+  },
+  "sdRoundCone": {
+    "prefix": "sdRoundCone",
+    "body": "sdRoundCone(${1:p}, ${2:r1}, ${3:r2}, ${4:h})$0",
+    "description": "```glsl\nfloat sdRoundCone(vec3 p, float r1, float r2, float h)\n```\n\nCone with spherical endcaps. r1 = base sphere radius, r2 = top sphere radius, h = distance between centers. Smooth tangent between caps. PERF: CHEAP.\nWhen r1==r2 it becomes a Y-axis capsule; when r2==0 it becomes a pointed bullet.\n\n**Example:**\n```glsl\nfloat d = sdRoundCone(p, 0.3, 0.1, 1.0);  // tear-drop\n```\n\n*Auto-imports* `/sdf/3d/round_cone.glsl`"
+  },
+  "sdPyramid": {
+    "prefix": "sdPyramid",
+    "body": "sdPyramid(${1:p}, ${2:h})$0",
+    "description": "```glsl\nfloat sdPyramid(vec3 p, float h) — 1×1 base, apex at +Y h\n```\n\nSquare-base pyramid. Base side 1 at y=0, apex at (0,h,0). PERF: MODERATE (heaviest of the new prims — multiple folds + sqrt). For arbitrary base size, scale the input: `sdPyramid(p/s, h)*s`.\n\n**Example:**\n```glsl\nfloat d = sdPyramid(p, 1.5);\n```\n\n*Auto-imports* `/sdf/3d/pyramid.glsl`"
+  },
+  "sdEllipsoid": {
+    "prefix": "sdEllipsoid",
+    "body": "sdEllipsoid(${1:p}, ${2:r})$0",
+    "description": "```glsl\nfloat sdEllipsoid(vec3 p, vec3 r)\n```\n\nPer-axis-scaled sphere. PERF: CHEAP (~2x sdSphere).\n**Approximate** — only true distance when r is uniform. For highly anisotropic shapes (e.g. r = vec3(1.0, 0.1, 1.0)) raymarching may overshoot; reduce step size or multiply the result by ~0.5 to be safe.\n\n**Example:**\n```glsl\nfloat d = sdEllipsoid(p, vec3(0.5, 0.3, 0.2));  // flattened disk\n```\n\n*Auto-imports* `/sdf/3d/ellipsoid.glsl`"
+  },
+  "sdHexPrism": {
+    "prefix": "sdHexPrism",
+    "body": "sdHexPrism(${1:p}, ${2:h})$0",
+    "description": "```glsl\nfloat sdHexPrism(vec3 p, vec2 h) — h.x=apothem, h.y=half-depth\n```\n\nHexagonal prism along Z axis. Like a pencil rod lying flat. PERF: FREE — no transcendentals.\nh.x = flat-to-flat half-width (apothem of the hex), h.y = half-depth.\n\n**Example:**\n```glsl\nfloat d = sdHexPrism(p, vec2(0.3, 0.6));\n```\n\n*Auto-imports* `/sdf/3d/hex_prism.glsl`"
+  },
+  "sdCappedTorus": {
+    "prefix": "sdCappedTorus",
+    "body": "sdCappedTorus(${1:p}, ${2:sc}, ${3:ra}, ${4:rb})$0",
+    "description": "```glsl\nfloat sdCappedTorus(vec3 p, vec2 sc, float ra, float rb)\n```\n\nPartial torus — only the slice within ±cap-angle from +Y is rendered. `sc = vec2(sin(cap), cos(cap))` where `cap` is the half-cap angle. `ra` = ring radius, `rb` = tube radius. PERF: CHEAP.\n\n**Example:**\n```glsl\nfloat cap = 1.5707963;  // π/2 → top half\nfloat d = sdCappedTorus(p, vec2(sin(cap), cos(cap)), 0.5, 0.08);\n```\n\n*Auto-imports* `/sdf/3d/capped_torus.glsl`"
+  },
+  "opUnion": {
+    "prefix": "opUnion",
+    "body": "opUnion(${1:a}, ${2:b})$0",
+    "description": "```glsl\nfloat opUnion(float a, float b) — min\n```\n\n*Auto-imports* `/sdf/ops/union.glsl`"
+  },
+  "opIntersect": {
+    "prefix": "opIntersect",
+    "body": "opIntersect(${1:a}, ${2:b})$0",
+    "description": "```glsl\nfloat opIntersect(float a, float b) — max\n```\n\n*Auto-imports* `/sdf/ops/intersect.glsl`"
+  },
+  "opSubtract": {
+    "prefix": "opSubtract",
+    "body": "opSubtract(${1:a}, ${2:b})$0",
+    "description": "```glsl\nfloat opSubtract(float a, float b) — max(a, -b)\n```\n\n*Auto-imports* `/sdf/ops/subtract.glsl`"
+  },
+  "opSmoothUnion": {
+    "prefix": "opSmoothUnion",
+    "body": "opSmoothUnion(${1:a}, ${2:b}, ${3:k})$0",
+    "description": "```glsl\nfloat opSmoothUnion(float a, float b, float k)\n```\n\n*Auto-imports* `/sdf/ops/smooth_union.glsl`"
+  },
+  "opSmoothSubtract": {
+    "prefix": "opSmoothSubtract",
+    "body": "opSmoothSubtract(${1:a}, ${2:b}, ${3:k})$0",
+    "description": "```glsl\nfloat opSmoothSubtract(float a, float b, float k)\n```\n\n*Auto-imports* `/sdf/ops/smooth_subtract.glsl`"
+  },
+  "opSmoothIntersect": {
+    "prefix": "opSmoothIntersect",
+    "body": "opSmoothIntersect(${1:a}, ${2:b}, ${3:k})$0",
+    "description": "```glsl\nfloat opSmoothIntersect(float a, float b, float k)\n```\n\n*Auto-imports* `/sdf/ops/smooth_intersect.glsl`"
+  },
+  "opSmoothUnionMat": {
+    "prefix": "opSmoothUnionMat",
+    "body": "opSmoothUnionMat(${1:...})$0",
+    "description": "```glsl\nvec2 opSmoothUnionMat(...) — returns (dist, blend)\n```\n\n*Auto-imports* `/sdf/ops/smooth_union.glsl`"
+  },
+  "opRound": {
+    "prefix": "opRound",
+    "body": "opRound(${1:d}, ${2:r})$0",
+    "description": "```glsl\nfloat opRound(float d, float r) — rounds any SDF\n```\n\nRounds the silhouette of any SDF by `r`. PERF: FREE — one subtract. For boxes prefer the dedicated `sdRoundedBox` which folds the round into the same op.\n\n**Example:**\n```glsl\nfloat d = opRound(sdBox(p, vec3(1.0)), 0.1);\n```\n\n*Auto-imports* `/sdf/ops/round.glsl`"
+  },
+  "opOnion": {
+    "prefix": "opOnion",
+    "body": "opOnion(${1:d}, ${2:t})$0",
+    "description": "```glsl\nfloat opOnion(float d, float t) — hollow shell of thickness 2t\n```\n\nMakes a hollow shell of thickness 2t from any solid SDF. Stack for concentric layers. PERF: FREE — abs + subtract.\n\nNote: slightly breaks Lipschitz=1 continuity at the inner surface; use smaller raymarch steps inside thin shells.\n\n**Example:**\n```glsl\nfloat d = opOnion(sdSphere(p, 0.5), 0.05);  // 5cm-thick spherical shell\n```\n\n*Auto-imports* `/sdf/ops/onion.glsl`"
+  },
+  "opRepeat": {
+    "prefix": "opRepeat",
+    "body": "opRepeat(${1:p}, ${2:c})$0",
+    "description": "```glsl\nvec3 opRepeat(vec3 p, vec3 c) — infinite tile\n```\n\n*Auto-imports* `/sdf/modifiers/repeat.glsl`"
+  },
+  "opMirror": {
+    "prefix": "opMirror",
+    "body": "opMirror(${1:p})$0",
+    "description": "```glsl\nvec3 opMirror(vec3 p) — abs fold\n```\n\n*Auto-imports* `/sdf/modifiers/mirror.glsl`"
+  },
+  "opTwist": {
+    "prefix": "opTwist",
+    "body": "opTwist(${1:p}, ${2:k})$0",
+    "description": "```glsl\nvec3 opTwist(vec3 p, float k) — twist around Y\n```\n\n*Auto-imports* `/sdf/modifiers/twist.glsl`"
+  },
+  "opBend": {
+    "prefix": "opBend",
+    "body": "opBend(${1:p}, ${2:k})$0",
+    "description": "```glsl\nvec3 opBend(vec3 p, float k) — bend around X\n```\n\n*Auto-imports* `/sdf/modifiers/bend.glsl`"
+  },
+  "opDisplace": {
+    "prefix": "opDisplace",
+    "body": "opDisplace(${1:d}, ${2:displacement})$0",
+    "description": "```glsl\nfloat opDisplace(float d, float displacement)\n```\n\n*Auto-imports* `/sdf/modifiers/displace.glsl`"
+  },
+  "opElongate": {
+    "prefix": "opElongate",
+    "body": "opElongate(${1:p}, ${2:h})$0",
+    "description": "```glsl\nvec2|vec3 opElongate(vec p, vec h) — stretch a shape along axes\n```\n\nInigo Quilez's elongation trick. Pass the result back into any SDF to stretch it.\nPERF: FREE — clamp + subtract.\n\n**Example:**\n```glsl\nfloat d = sdSphere(opElongate(p, vec3(0.0, 0.5, 0.0)), 0.3);  // vertical capsule\n```\n\n*Auto-imports* `/sdf/modifiers/elongate.glsl`"
+  },
+  "opExtrude": {
+    "prefix": "opExtrude",
+    "body": "opExtrude(${1:d2d}, ${2:pz}, ${3:h})$0",
+    "description": "```glsl\nfloat opExtrude(float d2d, float pz, float h) — extrude 2D SDF along Z\n```\n\nTurns any 2D SDF into a 3D prism. Pre-compute the 2D distance, then combine with a z-slab of half-height `h`. The standard iquilezles pattern — every 3D logo / glyph / \"2D stamped on 3D\" piece uses this.\nPERF: FREE — abs + max + length on vec2.\n\n**Example:**\n```glsl\nfloat d2 = sdCircle(p.xy, 0.3);\nfloat d3 = opExtrude(d2, p.z, 0.5);  // circular pillar, half-height 0.5\n```\n\n*Auto-imports* `/sdf/modifiers/extrusion.glsl`"
+  },
+  "opRevolve": {
+    "prefix": "opRevolve",
+    "body": "opRevolve(${1:p}, ${2:offset})$0",
+    "description": "```glsl\nvec2 opRevolve(vec3 p, float offset) — solid of revolution around Y\n```\n\nRotates a 2D profile around the Y axis. Returns a vec2 to feed any 2D SDF. `offset` shifts the rotation axis outward (offset=0 → disk-from-center profile; offset=ringR → torus-like).\nUsed for chair legs, wine glasses, vases, columns, rocket nozzles, bottle shapes — anything lathe-turned.\nPERF: FREE — one 2D length.\n\n**Example:**\n```glsl\nvec2 q = opRevolve(p, 0.0);\nfloat d = sdCircle(q - vec2(0.0, 1.0), 0.3);  // sphere from revolved profile\n```\n\n*Auto-imports* `/sdf/modifiers/revolution.glsl`"
+  },
+  "pModPolar": {
+    "prefix": "pModPolar",
+    "body": "pModPolar(${1:p}, ${2:repetitions})$0",
+    "description": "```glsl\nfloat pModPolar(inout vec2 p, float repetitions)\n```\n\n*Auto-imports* `/sdf/modifiers/pmod_polar.glsl`"
+  },
+  "pModInterval1D": {
+    "prefix": "pModInterval1D",
+    "body": "pModInterval1D(${1:p}, ${2:size}, ${3:start}, ${4:stop})$0",
+    "description": "```glsl\nfloat pModInterval1D(inout float p, size, start, stop)\n```\n\n*Auto-imports* `/sdf/modifiers/pmod_interval.glsl`"
+  },
+  "lookAt": {
+    "prefix": "lookAt",
+    "body": "lookAt(${1:ro}, ${2:target}, ${3:roll})$0",
+    "description": "```glsl\nmat3 lookAt(vec3 ro, vec3 target, float roll)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "orbitCamera": {
+    "prefix": "orbitCamera",
+    "body": "orbitCamera(${1:target}, ${2:radius}, ${3:azimuth}, ${4:elev})$0",
+    "description": "```glsl\nvec3 orbitCamera(target, radius, azimuth, elev)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "randomDisk": {
+    "prefix": "randomDisk",
+    "body": "randomDisk(${1:seed})$0",
+    "description": "```glsl\nvec2 randomDisk(vec2 seed) — uniform disk sample\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "raymarch": {
+    "prefix": "raymarch",
+    "body": "raymarch(${1:ro}, ${2:rd}, ${3:tMax}, ${4:maxSteps})$0",
+    "description": "```glsl\nfloat raymarch(ro, rd, tMax, maxSteps) — needs map()\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "calcNormal": {
+    "prefix": "calcNormal",
+    "body": "calcNormal(${1:p})$0",
+    "description": "```glsl\nvec3 calcNormal(vec3 p) — needs map()\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "lambert": {
+    "prefix": "lambert",
+    "body": "lambert(${1:n}, ${2:l})$0",
+    "description": "```glsl\nfloat lambert(vec3 n, vec3 l)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "blinnPhong": {
+    "prefix": "blinnPhong",
+    "body": "blinnPhong(${1:n}, ${2:l}, ${3:v}, ${4:shininess})$0",
+    "description": "```glsl\nfloat blinnPhong(n, l, v, shininess)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "pbrShade": {
+    "prefix": "pbrShade",
+    "body": "pbrShade(${1:albedo}, ${2:rough}, ${3:metal}, ${4:N}, ${5:V}, ${6:L}, ${7:lightColor})$0",
+    "description": "```glsl\nvec3 pbrShade(albedo, rough, metal, N, V, L, lightColor)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "D_GGX": {
+    "prefix": "D_GGX",
+    "body": "D_GGX(${1:NdotH}, ${2:a})$0",
+    "description": "```glsl\nfloat D_GGX(NdotH, a) — α = roughness²\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "F_Schlick": {
+    "prefix": "F_Schlick",
+    "body": "F_Schlick(${1:HdotV}, ${2:F0})$0",
+    "description": "```glsl\nvec3 F_Schlick(HdotV, F0)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "G_Smith": {
+    "prefix": "G_Smith",
+    "body": "G_Smith(${1:NdotV}, ${2:NdotL}, ${3:a})$0",
+    "description": "```glsl\nfloat G_Smith(NdotV, NdotL, a)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "rimLight": {
+    "prefix": "rimLight",
+    "body": "rimLight(${1:N}, ${2:V}, ${3:backL}, ${4:power})$0",
+    "description": "```glsl\nfloat rimLight(N, V, backL, power)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "celQuantize": {
+    "prefix": "celQuantize",
+    "body": "celQuantize(${1:x}, ${2:steps})$0",
+    "description": "```glsl\nfloat celQuantize(float x, float steps)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "celSpecular": {
+    "prefix": "celSpecular",
+    "body": "celSpecular(${1:spec}, ${2:threshold})$0",
+    "description": "```glsl\nfloat celSpecular(float spec, float threshold)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "celDiffuse": {
+    "prefix": "celDiffuse",
+    "body": "celDiffuse(${1:diff}, ${2:threshold})$0",
+    "description": "```glsl\nfloat celDiffuse(float diff, float threshold)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "softShadow": {
+    "prefix": "softShadow",
+    "body": "softShadow(${1:ro}, ${2:rd}, ${3:tMin}, ${4:tMax}, ${5:k}, ${6:maxSteps})$0",
+    "description": "```glsl\nfloat softShadow(ro, rd, tMin, tMax, float k | int maxSteps | float k, int maxSteps)\n```\n\nSphere-traced soft shadow. Three overloads:\n- 5-arg with **float k** — penumbra sharpness (typical 4–32), 64 fixed steps.\n- 5-arg with **int maxSteps** — k=8.0, variable step budget (use RM_SHADOW_STEPS_LOW/MID/HIGH).\n- 6-arg `(k, maxSteps)` — explicit control over both.\n\nReturns [0, 1] where 0 = full shadow, 1 = fully lit.\nNeeds a `map(vec3)` to be defined.\n\n**Example:**\n```glsl\nfloat sh = softShadow(p + n * 0.01, L, 0.01, 10.0, RM_SHADOW_STEPS_MID);\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "ambientOcclusion": {
+    "prefix": "ambientOcclusion",
+    "body": "ambientOcclusion(${1:p}, ${2:n})$0",
+    "description": "```glsl\nfloat ambientOcclusion(p, n) — needs map()\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "applyFog": {
+    "prefix": "applyFog",
+    "body": "applyFog(${1:col}, ${2:dist}, ${3:fogColor}, ${4:density})$0",
+    "description": "```glsl\nvec3 applyFog(col, dist, fogColor, density)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "applyFogLinear": {
+    "prefix": "applyFogLinear",
+    "body": "applyFogLinear(${1:col}, ${2:dist}, ${3:fogColor}, ${4:near}, ${5:far})$0",
+    "description": "```glsl\nvec3 applyFogLinear(col, dist, fogColor, near, far)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "hemisphereIBL": {
+    "prefix": "hemisphereIBL",
+    "body": "hemisphereIBL(${1:N}, ${2:groundCol}, ${3:skyCol})$0",
+    "description": "```glsl\nvec3 hemisphereIBL(N, groundCol, skyCol)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "simpleIBL": {
+    "prefix": "simpleIBL",
+    "body": "simpleIBL(${1:albedo}, ${2:rough}, ${3:metal}, ${4:N}, ${5:iblColor})$0",
+    "description": "```glsl\nvec3 simpleIBL(albedo, rough, metal, N, iblColor)\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "aaCoverage": {
+    "prefix": "aaCoverage",
+    "body": "aaCoverage(${1:[}, ${2:w]})$0",
+    "description": "```glsl\nfloat aaCoverage(float d [, float w]) — antialias an SDF edge\n```\n\nScreen-space SDF anti-aliasing using fwidth derivatives. Returns coverage in [0,1] — 1 inside, 0 outside, smooth boundary 1 pixel wide.\n\nUse 2-arg form `aaCoverage(d, w)` when there are no screen-space derivatives (e.g. raymarch hit-tests; pass world-space width).\nPERF: CHEAP — 1 fwidth + 1 smoothstep.\n\n**Example:**\n```glsl\nfloat d = sdCircle(uv, 0.3);\nfloat a = aaCoverage(d);\nvec3 col = mix(bg, fg, a);\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "traceReflection": {
+    "prefix": "traceReflection",
+    "body": "traceReflection(${1:hitP}, ${2:normal}, ${3:incident}, ${4:tMax}, ${5:maxSteps})$0",
+    "description": "```glsl\nfloat traceReflection(hitP, normal, incident, tMax, maxSteps) — needs map()\n```\n\nTrace one reflected ray from a hit point. Returns the hit distance on the reflected ray, or -1 if it escapes (sample the sky in that case).\nCombine with `fresnelSchlick` for realistic mirror-vs-grazing reflectivity.\nPERF: MODERATE — one raymarch per call. Use RM_STEPS_LOW or RM_STEPS_MID — full step counts are wasted on reflections.\n\n**Example:**\n```glsl\nfloat t2 = traceReflection(p, n, rd, 20.0, RM_STEPS_LOW);\nvec3 reflCol = (t2 > 0.0) ? shadeAt(p + reflect(rd, n) * t2) : sky(reflect(rd, n));\n```\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "fresnelSchlick": {
+    "prefix": "fresnelSchlick",
+    "body": "fresnelSchlick(${1:cosTheta}, ${2:f0})$0",
+    "description": "```glsl\nfloat|vec3 fresnelSchlick(float cosTheta, float|vec3 f0)\n```\n\nSchlick's Fresnel approximation. Returns reflection coefficient as a function of incident angle.\n`cosTheta` = dot(view, normal) clamped to [0,1].\n`f0` = base reflectance at normal incidence — 0.04 for plastic/dielectrics, the metallic albedo for metals.\n\nThere's also a `F_Schlick(HdotV, vec3 F0)` in render/lighting/pbr.glsl with the same math, designed for PBR call-sites.\nPERF: FREE — one integer-exponent pow expansion.\n\n*Auto-imports* `/include/raymarch.glsl`"
+  },
+  "portraitLight": {
+    "prefix": "portraitLight",
+    "body": "portraitLight(${1:n}, ${2:v}, ${3:l}, ${4:baseCol}, ${5:lightCol}, ${6:intensity}, ${7:shininess})$0",
+    "description": "```glsl\nvec3 portraitLight(n, v, l, baseCol, lightCol, intensity, shininess)\n```\n\nSingle-light contribution for portrait shading — Blinn-Phong diffuse + specular for ONE light direction.\nUse when you want to roll your own multi-light setup. For a complete drop-in shade pipeline, call `portraitShade` instead.\nPERF: CHEAP — one diffuse dot + one blinnPhong.\n\n*Auto-imports* `/render/portrait.glsl`"
+  },
+  "portraitShade": {
+    "prefix": "portraitShade",
+    "body": "portraitShade(${1:p}, ${2:n}, ${3:v}, ${4:baseCol}, ${5:shininess}, ${6:sssAmount})$0",
+    "description": "```glsl\nvec3 portraitShade(p, n, v, baseCol, shininess, sssAmount)\n```\n\nOne-call portrait/character shading: **three-point lighting** (key + fill + rim) + **soft shadow** on the key + **AO** + **ambient** + **fake SSS** for skin.\n\nReplaces ~30 lines of manual lighting with a single call. All constants (light dirs/colors/intensities, AO strength, SSS color) live at the top of `/render/portrait.glsl` and are tweakable — change in one place, re-light everywhere.\n\nArgs:\n- `p` = world hit point\n- `n` = surface normal\n- `v` = view direction toward eye (= `-rd`)\n- `baseCol` = material albedo\n- `shininess` = Blinn-Phong exponent (use `PORTRAIT_SHIN_SKIN/HAIR/EYE`)\n- `sssAmount` = 0..1 fake subsurface strength — set 0 for non-skin\n\nReturns linear color — tonemap before output (use `tonemapACES`).\nPERF: MODERATE — internally one softShadow + one ambientOcclusion (both raymarch loops).\n\n**Example:**\n```glsl\nfloat matId = mapWithMat(p).y;\nvec3 base; float shin; float sss;\nif (matId < 1.5) { base = vec3(0.95,0.80,0.55); shin = PORTRAIT_SHIN_SKIN; sss = 1.0; }\nelse if (matId < 2.5) { base = vec3(0.15,0.10,0.08); shin = PORTRAIT_SHIN_HAIR; sss = 0.0; }\nelse { base = vec3(0.90); shin = PORTRAIT_SHIN_EYE; sss = 0.0; }\nvec3 col = portraitShade(p, n, -rd, base, shin, sss);\ncol = tonemapACES(col);\n```\n\n*Auto-imports* `/render/portrait.glsl`"
+  },
+  "defaultMaterial": {
+    "prefix": "defaultMaterial",
+    "body": "defaultMaterial()$0",
+    "description": "```glsl\nMaterial defaultMaterial()\n```\n\nReturns a neutral Material — black albedo, +Z normal, height=0, roughness=1, ao=1. Use as a starting point when you want to override only a few fields.\n\n**Example:**\n```glsl\nMaterial m = defaultMaterial();\nm.albedo = vec3(0.8, 0.2, 0.1);\n```\n\n*Auto-imports* `/material/types.glsl`"
+  },
+  "brickMaterial": {
+    "prefix": "brickMaterial",
+    "body": "brickMaterial(${1:st}, ${2:id}, ${3:box}, ${4:tint})$0",
+    "description": "```glsl\nMaterial brickMaterial(vec2 st, vec2 id, float box, vec3 tint)\n```\n\nBrick-vs-mortar Material from a tile's SDF distance. Coord-system-agnostic — works for cartesian (running-bond) and polar (voussoir) tilings alike, because the normal comes from screen-space `dFdx`/`dFdy` on the SDF distance.\n\nArgs:\n- `st` — full-resolution coords (for edge-noise sampling)\n- `id` — brick identifier (for per-brick color jitter)\n- `box` — brick SDF distance (negative inside the brick)\n- `tint` — base brick color (use a BRICK_COLOR_* constant or your own)\n\nThe returned Material has: brick color jittered per-id with mortar in the gaps, screen-space normal, height=brick mask, roughness 0.3 in mortar / 0.85 on brick, and AO darkening at edges.\n\n**Example:**\n```glsl\nvec2 id;\nvec2 tile = brickTilePattern_runningBond(st, scale, id);\nfloat box = brickSDF(tile);\nMaterial m = brickMaterial(st, id, box, BRICK_COLOR_RED_CLAY);\n```\n\n*Auto-imports* `/material/brick/brick.glsl`"
+  },
+  "brickWeathered": {
+    "prefix": "brickWeathered",
+    "body": "brickWeathered(${1:st}, ${2:id}, ${3:box}, ${4:tint})$0",
+    "description": "```glsl\nMaterial brickWeathered(vec2 st, vec2 id, float box, vec3 tint)\n```\n\nAged-brick variant of `brickMaterial`. Same call signature. Adds an FBM age-wash on color, moss in low-height regions (mortar lines + bottoms of bricks), hairline cracks from turbulence, and boosted AO + roughness for a non-pristine surface.\n\nUse for old castle walls, abandoned buildings, sunken ruins. Drop-in swap with `brickMaterial`.\n\n**Example:**\n```glsl\nMaterial m = brickWeathered(st, id, box, BRICK_COLOR_RED_CLAY);\n```\n\n*Auto-imports* `/material/brick/weathered.glsl`"
+  },
+  "brickPainted": {
+    "prefix": "brickPainted",
+    "body": "brickPainted(${1:st}, ${2:id}, ${3:box}, ${4:baseTint}, ${5:paintCol})$0",
+    "description": "```glsl\nMaterial brickPainted(vec2 st, vec2 id, float box, vec3 baseTint, vec3 paintCol)\n```\n\nPainted-brick variant. Flat paint layer over the brick, with random chip patches biased to brick rims that reveal `baseTint` underneath. Paint is glossier than raw brick — roughness drops where paint is present.\n\nArgs add `paintCol` to the regular brick set. Use BRICK_COLOR_PAINT_WHITE / _TEAL / _OXBLOOD or pass your own.\n\n**Example:**\n```glsl\nMaterial m = brickPainted(st, id, box, BRICK_COLOR_RED_CLAY, BRICK_COLOR_PAINT_TEAL);\n```\n\n*Auto-imports* `/material/brick/painted.glsl`"
+  },
+  "brickConfigDefault": {
+    "prefix": "brickConfigDefault",
+    "body": "brickConfigDefault()$0",
+    "description": "```glsl\nBrickConfig brickConfigDefault()\n```\n\nReturns a BrickConfig pre-populated with library defaults (pulled from /material/brick/constants.glsl). Use as a starting point — override only the fields you want, pass the result to any brick*MaterialEx variant.\n\nFields:\n- **Edge noise**: `noiseScale`, `noiseAmount`, `noiseBand`\n- **Color**: `colorJitter`, `mortarColor`\n- **Roughness mapping**: `roughnessMortar`, `roughnessBrick`\n- **Baked AO**: `aoStrength`, `aoBand`\n- **Weathered only**: `ageScale`, `ageStrength`, `mossScale`, `mossAmount`, `mossColor`, `crackScale`, `crackAmount`\n- **Painted only**: `chipScale`, `chipThreshold`, `paintNoiseScale`, `paintRoughness`\n\n**Example:**\n```glsl\nBrickConfig cfg = brickConfigDefault();\ncfg.colorJitter = 0.6;\ncfg.mortarColor = vec3(0.3);\nMaterial m = brickMaterialEx(st, id, box, BRICK_COLOR_RED_CLAY, cfg);\n```\n\n*Auto-imports* `/material/brick/config.glsl`"
+  },
+  "brickMaterialEx": {
+    "prefix": "brickMaterialEx",
+    "body": "brickMaterialEx(${1:st}, ${2:id}, ${3:box}, ${4:tint}, ${5:cfg})$0",
+    "description": "```glsl\nMaterial brickMaterialEx(vec2 st, vec2 id, float box, vec3 tint, BrickConfig cfg)\n```\n\nFull-control variant of brickMaterial. Same shape as the shortcut but takes a BrickConfig to override edge-noise / color jitter / mortar color / roughness mapping / AO per call.\n\nSee `brickConfigDefault` for the full field list. Use the shortcut `brickMaterial(...)` if you don't need overrides.\n\n**Example:**\n```glsl\nBrickConfig cfg = brickConfigDefault();\ncfg.colorJitter = 0.6;\nMaterial m = brickMaterialEx(st, id, box, BRICK_COLOR_RED_CLAY, cfg);\n```\n\n*Auto-imports* `/material/brick/brick.glsl`"
+  },
+  "brickWeatheredEx": {
+    "prefix": "brickWeatheredEx",
+    "body": "brickWeatheredEx(${1:st}, ${2:id}, ${3:box}, ${4:tint}, ${5:cfg})$0",
+    "description": "```glsl\nMaterial brickWeatheredEx(vec2 st, vec2 id, float box, vec3 tint, BrickConfig cfg)\n```\n\nFull-control weathered brick. Consumes the weathered-only fields of BrickConfig: `ageScale`, `ageStrength`, `mossScale`, `mossAmount`, `mossColor`, `crackScale`, `crackAmount`.\n\n**Example:**\n```glsl\nBrickConfig cfg = brickConfigDefault();\ncfg.mossAmount = 0.9;\ncfg.mossColor = vec3(0.15, 0.30, 0.10); // wet moss\nMaterial m = brickWeatheredEx(st, id, box, BRICK_COLOR_RED_CLAY, cfg);\n```\n\n*Auto-imports* `/material/brick/weathered.glsl`"
+  },
+  "brickPaintedEx": {
+    "prefix": "brickPaintedEx",
+    "body": "brickPaintedEx(${1:st}, ${2:id}, ${3:box}, ${4:baseTint}, ${5:paintCol}, ${6:cfg})$0",
+    "description": "```glsl\nMaterial brickPaintedEx(vec2 st, vec2 id, float box, vec3 baseTint, vec3 paintCol, BrickConfig cfg)\n```\n\nFull-control painted brick. Consumes the painted-only fields of BrickConfig: `chipScale`, `chipThreshold`, `paintNoiseScale`, `paintRoughness`.\n\n**Example:**\n```glsl\nBrickConfig cfg = brickConfigDefault();\ncfg.chipThreshold = 0.6;  // more chipping\nMaterial m = brickPaintedEx(st, id, box, BRICK_COLOR_RED_CLAY, BRICK_COLOR_PAINT_TEAL, cfg);\n```\n\n*Auto-imports* `/material/brick/painted.glsl`"
+  },
+  "brickTile": {
+    "prefix": "brickTile",
+    "body": "brickTile(${1:st}, ${2:zoom}, ${3:rowAmount}, ${4:id})$0",
+    "description": "```glsl\nvec2 brickTile(vec2 st, float zoom, float rowAmount, out vec2 id)\n```\n\nGeneric brick-tile layout function. `rowAmount` = 1 for stack bond, 2 for running bond, 3 for stretcher bond. Prefer the named `brickTilePattern_*` wrappers for readability.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickTilePattern_runningBond": {
+    "prefix": "brickTilePattern_runningBond",
+    "body": "brickTilePattern_runningBond(${1:st}, ${2:zoom}, ${3:id})$0",
+    "description": "```glsl\nvec2 brickTilePattern_runningBond(vec2 st, float zoom, out vec2 id)\n```\n\nStandard running-bond layout — every other row offset by half a brick. The default brick look.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickTilePattern_stack": {
+    "prefix": "brickTilePattern_stack",
+    "body": "brickTilePattern_stack(${1:st}, ${2:zoom}, ${3:id})$0",
+    "description": "```glsl\nvec2 brickTilePattern_stack(vec2 st, float zoom, out vec2 id)\n```\n\nStack-bond layout — bricks line up in a rigid grid with no row offset. Modern / industrial look.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickTilePattern_stretcher": {
+    "prefix": "brickTilePattern_stretcher",
+    "body": "brickTilePattern_stretcher(${1:st}, ${2:zoom}, ${3:id})$0",
+    "description": "```glsl\nvec2 brickTilePattern_stretcher(vec2 st, float zoom, out vec2 id)\n```\n\nStretcher-bond layout — every third row offset by one-third. Busier than running bond.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickTilePattern_basket": {
+    "prefix": "brickTilePattern_basket",
+    "body": "brickTilePattern_basket(${1:st}, ${2:zoom}, ${3:id})$0",
+    "description": "```glsl\nvec2 brickTilePattern_basket(vec2 st, float zoom, out vec2 id)\n```\n\nBasket-weave layout — 2x1 pairs alternating horizontal/vertical in a checkerboard. Common in floors and courtyards.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickTilePattern_herringbone": {
+    "prefix": "brickTilePattern_herringbone",
+    "body": "brickTilePattern_herringbone(${1:st}, ${2:zoom}, ${3:id})$0",
+    "description": "```glsl\nvec2 brickTilePattern_herringbone(vec2 st, float zoom, out vec2 id)\n```\n\nSimplified herringbone — rows alternate horizontal/vertical brick orientation. Not a true 45°-rotated herringbone; useful as a starting point you can extend.\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickSDF": {
+    "prefix": "brickSDF",
+    "body": "brickSDF(${1:tile})$0",
+    "description": "```glsl\nfloat brickSDF(vec2 tile)\n```\n\nStandard brick shape SDF in tile-local space. Uses BRICK_HALF_EXTENTS and BRICK_CORNER_RADIUS from constants. Feed it the return value of any `brickTilePattern_*` to get the per-pixel SDF distance.\n\n**Example:**\n```glsl\nvec2 id; vec2 tile = brickTilePattern_runningBond(st, 5.0, id);\nfloat box = brickSDF(tile);\n```\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "brickBevelNormal": {
+    "prefix": "brickBevelNormal",
+    "body": "brickBevelNormal(${1:tile}, ${2:bevel}, ${3:depth})$0",
+    "description": "```glsl\nvec3 brickBevelNormal(vec2 tile, float bevel, float depth)\n```\n\nHigh-quality analytical bevel normal for cartesian brick tilings. Samples the brick SDF at 4 neighbor positions, builds a smooth height field, returns the gradient → normal.\n\nUse it to OVERRIDE the dFdx/dFdy normal that `brickMaterial` produces by default — better quality, resolution-independent, no aliasing at edges. Cost: 4 extra `sdRoundedBox` calls.\n\nDoes NOT work for polar tilings (voussoirs) — use dFdx in those cases.\n\n**Example:**\n```glsl\nMaterial m = brickMaterial(st, id, box, BRICK_COLOR_RED_CLAY);\nm.normal = brickBevelNormal(tile, BRICK_BEVEL, BRICK_DEPTH); // override\n```\n\n*Auto-imports* `/material/brick/pattern.glsl`"
+  },
+  "skyMaterial": {
+    "prefix": "skyMaterial",
+    "body": "skyMaterial(${1:st})$0",
+    "description": "```glsl\nMaterial skyMaterial(vec2 st)\n```\n\nVertical-gradient sky Material — warm horizon to cool zenith. `height = 0` so `shadeMaterial` keeps it flat (no spec, no diffuse falloff).\n\n**Example:**\n```glsl\nif (isOpening) mat = skyMaterial(st);\n```\n\n*Auto-imports* `/material/sky/sky.glsl`"
+  },
+  "shadeMaterial": {
+    "prefix": "shadeMaterial",
+    "body": "shadeMaterial(${1:m}, ${2:lightDir}, ${3:st})$0",
+    "description": "```glsl\nvec3 shadeMaterial(Material m, vec3 lightDir, vec2 st)\n```\n\nBlinn-Phong-ish shading consuming a Material. Designed for 2D pieces (screen-space normals, fixed view direction); for 3D raymarched scenes use `portraitShade` or roll your own using `lambert`/`blinnPhong` from /render/lighting/.\n\n`m.height` gates diffuse/spec — sky materials (height=0) stay perfectly flat. `m.roughness` controls spec exponent: 0 → tight mirror, 1 → broad matte.\n\n**Example:**\n```glsl\nvec3 lightDir = normalize(vec3(-0.5, 0.7, 1.0));\nvec3 col = shadeMaterial(mat, lightDir, st);\n```\n\n*Auto-imports* `/material/shade.glsl`"
+  }
+}
