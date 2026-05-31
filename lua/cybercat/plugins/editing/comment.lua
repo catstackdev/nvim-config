@@ -3,16 +3,10 @@
 return {
 	"numToStr/Comment.nvim",
 	event = { "BufReadPre", "BufNewFile" },
-	dependencies = {
-		"JoosepAlviste/nvim-ts-context-commentstring",
-	},
+	-- commentstring context is handled by ts-comments.nvim (see editing/ts-comments.lua);
+	-- Comment.nvim just reads vim.bo.commentstring, so no pre_hook is needed.
 	config = function()
-		local comment = require("Comment")
-		local ts_context_commentstring = require("ts_context_commentstring.integrations.comment_nvim")
-
-		comment.setup({
-			pre_hook = ts_context_commentstring.create_pre_hook(),
-		})
+		require("Comment").setup({})
 	end,
 	-- ✨ This 'keys' section is what you were missing
 	-- keys = {

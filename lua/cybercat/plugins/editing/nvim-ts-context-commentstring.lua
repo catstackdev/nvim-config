@@ -1,9 +1,13 @@
-return {
-	"JoosepAlviste/nvim-ts-context-commentstring",
-	event = "BufReadPost",
-	config = function()
-		require("ts_context_commentstring").setup({
-			enable_autocmd = true,
-		})
-	end,
-}
+-- Disabled: replaced by folke/ts-comments.nvim (see editing/ts-comments.lua).
+-- Keeping the file as a no-op spec so the import doesn't error and history
+-- remains discoverable.
+-- return {
+-- 	"JoosepAlviste/nvim-ts-context-commentstring",
+-- 	event = "BufReadPost",
+-- 	config = function()
+-- 		require("ts_context_commentstring").setup({
+-- 			enable_autocmd = true,
+-- 		})
+-- 	end,
+-- }
+return {}
