@@ -85,6 +85,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 local severity = vim.diagnostic.severity
 
 vim.diagnostic.config({
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = true,
+		header = "",
+		prefix = "",
+	},
 	signs = {
 		text = {
 			[severity.ERROR] = " ",

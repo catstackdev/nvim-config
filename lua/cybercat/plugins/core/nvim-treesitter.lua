@@ -8,7 +8,7 @@ return {
 		event = "BufReadPost", -- Loads after UI is ready
 		build = ":TSUpdate",
 		dependencies = {
-			-- "nvim-treesitter/nvim-treesitter-textobjects",
+			{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "master" },
 			"windwp/nvim-ts-autotag",
 			"nvim-treesitter/nvim-treesitter-refactor",
 		},
@@ -124,6 +124,56 @@ return {
 						node_incremental = "<C-space>",
 						scope_incremental = false,
 						node_decremental = "<bs>",
+					},
+				},
+				-- nvim-treesitter-textobjects (master branch API)
+				textobjects = {
+					select = {
+						enable = true,
+						lookahead = true, -- jump forward to nearest match
+						keymaps = {
+							["af"] = { query = "@function.outer", desc = "outer function" },
+							["if"] = { query = "@function.inner", desc = "inner function" },
+							["ac"] = { query = "@class.outer", desc = "outer class" },
+							["ic"] = { query = "@class.inner", desc = "inner class" },
+							["aa"] = { query = "@parameter.outer", desc = "outer parameter/argument" },
+							["ia"] = { query = "@parameter.inner", desc = "inner parameter/argument" },
+							["ai"] = { query = "@conditional.outer", desc = "outer conditional" },
+							["ii"] = { query = "@conditional.inner", desc = "inner conditional" },
+							["al"] = { query = "@loop.outer", desc = "outer loop" },
+							["il"] = { query = "@loop.inner", desc = "inner loop" },
+						},
+					},
+					move = {
+						enable = true,
+						set_jumps = true,
+						goto_next_start = {
+							["]f"] = { query = "@function.outer", desc = "next function start" },
+							["]c"] = { query = "@class.outer", desc = "next class start" },
+							["]a"] = { query = "@parameter.inner", desc = "next argument" },
+						},
+						goto_next_end = {
+							["]F"] = { query = "@function.outer", desc = "next function end" },
+							["]C"] = { query = "@class.outer", desc = "next class end" },
+						},
+						goto_previous_start = {
+							["[f"] = { query = "@function.outer", desc = "prev function start" },
+							["[c"] = { query = "@class.outer", desc = "prev class start" },
+							["[a"] = { query = "@parameter.inner", desc = "prev argument" },
+						},
+						goto_previous_end = {
+							["[F"] = { query = "@function.outer", desc = "prev function end" },
+							["[C"] = { query = "@class.outer", desc = "prev class end" },
+						},
+					},
+					swap = {
+						enable = true,
+						swap_next = {
+							["<leader>tsa"] = { query = "@parameter.inner", desc = "swap argument with next" },
+						},
+						swap_previous = {
+							["<leader>tsA"] = { query = "@parameter.inner", desc = "swap argument with prev" },
+						},
 					},
 				},
 				-- Treesitter refactor module

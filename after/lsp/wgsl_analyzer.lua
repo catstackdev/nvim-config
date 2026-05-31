@@ -1,5 +1,15 @@
 return {
 	filetypes = { "wgsl" },
+	on_attach = function(client, bufnr)
+		if client.server_capabilities.documentFormattingProvider then
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.format({ bufnr = bufnr, async = false })
+				end,
+			})
+		end
+	end,
 	settings = {
 		["wgsl-analyzer"] = {
 			-- customImports = {},                  -- map your /include/raymarch.glsl-style helpers if you add WGSL includes
