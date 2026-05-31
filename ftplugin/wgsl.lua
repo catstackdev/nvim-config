@@ -165,3 +165,7 @@ vim.api.nvim_create_autocmd("BufUnload", {
 	buffer = buf,
 	callback = stop_preview,
 })
+
+-- <leader>i*  → floating-window inspectors for the webgpu_fmt.py toolbelt.
+-- See lua/cybercat/utils/webgpu_inspect.lua for the full keymap list.
+require("cybercat.utils.webgpu_inspect").setup_keymaps(buf)

@@ -211,3 +211,7 @@ vim.keymap.set("n", "<leader>gv", function()
 	sync_to_tmp(vim.fn.expand("%:p"))
 	term_preview.launch("glslviewer " .. TMP_FRAG .. " --shadertoy " .. DEFAULT_FLAGS)
 end, vim.tbl_extend("force", opts, { desc = "GLSL Shadertoy preview" }))
+
+-- <leader>i*  → floating-window inspectors for the webgpu_fmt.py toolbelt.
+-- See lua/cybercat/utils/webgpu_inspect.lua for the full keymap list.
+require("cybercat.utils.webgpu_inspect").setup_keymaps(buf)
