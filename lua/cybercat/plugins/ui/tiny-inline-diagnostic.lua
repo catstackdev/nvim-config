@@ -4,8 +4,12 @@ return {
 	priority = 1000, -- needs to load before other diagnostic UI
 	config = function()
 		require("tiny-inline-diagnostic").setup({
-			preset = "modern", -- "modern" | "classic" | "minimal" | "powerline" | "ghost" | "simple" | "nonerdfont" | "amongus"
-			transparent_bg = false,
+			-- preset = "modern", -- "modern" | "classic" | "minimal" | "powerline" | "ghost" | "simple" | "nonerdfont" | "amongus"
+			preset = "powerline",
+
+			transparent_bg = true,
+			-- Make cursorline background transparent for diagnostics
+			transparent_cursorline = true,
 			options = {
 				show_source = { enabled = true, if_many = true },
 				use_icons_from_diagnostic = false,
@@ -19,7 +23,7 @@ return {
 				show_all_diags_on_cursorline = false,
 				enable_on_insert = false,
 				enable_on_select = false,
-				overflow = { mode = "wrap" },
+				-- overflow = { mode = "wrap" },
 				break_line = { enabled = false },
 				virt_texts = { priority = 2048 },
 				severity = {

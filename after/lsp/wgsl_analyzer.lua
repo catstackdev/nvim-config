@@ -9,6 +9,25 @@ return {
 				end,
 			})
 		end
+		-- if client:supports_method("textDocument/formatting") then
+		-- 	vim.api.nvim_create_autocmd("BufWritePre", {
+		-- 		buffer = bufnr,
+		-- 		callback = function()
+		-- 			vim.lsp.buf.format({
+		-- 				bufnr = bufnr,
+		-- 				async = false,
+		-- 				filter = function(c)
+		-- 					return c.name == "wgsl-analyzer"
+		-- 				end,
+		-- 			})
+		-- 		end,
+		-- 	})
+		-- end
+
+		-- 🔍 optional: enable inlay hints properly (Neovim 0.10+)
+		if vim.lsp.inlay_hint then
+			vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+		end
 	end,
 	settings = {
 		["wgsl-analyzer"] = {
@@ -16,8 +35,10 @@ return {
 			diagnostics = {
 				typeErrors = true,
 				nagaParsing = true, -- runs naga front-end
-				nagaValidation = true, -- runs naga IR validation
+				-- nagaValidation = true, -- runs naga IR validation
+				nagaValidation = false, -- runs naga IR validation
 				nagaVersion = "main",
+				-- nagaVersion = "23",
 			},
 			inlayHints = {
 				enabled = true,

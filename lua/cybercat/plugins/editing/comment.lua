@@ -1,22 +1,30 @@
--- g c c
--- g b c
-return {
-	"numToStr/Comment.nvim",
-	event = { "BufReadPre", "BufNewFile" },
-	-- commentstring context is handled by ts-comments.nvim (see editing/ts-comments.lua);
-	-- Comment.nvim just reads vim.bo.commentstring, so no pre_hook is needed.
-	config = function()
-		require("Comment").setup({})
-	end,
-	-- ✨ This 'keys' section is what you were missing
-	-- keys = {
-	--   -- Toggle comment on the current line
-	--   { "gcc", mode = "n", desc = "Comment toggle current line" },
-	--   -- Toggle comment for the selected lines in Visual mode
-	--   { "gc",  mode = "v", desc = "Comment toggle visual lines" },
-	--   -- Toggle block comment on the current line
-	--   { "gbc", mode = "n", desc = "Block comment current line" },
-	--   -- Toggle block comment for the selected lines in Visual mode
-	--   { "gb",  mode = "v", desc = "Block comment visual lines" },
-	-- },
-}
+-- Disabled: Neovim 0.10+ has built-in `gc` / `gcc` / `gbc`, and Comment.nvim
+-- conflicts with ts-comments.nvim (see editing/ts-comments.lua). Comment.nvim
+-- uses its own internal commentstring table and ignores `vim.filetype.get_option`,
+-- which is exactly the hook ts-comments installs for JSX context-awareness.
+-- Removing Comment.nvim lets the native mappings call ts-comments and produce
+-- `{/* %s */}` inside JSX vs `// %s` outside.
+return {}
+
+-- 1 --- g c c
+--       2 --- g b c
+--       3 -return {
+--       4 -  "numToStr/Comment.nvim",
+--       5 -  event = { "BufReadPre", "BufNewFile" },
+--       6 -  -- commentstring context is handled by ts-comments.nvim (see editing/ts-comments.lua);
+--       7 -  -- Comment.nvim just reads vim.bo.commentstring, so no pre_hook is needed.
+--       8 -  config = function()
+--       9 -    require("Comment").setup({})
+--      10 -  end,
+--      11 -  -- ✨ This 'keys' section is what you were missing
+--      12 -  -- keys = {
+--      13 -  --   -- Toggle comment on the current line
+--      14 -  --   { "gcc", mode = "n", desc = "Comment toggle current line" },
+--      15 -  --   -- Toggle comment for the selected lines in Visual mode
+--      16 -  --   { "gc",  mode = "v", desc = "Comment toggle visual lines" },
+--      17 -  --   -- Toggle block comment on the current line
+--      18 -  --   { "gbc", mode = "n", desc = "Block comment current line" },
+--      19 -  --   -- Toggle block comment for the selected lines in Visual mode
+--      20 -  --   { "gb",  mode = "v", desc = "Block comment visual lines" },
+--      21 -  -- },
+--      22 -}

@@ -101,6 +101,67 @@ end
 
 -- ─── text source helpers ────────────────────────────────────────────────────
 
+-- Node types we consider "an expression" — covers WGSL, GLSL, TS, JS.
+-- Walking up through these lets `bits` on the cursor of `12 & 0xFFu` grab
+-- the whole binary expression rather than just the token under the cursor.
+local EXPR_NODES = {
+	binary_expression = true,
+	unary_expression = true,
+	parenthesized_expression = true,
+	-- numbers / literals across grammars
+	number = true,
+	integer_literal = true,
+	int_literal = true,
+	float_literal = true,
+	decimal_integer_literal = true,
+	hex_integer_literal = true,
+	-- strings (hex colors often live in strings)
+	string = true,
+	string_literal = true,
+	template_string = true,
+	-- identifiers / refs
+	identifier = true,
+	call_expression = true,
+	member_expression = true,
+	field_expression = true,
+}
+
+local function ts_expression_text()
+	-- Bail quietly if there's no parser for this buffer (no plugin installed,
+	-- or filetype without a grammar).
+	local parser_ok = pcall(vim.treesitter.get_parser, 0)
+	if not parser_ok then
+		return nil
+	end
+	local node_ok, node = pcall(vim.treesitter.get_node)
+	if not node_ok or not node then
+		return nil
+	end
+	-- Find first expression-like ancestor.
+	while node and not EXPR_NODES[node:type()] do
+		node = node:parent()
+	end
+	if not node then
+		return nil
+	end
+	-- Greedily climb through nested expressions so `a & b | c` wins over `a`.
+	while node:parent() and EXPR_NODES[node:parent():type()] do
+		node = node:parent()
+	end
+	local sr, sc, er, ec = node:range()
+	local ok, lines = pcall(vim.api.nvim_buf_get_text, 0, sr, sc, er, ec, {})
+	if not ok or not lines then
+		return nil
+	end
+	local text = table.concat(lines, " "):gsub("^%s+", ""):gsub("%s+$", "")
+	-- Unwrap matched surrounding quotes so hex strings work directly with `rgb`.
+	text = text:gsub('^(["\'])(.-)%1$', "%2")
+	if text == "" then
+		return nil
+	end
+	return text
+end
+
 local function visual_text()
 	-- Works whether called mid-visual (from `x` keymap) or after exit.
 	local mode = vim.fn.mode()
@@ -122,7 +183,28 @@ local function visual_text()
 end
 
 local function cword_text()
-	return vim.fn.expand("<cWORD>"):gsub("[,;]+$", "")
+	return (vim.fn.expand("<cWORD>"):gsub("[,;]+$", ""))
+end
+
+-- For single-arg commands in normal mode: prefer the enclosing treesitter
+-- expression, fall back to cWORD if no parser is available.
+local function normal_text()
+	return ts_expression_text() or cword_text()
+end
+
+-- For multi-arg commands without a visual selection: use the current line.
+-- Strip common surrounding punctuation per token so things like
+-- `["ff8800", "00ffaa"]` still yield two clean hex strings.
+local function line_tokens()
+	local line = vim.api.nvim_get_current_line()
+	local args = {}
+	for w in line:gmatch("%S+") do
+		w = w:gsub('^[%[%(%{,"\']+', ""):gsub('[%]%)%},;"\']+$', "")
+		if w ~= "" then
+			table.insert(args, w)
+		end
+	end
+	return args
 end
 
 local function run_with(text, cmd, multi)
@@ -143,8 +225,16 @@ end
 
 -- ─── public API ─────────────────────────────────────────────────────────────
 
-function M.cword(cmd) run_with(cword_text(), cmd, false) end
-function M.cword_split(cmd) run_with(cword_text(), cmd, true) end
+function M.cword(cmd) run_with(normal_text(), cmd, false) end
+function M.cword_split(cmd)
+	-- Multi-arg in normal mode: use the whole line (tokenized).
+	local args = line_tokens()
+	if #args == 0 then
+		vim.notify("webgpu: empty line", vim.log.levels.WARN, { title = "webgpu" })
+		return
+	end
+	open_float(cmd, args)
+end
 function M.visual(cmd) run_with(visual_text(), cmd, false) end
 function M.visual_split(cmd) run_with(visual_text(), cmd, true) end
 function M.help() open_float("help", {}) end
@@ -180,6 +270,23 @@ function M.setup_keymaps(buf)
 
 	vim.keymap.set("n", "<leader>i?", M.help,
 		vim.tbl_extend("force", base, { desc = "Inspect: WebGPU toolbelt help" }))
+end
+
+-- Auto-attach to shader + JS/TS buffers. Called once from core init.
+function M.attach(filetypes)
+	filetypes = filetypes or {
+		"wgsl", "glsl",
+		"typescript", "typescriptreact",
+		"javascript", "javascriptreact",
+	}
+	local group = vim.api.nvim_create_augroup("webgpu_inspect_attach", { clear = true })
+	vim.api.nvim_create_autocmd("FileType", {
+		group = group,
+		pattern = filetypes,
+		callback = function(args)
+			M.setup_keymaps(args.buf)
+		end,
+	})
 end
 
 return M
