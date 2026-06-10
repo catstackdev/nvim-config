@@ -24,6 +24,23 @@ function M.get_mappings(cmp, luasnip)
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.abort(),
+		["<C-y>"] = cmp.mapping(function(fallback)
+			local sm_ok, sm = pcall(require, "supermaven-nvim.completion_preview")
+			if sm_ok and sm.has_suggestion() then
+				sm.on_accept_suggestion()
+				return
+			end
+			local cp_ok, cp = pcall(require, "copilot.suggestion")
+			if cp_ok and cp.is_visible() then
+				cp.accept()
+				return
+			end
+			if cmp.visible() and cmp.get_selected_entry() then
+				cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+				return
+			end
+			fallback()
+		end, { "i", "s" }),
 		["<CR>"] = cmp.mapping.confirm({
 			behavior = cmp.ConfirmBehavior.Replace,
 			select = true,
