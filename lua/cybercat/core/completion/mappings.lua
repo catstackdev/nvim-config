@@ -35,8 +35,8 @@ function M.get_mappings(cmp, luasnip)
 				cp.accept()
 				return
 			end
-			if cmp.visible() and cmp.get_selected_entry() then
-				cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+			if cmp.visible() then
+				cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true })
 				return
 			end
 			fallback()
