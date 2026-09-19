@@ -2,7 +2,9 @@
 return {
 	settings = {
 		Lua = {
-			-- Make the language server recognize "vim" global
+			runtime = {
+				version = "LuaJIT",
+			},
 			diagnostics = {
 				globals = { "vim" },
 			},
@@ -33,8 +35,7 @@ return {
 		},
 	},
 	-- Alternative: Filter out progress notifications at client level
-	on_attach = function(client, bufnr)
-		-- Disable certain notifications
+	on_attach = function(client)
 		client.server_capabilities.window = client.server_capabilities.window or {}
 		client.server_capabilities.window.workDoneProgress = false
 	end,

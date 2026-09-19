@@ -567,8 +567,9 @@ end, { desc = "[P] Surround selection with backticks (inline code)" })
 -- If not, surround it
 vim.keymap.set("v", "<leader>mx", function()
 	-- Get the selected text range
-	local start_row, start_col = unpack(vim.fn.getpos("'<"), 2, 3)
-	local end_row, end_col = unpack(vim.fn.getpos("'>"), 2, 3)
+	local sp, ep = vim.fn.getpos("'<"), vim.fn.getpos("'>")
+	local start_row, start_col = sp[2], sp[3]
+	local end_row, end_col = ep[2], ep[3]
 	-- Get the selected lines
 	local lines = vim.api.nvim_buf_get_lines(0, start_row - 1, end_row, false)
 	local selected_text = table.concat(lines, "\n"):sub(start_col, #lines == 1 and end_col or -1)
@@ -583,8 +584,9 @@ end, { desc = "[P]Strike through current selection" })
 -- If not, surround it with double asterisks for bold
 vim.keymap.set("v", "<leader>mb", function()
 	-- Get the selected text range
-	local start_row, start_col = unpack(vim.fn.getpos("'<"), 2, 3)
-	local end_row, end_col = unpack(vim.fn.getpos("'>"), 2, 3)
+	local sp, ep = vim.fn.getpos("'<"), vim.fn.getpos("'>")
+	local start_row, start_col = sp[2], sp[3]
+	local end_row, end_col = ep[2], ep[3]
 	-- Get the selected lines
 	local lines = vim.api.nvim_buf_get_lines(0, start_row - 1, end_row, false)
 	local selected_text = table.concat(lines, "\n"):sub(start_col, #lines == 1 and end_col or -1)
