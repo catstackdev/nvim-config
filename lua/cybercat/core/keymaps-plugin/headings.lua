@@ -671,7 +671,7 @@ local function insert_heading_and_date(level)
 	local date = os.date("%Y-%m-%d-%A")
 	local heading = string.rep("#", level) .. " " -- Generate heading based on the level
 	local dateLine = "[[" .. date .. "]]" -- Formatted date line
-	local row, _ = unpack(vim.api.nvim_win_get_cursor(0)) -- Get the current row number
+	local row = vim.api.nvim_win_get_cursor(0)[1] -- Get the current row number
 	-- Insert both lines: heading and dateLine
 	vim.api.nvim_buf_set_lines(0, row, row, false, { heading, dateLine })
 	-- Move the cursor to the end of the heading

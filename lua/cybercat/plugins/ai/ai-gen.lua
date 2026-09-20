@@ -1,6 +1,7 @@
 return {
 	-- The correct repository path
 	"David-Kunz/gen.nvim",
+	enabled = false,
 
 	cmd = "Gen",
 

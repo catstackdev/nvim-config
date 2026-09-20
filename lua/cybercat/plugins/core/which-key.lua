@@ -6,6 +6,15 @@ return {
 		vim.o.timeoutlen = 300
 	end,
 	opts = {},
+	keys = {
+		{
+			"<leader>?",
+			function()
+				require("which-key").show({ global = false })
+			end,
+			desc = "Buffer Local Keymaps (which-key)",
+		},
+	},
 	-- opts = function()
 	-- 	local wk = require("which-key")
 	-- 	wk.register({

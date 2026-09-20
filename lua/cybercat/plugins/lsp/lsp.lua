@@ -15,6 +15,11 @@ return {
 					suppress_on_insert = true, -- Hide during insert mode
 					ignore = {
 						"lua_ls", -- Ignore lua_ls progress
+						-- pyright runs a full begin/report/end progress cycle per analysis
+						-- pass (5+ while typing a couple of lines) and ends each with
+						-- title="" / message=nil, so they render as identical bare
+						-- "✔ pyright" lines that stack faster than done_ttl (3s) expires.
+						"pyright",
 					},
 				},
 				notification = {

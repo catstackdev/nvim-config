@@ -118,6 +118,17 @@ opt.timeoutlen = 1000
 opt.updatetime = 200
 
 -- ============================================================================
+-- Folding (native treesitter foldexpr; markdown overrides this per-buffer,
+-- see keymaps-plugin/headings.lua)
+-- ============================================================================
+
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldenable = true
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+
+-- ============================================================================
 -- Session Options
 -- ============================================================================
 

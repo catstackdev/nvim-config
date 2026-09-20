@@ -8,6 +8,7 @@ return {
 		trailing_stiffness = 0.4, -- 0.4      [0, 1]
 		stiffness_insert_mode = 0.6, -- 0.4      [0, 1]
 		trailing_stiffness_insert_mode = 0.6, -- 0.4      [0, 1]
-		distance_stop_animating = 0.5, -- 0.1      > 0
+		distance_stop_animating = 0.1, --0.5 -- 0.1      > 0
+		legacy_computing_symbols_support = true,
 	},
 }

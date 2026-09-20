@@ -23,10 +23,24 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
 
 		opts.desc = "See available code actions"
-		keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
+		-- keymap.set({ "n", "v" }, "<leader>ca", function()
+		-- 	require("tiny-code-action").code_action()
+		-- end, opts) -- see available code actions with diff preview, in visual mode will apply to selection
+		vim.keymap.set({ "n", "x" }, "<leader>ca", function()
+			require("tiny-code-action").code_action()
+		end, { noremap = true, silent = true })
 
+		-- opts.desc = "Smart rename (live preview)"
+		-- keymap.set("n", "<leader>rn", function()
+		-- 	vim.cmd("IncRename " .. vim.fn.expand("<cword>"))
+		-- end, opts) -- smart rename with live preview
 		opts.desc = "Smart rename"
 		keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
+
+		opts.desc = "Smart rename (live preview)"
+		keymap.set("n", "<leader>rN", function()
+			vim.cmd("IncRename " .. vim.fn.expand("<cword>"))
+		end, opts)
 
 		opts.desc = "Show buffer diagnostics"
 		keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file

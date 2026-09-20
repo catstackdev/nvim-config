@@ -41,3 +41,6 @@ backup/
 *.md
 docs/
 
+
+# Claude Code project skills - must survive the blanket *.md ignore above
+!.claude/skills/**/*.md

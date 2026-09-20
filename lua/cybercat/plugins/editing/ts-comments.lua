@@ -6,13 +6,14 @@ return {
 	"folke/ts-comments.nvim",
 	event = "VeryLazy",
 	opts = {
-		-- ts-comments ships with no entry for wgsl/glsl; register them so the
+		-- ts-comments ships with no entry for wgsl/glsl/kdl; register them so the
 		-- built-in `gc` / `gcc` (Neovim 0.10+) resolves a commentstring instead
 		-- of falling back to `vim.filetype.get_option`, which on these filetypes
 		-- can recurse through the override and blow the Lua stack.
 		lang = {
 			wgsl = "// %s",
 			glsl = "// %s",
+			kdl = "// %s",
 		},
 	},
 }

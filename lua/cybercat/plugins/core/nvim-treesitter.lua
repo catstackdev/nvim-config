@@ -68,6 +68,7 @@ return {
 					"html",
 					"css",
 					"scss",
+					"xml", -- also covers svg (filetype "svg" maps to treesitter lang "xml")
 					-- "less",    -- optional
 					"javascript",
 					"typescript",

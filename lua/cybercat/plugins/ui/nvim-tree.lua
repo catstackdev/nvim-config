@@ -4,7 +4,6 @@ return {
 	dependencies = "nvim-tree/nvim-web-devicons",
 	config = function()
 		local nvimtree = require("nvim-tree")
-
 		-- recommended settings from nvim-tree documentation
 		vim.g.loaded_netrw = 1
 		vim.g.loaded_netrwPlugin = 1
@@ -79,6 +78,53 @@ return {
 			map("v", preview_node, "Preview / Play file")
 			map("V", stop_audio, "Stop audio (afplay)")
 			map("O", open_system, "Open with system default app")
+
+			-- nvim-tree's copy/cut crash with "expected table, got nil" when
+			-- there's no resolvable node under the cursor (e.g. mid-refresh);
+			-- upstream doesn't guard for it, so bail out here instead.
+			local function guard_node_under_cursor(fn)
+				return function()
+					if api.tree.get_node_under_cursor() then
+						fn()
+					end
+				end
+			end
+			map("c", guard_node_under_cursor(api.fs.copy.node), "Copy")
+			map("x", guard_node_under_cursor(api.fs.cut), "Cut")
+		end
+
+		vim.api.nvim_set_hl(0, "NvimTreeHarpoonIcon", { fg = "#FF6B00", bold = true })
+
+		local HarpoonDecorator = require("nvim-tree.api").Decorator:extend()
+
+		function HarpoonDecorator:new()
+			self.enabled = true
+			self.highlight_range = "none"
+			self.icon_placement = "after"
+			self.harpoon_icon = { str = "H", hl = { "NvimTreeHarpoonIcon" } }
+
+			self.marked_paths = {}
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				local ok2, marks = pcall(function()
+					return harpoon.get_mark_config().marks
+				end)
+				if ok2 and marks then
+					local cwd = vim.loop.cwd()
+					for _, mark in pairs(marks) do
+						if mark and mark.filename and mark.filename ~= "" then
+							self.marked_paths[vim.fn.fnamemodify(cwd .. "/" .. mark.filename, ":p")] = true
+						end
+					end
+				end
+			end
+		end
+
+		function HarpoonDecorator:icons(node)
+			if node.type == "file" and self.marked_paths[node.absolute_path] then
+				return { self.harpoon_icon }
+			end
+			return nil
 		end
 
 		nvimtree.setup({
@@ -100,6 +146,17 @@ return {
 							arrow_open = "", -- arrow when folder is open
 						},
 					},
+				},
+				decorators = {
+					"Git",
+					"Open",
+					"Hidden",
+					"Modified",
+					"Bookmark",
+					HarpoonDecorator,
+					"Diagnostics",
+					"Copied",
+					"Cut",
 				},
 			},
 			-- disable window_picker for
@@ -124,12 +181,7 @@ return {
 		local keymap = vim.keymap -- for conciseness
 
 		keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- toggle file explorer
-		keymap.set(
-			"n",
-			"<leader>ef",
-			"<cmd>NvimTreeFindFileToggle<CR>",
-			{ desc = "Toggle file explorer on current file" }
-		) -- toggle file explorer on current file
+		keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "Reveal current file in file explorer" }) -- open (if closed) and focus the tree on the current file, without closing it if already open
 		keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" }) -- collapse file explorer
 		keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- refresh file explorer
 		keymap.set("n", "<leader><tab>", "<cmd>NvimTreeFocus<CR>", { desc = "goto file explorer" }) -- toggle file explorer

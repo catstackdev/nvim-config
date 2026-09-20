@@ -1,3 +1,4 @@
+-- NOTE: for ripgrep, search replace,
 return {}
 -- return {
 -- 	"MagicDuck/grug-far.nvim",

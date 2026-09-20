@@ -7,7 +7,7 @@ return {
 	lazy = true,
 	cmd = { "Outline", "OutlineOpen" },
 	keys = {
-		{ "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
+		{ "<leader>oo", "<cmd>Outline<CR>", desc = "Toggle outline" },
 	},
 	opts = {
 		symbol_folding = {
@@ -18,26 +18,24 @@ return {
 			position = "right", -- optional: "left" or "right"
 			show_numbers = false, -- show line numbers in outline
 			show_relative_numbers = false,
-			show_symbol_kind = true, -- show symbol type (function, class, etc.)
+		},
+		outline_items = {
+			show_symbol_details = true, -- show symbol type (function, class, etc.)
 		},
 		auto_close = false, -- keep outline open when switching buffers
 		highlight_hovered_item = true, -- highlights symbol under cursor
-		preview = true, -- optional: show preview of symbol definition
+		preview_window = {
+			auto_preview = true, -- show preview of symbol definition
+			live = true,
+		},
 		show_guides = true, -- tree guides for nested symbols
 		keymaps = {
-			close = "q",
+			close = { "<Esc>", "q" },
 			goto_location = "<CR>",
-			focus_location = "o",
+			peek_location = "o",
 			hover_symbol = "K",
 			toggle_preview = "p",
 			rename_symbol = "r",
 		},
-		on_hover = function(symbol)
-			if not symbol then
-				vim.notify("No symbol under cursor", vim.log.levels.WARN)
-				return
-			end
-			vim.lsp.buf.hover()
-		end,
 	},
 }

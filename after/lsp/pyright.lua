@@ -3,6 +3,11 @@
 local util = require("lspconfig.util")
 
 local function get_python_path(workspace)
+	-- root_dir is nil for a lone .py file with no project marker (pyproject.toml,
+	-- setup.py, .git, ...). Concatenating it would error out of before_init and
+	-- abort the whole FileType autocmd chain, so fall back to cwd.
+	workspace = workspace or vim.fn.getcwd()
+
 	-- Check for .venv (uv/venv standard)
 	if vim.fn.executable(workspace .. "/.venv/bin/python") == 1 then
 		return workspace .. "/.venv/bin/python"

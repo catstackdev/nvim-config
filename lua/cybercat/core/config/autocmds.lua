@@ -76,6 +76,11 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function(event)
 		vim.bo[event.buf].buflisted = false
 		vim.schedule(function()
+			-- fast-closing buffers (notify toasts, lspinfo, qf, ...) can already
+			-- be gone by the time this deferred callback runs
+			if not vim.api.nvim_buf_is_valid(event.buf) then
+				return
+			end
 			vim.keymap.set("n", "<esc>", function()
 				vim.cmd("close")
 				pcall(vim.api.nvim_buf_delete, event.buf, { force = true })

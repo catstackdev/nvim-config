@@ -18,7 +18,6 @@ return {
 			},
 			blend = 10,
 		})
-
 		-- Make nvim-notify the default handler
 		vim.notify = notify
 

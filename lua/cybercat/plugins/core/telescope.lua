@@ -38,8 +38,29 @@ return {
 		telescope.setup({
 			-- configure custom mappings
 			defaults = {
-				-- path_display = { "truncate" },
+				-- vertical layout gives the results list the full terminal width
+				-- (preview moves below) so long paths have room to display in full
+				-- layout_strategy = "vertical",
+				-- layout_config = {
+				-- 	vertical = {
+				-- 		preview_height = 0.5,
+				-- 	},
+				-- },
+				-- puts the full path of the highlighted file in the preview
+				-- window's title (top border), even when the results list
+				-- below shows a smart-truncated path
+				dynamic_preview_title = true,
 				path_display = { "smart" },
+				-- path_display = {},
+				-- overall popup size: width/height are fractions of the editor;
+				-- wider box = more room before "smart" needs to truncate anything
+				layout_config = {
+					width = 0.90,
+					height = 0.90,
+					horizontal = {
+						preview_width = 0.60,
+					},
+				},
 				file_ignore_patterns = { "node_modules", ".git/" },
 				vimgrep_arguments = {
 					"rg",
@@ -77,7 +98,7 @@ return {
 		keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" }) -- find string in current working directory as you type
 		keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" }) -- find string under cursor in current working directory
 		keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Show open buffers" }) -- list open buffers in current neovim instance
-		keymap.set("n", "<leader>hf", "<cmd>Telescope harpoon marks<cr>", { desc = "Show harpoon marks" }) -- show harpoon marks
+		keymap.set("n", "<leader>fh", "<cmd>Telescope harpoon marks<cr>", { desc = "Show harpoon marks" }) -- show harpoon marks
 		keymap.set("n", "<leader>gL", "<cmd>Telescope git_commits<cr>", { desc = "Show git Log/commits" }) -- list all git commits (use <cr> to checkout) ["gc" for git commits]
 		keymap.set(
 			"n",
@@ -88,5 +109,8 @@ return {
 		keymap.set("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", { desc = "Show git branches" }) -- list git branches (use <cr> to checkout) ["gb" for git branch]
 		keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>", { desc = "Show current git changes per file" }) -- list current changes per file with diff preview ["gs" for git status]
 		keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
+		vim.keymap.set("n", "<leader>fy", "<cmd>Telescope yank_history<cr>", {
+			desc = "Yank history",
+		})
 	end,
 }

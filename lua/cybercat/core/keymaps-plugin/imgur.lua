@@ -213,7 +213,8 @@ vim.keymap.set({ "n", "i" }, "<M-i>", function()
 						local markdown_url = string.format("![imgur](%s)", url)
 						vim.notify("Image uploaded to Imgur.", vim.log.levels.INFO)
 						-- Insert formatted Markdown link into buffer at cursor position
-						local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+						local pos = vim.api.nvim_win_get_cursor(0)
+						local row, col = pos[1], pos[2]
 						vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, col, { markdown_url })
 					elseif error_status == 401 or error_status == 429 then
 						vim.notify("Access token expired or invalid, refreshing...", vim.log.levels.WARN)

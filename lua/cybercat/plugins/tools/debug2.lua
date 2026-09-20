@@ -6,6 +6,7 @@ return {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
+			"mfussenegger/nvim-dap-python",
 		},
 		config = function()
 			local dap = require("dap")
@@ -30,8 +31,37 @@ return {
 				dapui.close()
 			end
 
-			-- Path to js-debug-adapter
+			-- Python: mirror after/lsp/pyright.lua's interpreter resolution so
+			-- breakpoints run against the same venv the LSP already uses.
+			local function resolve_python(workspace)
+				workspace = workspace or vim.fn.getcwd()
+				if vim.fn.executable(workspace .. "/.venv/bin/python") == 1 then
+					return workspace .. "/.venv/bin/python"
+				end
+				if vim.fn.executable(workspace .. "/venv/bin/python") == 1 then
+					return workspace .. "/venv/bin/python"
+				end
+				if vim.env.VIRTUAL_ENV then
+					return vim.env.VIRTUAL_ENV .. "/bin/python"
+				end
+				local python3 = vim.fn.exepath("python3")
+				return python3 ~= "" and python3 or vim.fn.exepath("python")
+			end
+
 			local mason_path = vim.fn.stdpath("data") .. "/mason/packages"
+			local debugpy_python = mason_path .. "/debugpy/venv/bin/python"
+
+			if vim.fn.executable(debugpy_python) == 1 then
+				local dap_python = require("dap-python")
+				dap_python.setup(debugpy_python)
+				dap_python.resolve_python = function()
+					return resolve_python(vim.fn.getcwd())
+				end
+			else
+				vim.notify("debugpy not found! Run :Mason to install", vim.log.levels.WARN)
+			end
+
+			-- Path to js-debug-adapter
 			local js_debug_path = mason_path .. "/js-debug-adapter"
 
 			-- Check if exists
@@ -67,40 +97,35 @@ return {
 				},
 			}
 
+			-- Resolve a Chrome/Chromium executable without hardcoding one
+			-- machine's install location; nil lets js-debug use its own default.
+			local function resolve_browser()
+				for _, candidate in ipairs({
+					"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+					"/Applications/Chromium.app/Contents/MacOS/Chromium",
+					"chromium",
+					"google-chrome",
+				}) do
+					if vim.fn.executable(candidate) == 1 then
+						return candidate
+					end
+				end
+				return nil
+			end
+
 			-- Configurations
-			-- for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
-			-- 	dap.configurations[language] = {
-			-- 		{
-			-- 			type = "pwa-chrome",
-			-- 			request = "launch",
-			-- 			name = "Launch Chrome (localhost:5173)",
-			-- 			url = "http://localhost:5173",
-			-- 			webRoot = "${workspaceFolder}",
-			-- 			sourceMaps = true,
-			-- 			protocol = "inspector",
-			-- 			port = 9222,
-			-- 		},
-			-- 		{
-			-- 			type = "pwa-node",
-			-- 			request = "launch",
-			-- 			name = "Launch Node File",
-			-- 			program = "${file}",
-			-- 			cwd = "${workspaceFolder}",
-			-- 			sourceMaps = true,
-			-- 		},
-			-- 	}
-			-- end
-			---- ✅ Configurations with Chromium
 			for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
 				dap.configurations[language] = {
 					{
 						type = "pwa-chrome",
 						request = "launch",
-						name = "Launch Chromium (localhost:5173)",
-						url = "http://localhost:5173",
+						name = "Launch browser (prompts for dev server port)",
+						url = function()
+							local port = vim.fn.input("Dev server port: ")
+							return "http://localhost:" .. port
+						end,
 						webRoot = "${workspaceFolder}",
-						-- ✅ Specify Chromium executable
-						runtimeExecutable = "/Applications/Chromium.app/Contents/MacOS/Chromium",
+						runtimeExecutable = resolve_browser(),
 						runtimeArgs = {
 							"--remote-debugging-port=9222",
 							"--user-data-dir=${workspaceFolder}/.chromium-debug",

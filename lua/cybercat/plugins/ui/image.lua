@@ -2,7 +2,9 @@ return {
 	"3rd/image.nvim",
 	enabled = true,
 	dev = false,
-	ft = { "markdown", "quarto", "vimwiki" },
+	-- "python" added so image.nvim is loaded for Python buffers; molten-nvim
+	-- drives inline plot rendering through image.nvim's API (see languages/molten.lua)
+	ft = { "markdown", "quarto", "vimwiki", "python" },
 	dependencies = {
 		{
 			"vhyrro/luarocks.nvim",

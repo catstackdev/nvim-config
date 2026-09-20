@@ -1,5 +1,6 @@
 return {
 	"joshuavial/aider.nvim",
+	enabled = false,
 	opts = {
 		auto_manage_context = true, -- automatically manage buffer context
 		default_bindings = false, -- disable default keybindings (use custom below)

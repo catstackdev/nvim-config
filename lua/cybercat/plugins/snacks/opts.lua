@@ -12,12 +12,15 @@ function M.setup()
 		explorer = { enabled = true },
 		indent = { enabled = true },
 		input = { enabled = true },
-		
+		-- unifies number/sign/fold columns; git patterns default to "GitSign",
+		-- which matches lewis6991/gitsigns.nvim's highlight group prefix already
+		statuscolumn = { enabled = true },
+
 		-- ============================================================================
 		-- Picker Configuration
 		-- ============================================================================
 		-- Documentation: https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
-		
+
 		picker = {
 			-- Score manipulation for frecency
 			transform = function(item)
@@ -30,17 +33,17 @@ function M.setup()
 				end
 				return item
 			end,
-			
+
 			debug = {
 				scores = false, -- show scores in the list
 			},
-			
+
 			-- Default layout: ivy
 			layout = {
 				preset = "ivy",
 				cycle = false, -- Don't cycle to top when reaching bottom
 			},
-			
+
 			-- Custom layouts
 			layouts = {
 				ivy = {
@@ -78,11 +81,11 @@ function M.setup()
 					},
 				},
 			},
-			
+
 			matcher = {
 				frecency = true,
 			},
-			
+
 			win = {
 				input = {
 					keys = {
@@ -94,7 +97,7 @@ function M.setup()
 					},
 				},
 			},
-			
+
 			formatters = {
 				file = {
 					filename_first = true, -- display filename before path
@@ -102,36 +105,36 @@ function M.setup()
 				},
 			},
 		},
-		
+
 		-- ============================================================================
 		-- LazyGit Configuration
 		-- ============================================================================
 		-- Documentation: https://github.com/folke/snacks.nvim/blob/main/docs/lazygit.md
-		
+
 		lazygit = {
 			theme = {
 				selectedLineBgColor = { bg = "CursorLine" },
 			},
 			win = {
-				width = 0,  -- Fullscreen
+				width = 0, -- Fullscreen
 				height = 0, -- Fullscreen
 			},
 		},
-		
+
 		-- ============================================================================
 		-- Notifier Configuration
 		-- ============================================================================
-		
+
 		notifier = {
 			enabled = true,
 			top_down = false, -- place notifications from top to bottom
 			timeout = 3000,
 		},
-		
+
 		-- ============================================================================
 		-- Styles Configuration
 		-- ============================================================================
-		
+
 		styles = {
 			snacks_image = {
 				relative = "editor",
@@ -141,11 +144,11 @@ function M.setup()
 				wo = { wrap = true },
 			},
 		},
-		
+
 		-- ============================================================================
 		-- Image Configuration
 		-- ============================================================================
-		
+
 		image = {
 			enabled = true,
 			doc = {
@@ -158,11 +161,11 @@ function M.setup()
 				-- Cache location: :lua print(vim.fn.stdpath("cache") .. "/snacks/image")
 			},
 		},
-		
+
 		-- ============================================================================
 		-- Dashboard Configuration
 		-- ============================================================================
-		
+
 		dashboard = {
 			preset = {
 				keys = {

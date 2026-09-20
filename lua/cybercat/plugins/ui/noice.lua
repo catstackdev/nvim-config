@@ -57,6 +57,13 @@ return {
 				view = "mini",
 			},
 			lsp = {
+				-- fidget.nvim already owns the LSP progress UI. Noice's progress is on
+				-- by default, so every server was reported twice, and its
+				-- `lsp_progress_done` format is "✔ {title} {client}" -- pyright ends each
+				-- analysis pass with an empty title, so a bare "✔ pyright" popped up on
+				-- every keystroke-triggered pass. ts_ls only reports once per project
+				-- load, which is why it never looked broken.
+				progress = { enabled = false },
 				message = {
 					-- Messages shown by lsp servers
 					enabled = true,

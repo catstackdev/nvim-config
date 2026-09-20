@@ -4,7 +4,6 @@ return {
 	event = { "BufReadPre", "BufNewFile" }, -- to disable, comment this out
 	config = function()
 		local conform = require("conform")
-
 		-- Expand path once at config time
 		local prettier_config = vim.fn.expand("~/.prettierrc.yaml")
 		local home_dir = vim.fn.expand("~")

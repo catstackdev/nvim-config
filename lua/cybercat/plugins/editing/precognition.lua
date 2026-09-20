@@ -1,0 +1,26 @@
+return {}
+-- return { -- inline motion hints; pairs with hardtime.nvim, which restricts the keys this teaches alternatives for
+-- 	"tris203/precognition.nvim",
+-- 	event = { "BufReadPost", "BufNewFile" },
+-- 	keys = {
+-- 		{
+-- 			"<leader>vh",
+-- 			function()
+-- 				require("precognition").toggle()
+-- 			end,
+-- 			desc = "Toggle motion hints",
+-- 		},
+-- 	},
+-- 	opts = {
+-- 		startVisible = false, -- on-demand via <leader>vh instead of always-on virtual text
+-- 		disabled_fts = {
+-- 			"alpha",
+-- 			"neo-tree",
+-- 			"NvimTree",
+-- 			"lazy",
+-- 			"mason",
+-- 			"TelescopePrompt",
+-- 			"harpoon",
+-- 		},
+-- 	},
+-- }
