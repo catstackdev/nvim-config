@@ -211,6 +211,92 @@ return {
 			-- a nil info_string node that crashes nvim-treesitter's query predicates
 			-- on Neovim 0.12. Remove once upstream fixes the nil-check.
 			vim.treesitter.query.set("markdown", "injections", "")
+
+			-- Same Neovim 0.12 nil-node bug, hit via bash's heredoc_redirect rule:
+			-- any buffer with a heredoc (e.g. `cat <<EOF`) crashes the highlighter
+			-- computing the `heredoc_end` capture's range. Override injections with
+			-- upstream's queries/bash/injections.scm minus that one rule. Remove
+			-- once upstream fixes the nil-check.
+			vim.treesitter.query.set(
+				"bash",
+				"injections",
+				[[
+((comment) @injection.content
+  (#set! injection.language "comment"))
+
+((regex) @injection.content
+  (#set! injection.language "regex"))
+
+; printf 'format'
+((command
+  name: (command_name) @_command
+  .
+  argument: [
+    (string) @injection.content
+    (concatenation
+      (string) @injection.content)
+    (raw_string) @injection.content
+    (concatenation
+      (raw_string) @injection.content)
+  ])
+  (#eq? @_command "printf")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.include-children)
+  (#set! injection.language "printf"))
+
+; printf -v var 'format'
+((command
+  name: (command_name) @_command
+  argument: (word) @_arg
+  .
+  (_)
+  .
+  argument: [
+    (string) @injection.content
+    (concatenation
+      (string) @injection.content)
+    (raw_string) @injection.content
+    (concatenation
+      (raw_string) @injection.content)
+  ])
+  (#eq? @_command "printf")
+  (#eq? @_arg "-v")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.include-children)
+  (#set! injection.language "printf"))
+
+; printf -- 'format'
+((command
+  name: (command_name) @_command
+  argument: (word) @_arg
+  .
+  argument: [
+    (string) @injection.content
+    (concatenation
+      (string) @injection.content)
+    (raw_string) @injection.content
+    (concatenation
+      (raw_string) @injection.content)
+  ])
+  (#eq? @_command "printf")
+  (#eq? @_arg "--")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.include-children)
+  (#set! injection.language "printf"))
+
+((command
+  name: (command_name) @_command
+  .
+  argument: [
+    (string)
+    (raw_string)
+  ] @injection.content)
+  (#eq? @_command "bind")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.include-children)
+  (#set! injection.language "readline"))
+]]
+			)
 		end,
 	},
 
