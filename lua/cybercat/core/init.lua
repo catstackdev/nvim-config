@@ -20,4 +20,4 @@ require("cybercat.core.filetype")
 require("cybercat.core.lowPower10s")
 
 -- Auto-start Claude socket for IDE integration
-require("cybercat.core.claude-socket").setup()
+-- require("cybercat.core.claude-socket").setup()
