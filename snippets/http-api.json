@@ -1,0 +1,107 @@
+{
+  "api: new file": {
+    "prefix": "apinew",
+    "body": [
+      "# ${1:What this file does}. List its requests: api run <this file> --list",
+      "# A path starting with / goes to the active server (see .api.toml).",
+      "",
+      "@${2:limit} = ${3:10}",
+      "",
+      "### ${4:List items}",
+      "# @filter ${5:.data}",
+      "GET ${6:/items}?${2:limit}={{${2:limit}}}",
+      "Accept: application/json",
+      "",
+      "### ${7:Create item}",
+      "# @name ${8:create}",
+      "POST ${9:/items}",
+      "Content-Type: application/json",
+      "",
+      "{\"name\": \"${10:Ann}\"}",
+      "",
+      "### ${11:Get it back}",
+      "GET ${9:/items}/{{${8:create}.response.body.data.id}}",
+      "$0"
+    ],
+    "description": "api: starter .http file with a variable, a filter and a chained request"
+  },
+  "api: request": {
+    "prefix": "apireq",
+    "body": [
+      "### ${1:Name}",
+      "${2|GET,POST,PUT,PATCH,DELETE|} ${3:/path}",
+      "Accept: application/json",
+      "$0"
+    ],
+    "description": "api: a request block"
+  },
+  "api: GET": {
+    "prefix": "apiget",
+    "body": [
+      "### ${1:Name}",
+      "# @filter ${2:.data}",
+      "GET ${3:/path}",
+      "Accept: application/json",
+      "$0"
+    ],
+    "description": "api: GET with a default jq filter"
+  },
+  "api: POST JSON": {
+    "prefix": "apipost",
+    "body": [
+      "### ${1:Name}",
+      "POST ${2:/path}",
+      "Content-Type: application/json",
+      "",
+      "{\"${3:name}\": \"${4:value}\"}",
+      "$0"
+    ],
+    "description": "api: POST with a JSON body"
+  },
+  "api: checks": {
+    "prefix": "apicheck",
+    "body": [
+      "### ${1:Health}",
+      "# @assert .status == ${2:200}",
+      "# @assert .body.${3:status} == \"${4:ok}\"",
+      "${5|GET,POST,PUT,PATCH,DELETE|} ${6:/health}",
+      "$0"
+    ],
+    "description": "api: a request with # @assert checks (exit 3 when one fails)"
+  },
+  "api: @name": {
+    "prefix": "apiname",
+    "body": ["# @name ${1:name}"],
+    "description": "api: name a request so later ones can read its response"
+  },
+  "api: @filter": {
+    "prefix": "apifilter",
+    "body": ["# @filter ${1:.data}"],
+    "description": "api: default jq filter for the output"
+  },
+  "api: @assert": {
+    "prefix": "apiassert",
+    "body": ["# @assert ${1:.status == 200}"],
+    "description": "api: response check on {status, headers, body, ms}"
+  },
+  "api: @var": {
+    "prefix": "apivar",
+    "body": ["@${1:name} = ${2:value}"],
+    "description": "api: file variable, used as {{name}}"
+  },
+  "api: response value": {
+    "prefix": "apichain",
+    "body": ["{{${1:name}.response.body.${2:data.id}}}"],
+    "description": "api: read a value from a named request's response"
+  },
+  "api: body from file": {
+    "prefix": "apifile",
+    "body": ["< ./${1:body.json}"],
+    "description": "api: read the body from a file next to the .http file"
+  },
+  "api: uuid": {
+    "prefix": "apiuuid",
+    "body": ["{{\\$uuid}}"],
+    "description": "api: a fresh UUID at send time"
+  }
+}

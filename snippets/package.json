@@ -3,10 +3,26 @@
   "description": "Per-language JSON snippet collection consumed by luasnip's VSCode loader.",
   "contributes": {
     "snippets": [
-      { "language": "http", "path": "./http.json" },
-      { "language": "hurl", "path": "./hurl.json" },
-      { "language": "glsl", "path": "./glsl-library.json" },
-      { "language": "wgsl", "path": "./wgsl.json" }
+      {
+        "language": "http",
+        "path": "./http.json"
+      },
+      {
+        "language": "http",
+        "path": "./http-api.json"
+      },
+      {
+        "language": "hurl",
+        "path": "./hurl.json"
+      },
+      {
+        "language": "glsl",
+        "path": "./glsl-library.json"
+      },
+      {
+        "language": "wgsl",
+        "path": "./wgsl.json"
+      }
     ]
   }
 }
