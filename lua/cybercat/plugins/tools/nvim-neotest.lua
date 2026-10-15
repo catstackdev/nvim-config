@@ -9,7 +9,9 @@ return {
 		-- Adapters for your stack
 		"nvim-neotest/neotest-jest",
 		"marilari88/neotest-vitest",
-		{ "fredrikaverpil/neotest-golang", version = "*" },
+		-- v1.x on purpose: v2+ needs the Go parser from nvim-treesitter's `main` branch
+		-- (it queries `statement_list`); this config is on `master`, whose parser lacks it.
+		{ "fredrikaverpil/neotest-golang", version = "1.*" },
 		-- neotest-golang debugs through nvim-dap-go (already set up in core/debug/go.lua)
 		"leoluz/nvim-dap-go",
 	},
@@ -25,7 +27,11 @@ return {
 						return vim.fn.getcwd()
 					end,
 				}),
-				require("neotest-golang")({}), -- default runner: plain `go test`
+				require("neotest-golang")({
+					-- Off: v1 misreads unkeyed table rows ({"name", GET, "/todos", ...}) as
+					-- duplicate names (false alarm in lesson 25).
+					warn_test_name_dupes = false,
+				}), -- default runner: plain `go test`
 				require("neotest-vitest")({
 					-- Filter directories for Vitest
 					filter_dir = function(name)
@@ -50,11 +56,11 @@ return {
 
 			-- Icons
 			icons = {
-				running = "",
-				passed = "",
-				failed = "",
-				skipped = "",
-				unknown = "",
+				running = "⟳",
+				passed = "✓",
+				failed = "✗",
+				skipped = "○",
+				unknown = "?",
 			},
 		})
 	end,
