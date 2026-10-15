@@ -93,6 +93,15 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- also close quickfix/location lists with q (default q only starts macro recording there)
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup("close_qf_with_q"),
+	pattern = "qf",
+	callback = function(event)
+		vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true, desc = "Close list" })
+	end,
+})
+
 -- -- This is used to switch between light and dark background colors when the
 -- -- focus is lost or gained, for example when I switch from neovim to a tmux
 -- -- pane on the right, or between 2 neovim splits

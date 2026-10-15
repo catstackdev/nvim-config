@@ -1,0 +1,134 @@
+/* Midnight-blue theme for markdown-preview.nvim (matches go-learning docs) */
+:root {
+  --bg: #0b1026;
+  --bg-sidebar: #070b1c;
+  --bg-code: #111a3a;
+  --border: #1f2a52;
+  --text: #c9d4f0;
+  --text-muted: #8190b8;
+  --heading: #e6ecff;
+  --accent: #5b8cff;
+  --accent-soft: #7aa2ff;
+}
+
+/* The previewer themes through CSS variables set on [data-theme] and body
+   (page.css / markdown.css / highlight.css), so override those first. */
+:root,
+html,
+body,
+[data-theme],
+[data-theme='dark'],
+[data-theme='light'] {
+  /* page.css */
+  --foreground-color: var(--text);
+  --background-color: var(--bg);
+  --secondary-background-color: var(--bg);
+  --border-color: var(--border);
+  /* markdown.css */
+  --color-text-primary: var(--text);
+  --color-text-tertiary: var(--text-muted);
+  --color-text-link: var(--accent);
+  --color-bg-primary: var(--bg);
+  --color-bg-secondary: var(--bg);
+  --color-bg-tertiary: var(--bg-code);
+  --color-border-primary: var(--border);
+  --color-border-secondary: var(--border);
+  --color-border-tertiary: var(--text-muted);
+  --color-markdown-blockquote-border: var(--accent);
+  --color-markdown-table-border: var(--border);
+  --color-markdown-table-tr-border: var(--border);
+  --color-markdown-code-bg: var(--bg-code);
+}
+
+main,
+#page-ctn {
+  background-color: var(--bg) !important;
+}
+
+body,
+.markdown-body {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6,
+.markdown-body strong {
+  color: var(--heading) !important;
+  border-color: var(--border) !important;
+}
+
+.markdown-body a {
+  color: var(--accent) !important;
+}
+.markdown-body a:hover {
+  color: var(--accent-soft) !important;
+}
+
+.markdown-body blockquote {
+  background: var(--bg-code) !important;
+  border-left: 4px solid var(--accent) !important;
+  color: var(--text-muted) !important;
+}
+
+.markdown-body hr {
+  background-color: var(--border) !important;
+  border-color: var(--border) !important;
+}
+
+.markdown-body code,
+.markdown-body tt {
+  background: var(--bg-code) !important;
+  color: var(--accent-soft) !important;
+}
+.markdown-body pre,
+.markdown-body .highlight pre,
+.markdown-body pre > code {
+  background: var(--bg-code) !important;
+  color: var(--text) !important;
+}
+.markdown-body pre {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  border: 1px solid var(--border) !important;
+}
+.markdown-body table tr {
+  background-color: var(--bg) !important;
+  border-top: 1px solid var(--border) !important;
+}
+.markdown-body table tr:nth-child(2n) {
+  background-color: var(--bg-sidebar) !important;
+}
+
+/* Prism-like tokens (highlight.js classes used by the previewer) */
+.hljs-comment {
+  color: #5d6b99 !important;
+}
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #c792ea !important;
+}
+.hljs-string,
+.hljs-attr {
+  color: #9ece6a !important;
+}
+.hljs-number,
+.hljs-literal {
+  color: #ff9e64 !important;
+}
+.hljs-title,
+.hljs-function {
+  color: #7aa2ff !important;
+}
+.hljs-built_in,
+.hljs-type {
+  color: #4fd6be !important;
+}

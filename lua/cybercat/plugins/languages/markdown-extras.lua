@@ -48,9 +48,14 @@ return {
 		ft = "markdown",
 		build = "cd app && npm install",
 		config = function()
-			vim.g.mkdp_auto_close = 0
+			vim.g.mkdp_auto_close = 0 -- keep preview open when leaving buffer
 			vim.g.mkdp_theme = "dark"
 			vim.g.mkdp_filetypes = { "markdown" }
+			vim.g.mkdp_browser = "chromium"
+			vim.g.mkdp_echo_preview_url = 1 -- print URL in cmdline so you know the port
+			vim.g.mkdp_page_title = "${name}"
+			-- Midnight-blue palette; must be an absolute path
+			vim.g.mkdp_markdown_css = vim.fn.stdpath("config") .. "/markdown-preview/midnight.css"
 		end,
 		keys = {
 			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview" },

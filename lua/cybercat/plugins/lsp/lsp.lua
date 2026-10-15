@@ -7,6 +7,7 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/lazydev.nvim", opts = {} },
+		{ "b0o/SchemaStore.nvim", version = false }, -- JSON/YAML schema catalog, consumed by after/lsp/jsonls.lua
 		{
 			"j-hui/fidget.nvim",
 			opts = {

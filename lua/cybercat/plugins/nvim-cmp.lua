@@ -14,6 +14,7 @@ return {
 		"hrsh7th/cmp-nvim-lsp-signature-help",
 		"saadparwaiz1/cmp_luasnip",
 		"hrsh7th/cmp-emoji",
+		"rcarriga/cmp-dap", -- completion inside the nvim-dap REPL
 
 		-- "petertriho/cmp-git", -- Added missing git source  use cmp_git
 		-- Snippet engine & sources
@@ -188,7 +189,7 @@ return {
 				vim.notify("No snippets for filetype: " .. ft, vim.log.levels.WARN)
 				return
 			end
-			
+
 			local lines = { "Available snippets for '" .. ft .. "':" }
 			for trigger, snip_list in pairs(snippets) do
 				table.insert(lines, "  • " .. trigger .. " (" .. #snip_list .. " variant(s))")
@@ -198,17 +199,17 @@ return {
 
 		-- Load VSCode-style snippets
 		require("luasnip.loaders.from_vscode").lazy_load()
-		
+
 		-- Load custom JSON snippets from snippets directory
 		require("luasnip.loaders.from_vscode").lazy_load({
-			paths = vim.fn.stdpath("config") .. "/snippets"
+			paths = vim.fn.stdpath("config") .. "/snippets",
 		})
-		
+
 		-- Load Lua snippets from lua/luasnip directory
-		require("luasnip.loaders.from_lua").lazy_load({ 
-			paths = vim.fn.stdpath("config") .. "/lua/luasnip" 
+		require("luasnip.loaders.from_lua").lazy_load({
+			paths = vim.fn.stdpath("config") .. "/lua/luasnip",
 		})
-		
+
 		-- LuaSnip configuration
 		luasnip.config.set_config({
 			history = true,
@@ -218,6 +219,11 @@ return {
 
 		-- Main cmp setup
 		cmp.setup({
+			-- cmp is off in prompt buffers by default; the dap REPL is one.
+			enabled = function()
+				return vim.api.nvim_get_option_value("buftype", { buf = 0 }) ~= "prompt"
+					or require("cmp_dap").is_dap_buffer()
+			end,
 			completion = {
 				completeopt = "menu,menuone,preview,noselect",
 			},
@@ -264,14 +270,14 @@ return {
 		cmp.setup.filetype("gitcommit", {
 			sources = cmp.config.sources(sources.get_gitcommit_sources()),
 		})
-		
+
 		-- HTTP/REST/Hurl file completion
 		for _, ft in ipairs({ "http", "rest", "hurl" }) do
 			cmp.setup.filetype(ft, {
 				sources = cmp.config.sources(sources.get_http_sources()),
 			})
 		end
-		
+
 		-- Go completion - prioritize LSP over AI
 		cmp.setup.filetype("go", {
 			sources = cmp.config.sources(sources.get_go_sources()),
@@ -279,7 +285,15 @@ return {
 				max_view_entries = 50, -- Show more items for Go
 			},
 		})
-		
+
+		-- Debugger REPL / dap-ui watches: complete from the live debug session.
+		-- "dap" asks the adapter (debugpy, js-debug); Delve doesn't implement
+		-- that, so "dap_variables" lists the variables in scope at the stop.
+		cmp.register_source("dap_variables", require("cybercat.core.completion.dap_variables").new())
+		cmp.setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
+			sources = { { name = "dap" }, { name = "dap_variables" } },
+		})
+
 		-- Git completion setup
 		-- require("cmp_git").setup()
 	end,
