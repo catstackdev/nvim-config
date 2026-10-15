@@ -94,6 +94,14 @@ local function open(expr, text, value_type)
 	})
 end
 
+--- The expression under the cursor / in the selection (any visual mode); leaves visual mode.
+---@return string
+function M.take_expr()
+	local expr = current_expr()
+	leave_visual_mode()
+	return expr
+end
+
 function M.show()
 	local session = require("dap").session()
 	if not session then

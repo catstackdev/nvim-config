@@ -9,6 +9,9 @@ return {
 		-- Adapters for your stack
 		"nvim-neotest/neotest-jest",
 		"marilari88/neotest-vitest",
+		{ "fredrikaverpil/neotest-golang", version = "*" },
+		-- neotest-golang debugs through nvim-dap-go (already set up in core/debug/go.lua)
+		"leoluz/nvim-dap-go",
 	},
 	event = "VeryLazy",
 	config = function()
@@ -22,6 +25,7 @@ return {
 						return vim.fn.getcwd()
 					end,
 				}),
+				require("neotest-golang")({}), -- default runner: plain `go test`
 				require("neotest-vitest")({
 					-- Filter directories for Vitest
 					filter_dir = function(name)
