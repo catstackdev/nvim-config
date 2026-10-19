@@ -12,9 +12,14 @@ return {
 			"nvim-neotest/nvim-nio",
 			"mfussenegger/nvim-dap-python",
 			"leoluz/nvim-dap-go",
+			"Weissle/persistent-breakpoints.nvim",
 		},
 		config = function()
 			-- Keymaps first: a missing debugger below must never leave them unset.
+			-- Saving only: restoring is done by core/debug/breakpoint_restore.lua, because
+			-- the plugin's own loader puts breakpoints of unloaded buffers on line 1.
+			require("persistent-breakpoints").setup()
+			require("cybercat.core.debug.breakpoint_restore").setup()
 			require("cybercat.core.debug.keymaps").setup()
 			require("cybercat.core.debug.ui").setup()
 			require("cybercat.core.debug.go").setup()

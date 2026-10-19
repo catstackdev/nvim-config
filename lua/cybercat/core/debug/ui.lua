@@ -121,6 +121,9 @@ local function define_signs()
 	vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = colour_of("DiffAdd", "bg", "#2e4a2e") })
 	vim.api.nvim_set_hl(0, "DapStoppedArrow", { fg = colour_of("DiagnosticOk", "fg", "#98c379"), bold = true })
 	vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "", linehl = "", numhl = "" })
+	vim.fn.sign_define("DapBreakpointCondition", { text = "🟡", texthl = "", linehl = "", numhl = "" })
+	vim.fn.sign_define("DapLogPoint", { text = "📝", texthl = "", linehl = "", numhl = "" })
+	vim.fn.sign_define("DapBreakpointRejected", { text = "⭕", texthl = "", linehl = "", numhl = "" })
 	vim.fn.sign_define(
 		"DapStopped",
 		{ text = "→", texthl = "DapStoppedArrow", linehl = "DapStoppedLine", numhl = "" }
