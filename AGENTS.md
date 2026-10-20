@@ -305,9 +305,18 @@ a lualine component in `plugins/ui/lualine.lua` (`runner.status()` /
 `statusColor()`).
 
 **Add a language**: create `utils/runner/languages/<name>.lua` returning
-`{ filetypes, resolve(ctx) -> cmd, cwd, test? (same shape), errorformat?, errorRoot?(ctx) }`,
+`{ filetypes, resolve(ctx) -> cmd, cwd, test? (same shape), testNearest?, testInFile?, errorformat?, errorRoot?(ctx) }`,
 then add `"<name>"` to `languageModules` in `utils/runner/init.lua`. `ctx` =
-`{ file, dir, root(marker) }`. Rules learned:
+`{ file, dir, root(marker) }`. A `test*` function may return `nil` to abort
+(after a `vim.notify`). Rules learned:
+
+- **Rust `<leader>te*`**: neotest has no Rust adapter (`neotest-rust` is
+  archived and needs cargo-nextest, which skips doctests), so
+  `core/keymaps/runner.lua` maps `tet` (nearest `#[test]`, found with
+  treesitter, e.g. `cargo test tests::adds`), `tef` (file: `--test <name>` for
+  `tests/*.rs`, else module path `a::b`) and `tea` (whole crate) buffer-locally
+  on `FileType rust`. Other languages keep the global neotest keys. If a Rust
+  neotest adapter becomes viable, drop that autocmd.
 
 - `errorRoot` must be the dir error paths are relative to. Cargo prints paths
   relative to the WORKSPACE root (outermost `Cargo.toml`), not the crate.

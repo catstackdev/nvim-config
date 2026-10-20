@@ -3,6 +3,8 @@
 --   filetypes   string[]                       filetypes it handles
 --   resolve     fun(ctx) -> cmd, cwd           command to run and where
 --   test        fun(ctx) -> cmd, cwd           (optional) command to run its tests
+--   testNearest fun(ctx) -> cmd?, cwd          (optional) test under the cursor; nil cmd = abort
+--   testInFile  fun(ctx) -> cmd?, cwd          (optional) only the tests of the current file
 --   errorformat string?                        parses failures into quickfix
 --   errorRoot   fun(ctx) -> string?            dir the error paths are relative to
 -- To add a language: create that file and list its name in `languageModules`.
@@ -190,6 +192,9 @@ local function launch(action)
 		end,
 	}
 	local cmd, cwd = build(ctx)
+	if not cmd then
+		return -- the language module already said why (e.g. cursor not in a test)
+	end
 	if vim.fn.executable(cmd[1]) == 0 then
 		vim.notify(cmd[1] .. " is not installed", vim.log.levels.ERROR)
 		return
@@ -210,6 +215,15 @@ end
 
 function M.testFile()
 	launch("test")
+end
+
+-- Optional per-language narrower scopes (see testNearest/testInFile in a language module)
+function M.testNearest()
+	launch("testNearest")
+end
+
+function M.testInFile()
+	launch("testInFile")
 end
 
 function M.runLast()
