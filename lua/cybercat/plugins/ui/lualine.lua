@@ -74,6 +74,18 @@ return {
 				lualine_x = {
 					-- Distant connection status (if available)
 					distantComponent or {},
+					-- Last file/test run (utils/runner): "✓ cargo test · ok · 0.4s"
+					{
+						function()
+							return require("cybercat.utils.runner").status()
+						end,
+						cond = function()
+							return require("cybercat.utils.runner").status() ~= ""
+						end,
+						color = function()
+							return require("cybercat.utils.runner").statusColor()
+						end,
+					},
 					{
 						lazy_status.updates,
 						cond = lazy_status.has_updates,

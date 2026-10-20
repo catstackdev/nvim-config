@@ -5,7 +5,34 @@ return {
 		vim.o.timeout = true
 		vim.o.timeoutlen = 300
 	end,
-	opts = {},
+	opts = {
+		preset = "modern",
+		delay = 200,
+		icons = { mappings = true },
+		win = { border = "rounded", title_pos = "center" },
+		-- Group names shown after pressing <leader>; keep in sync with the prefixes in use
+		spec = {
+			{ "<leader>a", group = "imports / autosave" },
+			{ "<leader>c", group = "claude / file" },
+			{ "<leader>d", group = "debug" },
+			{ "<leader>e", group = "explorer" },
+			{ "<leader>f", group = "find / fix" },
+			{ "<leader>g", group = "git" },
+			{ "<leader>h", group = "harpoon" },
+			{ "<leader>j", group = "jupyter / jqx" },
+			{ "<leader>l", group = "lazy / lsp / preview" },
+			{ "<leader>m", group = "markdown" },
+			{ "<leader>o", group = "organize / outline" },
+			{ "<leader>q", group = "quit / quickfix" },
+			{ "<leader>r", group = "refactor / run" },
+			{ "<leader>R", group = "http requests" },
+			{ "<leader>s", group = "search / splits / speak" },
+			{ "<leader>t", group = "tabs / test / treesj" },
+			{ "<leader>u", group = "ui / undo" },
+			{ "<leader>w", group = "write / session" },
+			{ "<leader>x", group = "trouble" },
+		},
+	},
 	keys = {
 		{
 			"<leader>?",

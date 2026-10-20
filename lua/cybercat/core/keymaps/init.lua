@@ -13,3 +13,4 @@ require("cybercat.core.keymaps.lsp-imports") -- LSP import management
 require("cybercat.core.keymaps.git") -- Git operations
 require("cybercat.core.keymaps.files") -- File permissions, bash execution
 require("cybercat.core.keymaps.speech") -- Speak/stop selected text via macOS say
+require("cybercat.core.keymaps.runner") -- Run current file (rust, go, ts, py, ...)

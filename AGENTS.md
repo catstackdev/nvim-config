@@ -1,11 +1,16 @@
 # Agent Guidelines for Neovim Configuration
 
 ## Overview
-Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager. Organized under `cybercat` namespace with 98 plugins in 8 categories. **Recently refactored** (January 2026) into a clean, modular structure. Supports multiple modes via `NEOVIM_MODE` environment variable.
+
+Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin
+manager. Organized under `cybercat` namespace with 98 plugins in 8 categories.
+**Recently refactored** (January 2026) into a clean, modular structure. Supports
+multiple modes via `NEOVIM_MODE` environment variable.
 
 ## Build/Lint/Test Commands
 
 ### Plugin Management
+
 ```vim
 :Lazy sync          " Install/update all plugins
 :Lazy update        " Update plugins only
@@ -17,12 +22,14 @@ Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager
 ```
 
 ### Linting
+
 ```vim
 <leader>l           " Manually trigger linting (nvim-lint)
 :CspellToggle       " Toggle spell checking
 ```
 
 **Active Linters** (lua/cybercat/plugins/linting.lua):
+
 - JavaScript/TypeScript: `eslint_d`, `cspell`
 - Python: `pylint`, `cspell`
 - Markdown/HTML/Text: `cspell`
@@ -30,6 +37,7 @@ Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager
 **Lint Events**: `BufEnter`, `BufWritePost`, `InsertLeave`
 
 ### Formatting
+
 ```vim
 :Conform format     " Format current buffer (currently disabled)
 <leader>fa          " Fix all (imports + code via LSP)
@@ -39,11 +47,14 @@ Custom Neovim configuration (~2,200 lines of Lua) using lazy.nvim plugin manager
 **Note**: LSP formatting on save is **enabled** (lua/cybercat/lsp.lua:55-62)
 
 ### Testing
+
 No formal test framework. Manual testing via:
+
 - `lua/cybercat/cybercat-app/test/` modules
 - `:lua require('module').function()` for unit testing
 
 ### LSP Commands
+
 ```vim
 :LspInfo            " Show attached LSP servers
 :LspRestart         " Restart LSP server
@@ -60,11 +71,13 @@ K                   " Hover documentation
 ### Lua Style
 
 #### Indentation & Formatting
+
 - **2 spaces** (tabs expanded to spaces - options.lua:17-18)
 - **No line wrapping** (options.lua:22)
 - **Cursorline enabled** (options.lua:28)
 
 #### Naming Conventions
+
 ```lua
 -- Variables: camelCase
 local userName = "cybercat"
@@ -84,6 +97,7 @@ local MAX_BUFFER_SIZE = 1024
 ```
 
 #### Module Pattern
+
 ```lua
 -- Plugin configuration (lazy.nvim style)
 return {
@@ -103,6 +117,7 @@ return {
 ```
 
 #### Import Pattern
+
 ```lua
 -- Require at top of file
 local telescope = require("telescope")
@@ -118,6 +133,7 @@ end
 ```
 
 #### Error Handling
+
 ```lua
 -- Use pcall for potentially failing operations
 local ok, result = pcall(function()
@@ -140,6 +156,7 @@ end
 ```
 
 #### Keymaps
+
 ```lua
 -- Always include description for which-key
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", {
@@ -158,15 +175,31 @@ keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 
 **Leader Key**: Space (` `)
 
-**Common Prefixes**:
-- `<leader>f` - Find/Telescope operations
-- `<leader>l` - LSP operations
-- `<leader>g` - Git operations
-- `<leader>w` - Window/write operations
-- `<leader>q` - Quit operations
-- `<leader>t` - Tab/terminal operations
+**Leader groups** (named in `plugins/core/which-key.lua` `opts.spec`): `a`
+imports/autosave, `c` claude/file, `d` debug (DAP), `e` explorer, `f` find/fix,
+`g` git, `h` harpoon, `j` jupyter/jqx (Molten maps its `j*` keys on
+python/markdown only), `l` lazy/lsp/preview, `m` markdown, `o` organize/outline,
+`q` quit/quickfix, `r` refactor/run, `R` http requests (kulala), `s`
+search/splits/speak (mostly Snacks pickers), `t` tabs/test/treesj (`te*` =
+neotest, `tc*` = coverage), `u` ui/undo, `w` write/session, `x` trouble.
+Single-key maps (`<leader>n`, `z`, `Z`, `b`, ...) need no group.
+
+**Adding a keymap**:
+
+- Pick the existing group for its prefix; if you introduce a NEW `<leader>X`
+  prefix, add `{ "<leader>X", group = "..." }` to the which-key `spec`, or the
+  popup shows it unnamed.
+- Always set `desc`, in `Area: action` style where a prefix is shared by several
+  tools (`Run: current file`, `Debug: step into`, `Rest: run request`).
+- Check for collisions first: buffer-local maps (LSP attach, `rest.lua`'s
+  http/rest buffers, Molten's python buffers) shadow global ones, and
+  `<leader>r*` is shared by refactoring, LSP rename and the runner.
+- To list every live leader mapping (lazy `keys` stubs included), run a headless
+  nvim that waits for `VeryLazy`, then dump `nvim_get_keymap` for n/v/x/i/t.
+  Buffer-local and filetype-only maps will NOT appear in that dump.
 
 #### Comments
+
 ```lua
 -- Single-line comments with space after --
 
@@ -192,11 +225,13 @@ lua/cybercat/
 │   │   ├── options.lua    # vim.opt settings (merged from 2 files)
 │   │   ├── autocmds.lua   # Autocommands
 │   │   └── commands.lua   # Custom commands
-│   ├── keymaps/       # All keymaps (10 organized modules)
-│   │   ├── init.lua   # Keymap loader
+│   ├── keymaps/       # All keymaps (organized modules)
+│   │   ├── init.lua   # Keymap loader (add new modules here)
 │   │   ├── basic.lua, file-ops.lua, windows.lua
 │   │   ├── plugins.lua, lsp-imports.lua, git.lua
-│   │   └── navigation.lua, files.lua, spelling.lua
+│   │   ├── navigation.lua, files.lua, spelling.lua
+│   │   ├── speech.lua # Speak selected text (macOS say)
+│   │   └── runner.lua # <leader>rr/rt/rl/ro/rq -> utils/runner
 │   ├── ui/            # UI configuration
 │   │   ├── highlights.lua  # Syntax highlighting
 │   │   ├── colors.lua      # Color definitions
@@ -222,6 +257,9 @@ lua/cybercat/
 │   ├── nvim-cmp.lua   # Completion (stays in root)
 │   └── distant-portal/ # Remote editing module
 ├── utils/             # Utility modules
+│   ├── runner/        # All-in-one file runner (see "File Runner" below)
+│   │   ├── init.lua   # Core: run/test, output window, quickfix, status
+│   │   └── languages/ # One module per language (rust, go, python, ...)
 │   ├── http/          # HTTP testing utilities (4 modules)
 │   └── markdown/      # Markdown utilities (headings.lua 46KB)
 ├── cybercat-app/      # Custom applications
@@ -230,6 +268,7 @@ lua/cybercat/
 ```
 
 **Plugin Loading** (lazy.lua - categorized imports):
+
 - `cybercat.plugins.core` - Essential plugins
 - `cybercat.plugins.ui` - UI enhancements
 - `cybercat.plugins.editing` - Editing tools
@@ -241,9 +280,52 @@ lua/cybercat/
 - `cybercat.plugins.colorscheme` - Themes
 - `cybercat.plugins` - Legacy compatibility
 
+### File Runner (`utils/runner/`)
+
+One set of keys runs the current file in any language. Keymaps live in
+`core/keymaps/runner.lua`; http/rest buffers override `rr`/`rt`/`rl` locally
+(`plugins/tools/rest.lua`), so those are not conflicts.
+
+| Key          | Action                                                    |
+| ------------ | --------------------------------------------------------- |
+| `<leader>rr` | `Run: current file` (saves first)                         |
+| `<leader>rt` | `Run: test crate/project` (languages without `test` warn) |
+| `<leader>rl` | run the last command again                                |
+| `<leader>ro` | reopen the last output (after `rq`)                       |
+| `<leader>rq` | close the output (`q` inside the output does the same)    |
+
+Behavior: ONE reused bottom window (each run replaces the previous terminal
+buffer); focus stays in the code window; winbar shows `⟳ / ✓ / ✗ cmd · time`; a
+failed run fills the quickfix list from the output via the language's
+`errorformat` (jump with `]q`/`[q`); a toast appears if the output was closed
+mid-run; the output auto-closes when you switch to another file, but ONLY after
+a passed run (a failed or running one stays, since quickfix jumps are file
+switches too; `<leader>ro` reopens without re-closing); the last result is also
+a lualine component in `plugins/ui/lualine.lua` (`runner.status()` /
+`statusColor()`).
+
+**Add a language**: create `utils/runner/languages/<name>.lua` returning
+`{ filetypes, resolve(ctx) -> cmd, cwd, test? (same shape), errorformat?, errorRoot?(ctx) }`,
+then add `"<name>"` to `languageModules` in `utils/runner/init.lua`. `ctx` =
+`{ file, dir, root(marker) }`. Rules learned:
+
+- `errorRoot` must be the dir error paths are relative to. Cargo prints paths
+  relative to the WORKSPACE root (outermost `Cargo.toml`), not the crate.
+- Terminal output wraps at window width, so very long absolute paths can split
+  across lines and be missed by `errorformat`.
+- Filter runtime-internal frames (`node:`, `bun:`) with `%-G...` before the
+  frame patterns, or quickfix fills with noise.
+- Newer Rust panics read `thread 'x' (123) panicked at file:l:c:`; keep the
+  `%.%#` between the quoted name and `panicked`.
+- Test headless: `nvim --headless -u NONE -l script.lua` with
+  `vim.opt.rtp:prepend(<config dir>)`, call `runner.runFile()`/`testFile()`,
+  then poll window winbars for `ok`/`exit` and read `vim.fn.getqflist()`.
+  Spawning jobs needs the sandbox off in Claude Code.
+
 ### LSP Configuration
 
 #### Server Setup Pattern
+
 Servers configured in `after/lsp/{server_name}.lua`:
 
 ```lua
@@ -266,13 +348,16 @@ return {
 ```
 
 **Installed LSP Servers** (mason.lua:30-49):
+
 - ts_ls, html, cssls, tailwindcss, svelte
 - lua_ls, graphql, emmet_ls, prismals
 - pyright, terraformls, jsonls, dockerls
 - marksman (markdown), angularls
 
 #### LSP Capabilities
+
 Enhanced completion capabilities (lsp.lua:38-54):
+
 - Snippet support
 - Markdown documentation
 - Insert/replace mode
@@ -286,6 +371,7 @@ MD_HEADING_BG=<color>         # Markdown heading background
 ```
 
 **Skitty Mode** (init.lua:9-13, options.lua:8-14):
+
 - Disables line numbers
 - Enables auto-save plugin
 - 500ms startup delay
@@ -293,6 +379,7 @@ MD_HEADING_BG=<color>         # Markdown heading background
 ## Plugin System
 
 ### Lazy Loading Strategy
+
 ```lua
 -- Load on event
 event = { "BufReadPre", "BufNewFile" }
@@ -311,6 +398,7 @@ dependencies = { "nvim-lua/plenary.nvim" }
 ```
 
 ### Disabled Plugins (disabled.lua:12-13)
+
 ```lua
 { "akinsho/bufferline.nvim", enabled = is_neovide }
 { "Rics-Dev/project-explorer.nvim", enabled = is_neovide }
@@ -323,10 +411,11 @@ dependencies = { "nvim-lua/plenary.nvim" }
 Plugin templates available in `templates/` directory:
 
 1. **plugin-template.lua** - Full template with all options
-2. **plugin-simple.lua** - Minimal template (just install)  
+2. **plugin-simple.lua** - Minimal template (just install)
 3. **plugin-keymaps.lua** - Keymap-focused template
 
 **Steps:**
+
 ```bash
 # 1. Copy template to correct category
 cp templates/plugin-template.lua lua/cybercat/plugins/ui/my-plugin.lua
@@ -337,6 +426,7 @@ cp templates/plugin-template.lua lua/cybercat/plugins/ui/my-plugin.lua
 ```
 
 **Plugin Categories:**
+
 - `core/` - Essential tools (telescope, treesitter)
 - `ui/` - UI enhancements (lualine, dashboard)
 - `editing/` - Editing tools (surround, autopairs)
@@ -346,13 +436,16 @@ cp templates/plugin-template.lua lua/cybercat/plugins/ui/my-plugin.lua
 - `tools/` - Development tools
 - `disabled/` - Inactive plugins
 
-**Auto-loading:** Plugins in categorized directories are automatically loaded via `lazy.lua` imports. No manual registration needed!
+**Auto-loading:** Plugins in categorized directories are automatically loaded
+via `lazy.lua` imports. No manual registration needed!
 
 ## Git Workflow
 
 ### Debug Code Policy
+
 **NEVER** commit debug code like init.lua:15-32 (gitcommit notifications).
 Remove before committing:
+
 ```lua
 -- DELETE debug autocmds
 vim.api.nvim_create_autocmd("FileType", {
@@ -366,18 +459,21 @@ vim.api.nvim_create_autocmd("FileType", {
 ## Common Patterns
 
 ### Conditional Plugin Loading
+
 ```lua
 enabled = vim.g.neovim_mode == "skitty"  -- Only in skitty mode
 enabled = not vim.g.neovide               -- Disable in Neovide
 ```
 
 ### Safe Require
+
 ```lua
 local ok, module = pcall(require, "module-name")
 if not ok then return end
 ```
 
 ### Notification Levels
+
 ```lua
 vim.notify("Info message", vim.log.levels.INFO)
 vim.notify("Warning", vim.log.levels.WARN)
@@ -385,15 +481,20 @@ vim.notify("Error occurred", vim.log.levels.ERROR)
 ```
 
 ## Performance Notes
+
 - Disabled RTP plugins (lazy.lua:33-42): gzip, tarPlugin, tohtml, zipPlugin
 - Plugin updates don't notify (lazy.lua:27)
 - Config changes don't notify (lazy.lua:46)
 
 ## Cursor/Copilot Rules
-No external rules files found (`.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`).
+
+No external rules files found (`.cursor/rules/`, `.cursorrules`,
+`.github/copilot-instructions.md`).
 
 ## Testing Guidelines
+
 When modifying:
+
 1. Source file: `:luafile %`
 2. Test keymaps work as expected
 3. Check `:Lazy check` for errors
