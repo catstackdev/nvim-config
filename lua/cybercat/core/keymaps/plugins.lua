@@ -6,10 +6,15 @@ keymap.set("n", "<leader>lzo", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 keymap.set("n", "<leader>lzu", "<cmd>Lazy update<CR>", { desc = "Update Lazy" })
 
 -- Mason
-keymap.set("n", "<leader>mn", "<cmd>Mason<CR>", { desc = "Update Lazy" })
+keymap.set("n", "<leader>mn", "<cmd>Mason<CR>", { desc = "Open Mason" })
 
 -- LSP Info
 keymap.set("n", "<leader>li", "<cmd>LspInfo<CR>", { desc = "open LspInfo" })
 
 -- kubectl toggle
-keymap.set("n", "<leader>uk", '<cmd>lua require("kubectl").toggle()<cr>', { noremap = true, silent = true })
+keymap.set(
+	"n",
+	"<leader>uk",
+	'<cmd>lua require("kubectl").toggle()<cr>',
+	{ noremap = true, silent = true, desc = "Toggle kubectl" }
+)

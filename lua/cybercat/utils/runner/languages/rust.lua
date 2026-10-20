@@ -44,6 +44,7 @@ end
 -- cargo infers the package from cwd, so a workspace member runs on its own
 return {
 	filetypes = { "rust" },
+	argsSeparator = "--", -- cargo run -q -- <program args>
 	testNearest = function(ctx)
 		local path = testPathAtCursor()
 		if not path then

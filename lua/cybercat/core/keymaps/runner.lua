@@ -6,7 +6,9 @@ local runner = require("cybercat.utils.runner")
 keymap.set("n", "<leader>rr", runner.runFile, { desc = "Run: current file" })
 keymap.set("n", "<leader>rt", runner.testFile, { desc = "Run: test crate/project" })
 keymap.set("n", "<leader>rl", runner.runLast, { desc = "Run: last command again" })
-keymap.set("n", "<leader>ro", runner.open, { desc = "Run: reopen output" })
+keymap.set("n", "<leader>rR", runner.runWithArgs, { desc = "Run: current file with args" })
+keymap.set("n", "<leader>rx", runner.stop, { desc = "Run: stop running job" })
+keymap.set("n", "<leader>ro", runner.toggle, { desc = "Run: toggle output" })
 keymap.set("n", "<leader>rq", runner.close, { desc = "Run: close output" })
 
 -- neotest has no Rust adapter (neotest-rust is archived), so in Rust buffers the

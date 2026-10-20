@@ -286,13 +286,15 @@ One set of keys runs the current file in any language. Keymaps live in
 `core/keymaps/runner.lua`; http/rest buffers override `rr`/`rt`/`rl` locally
 (`plugins/tools/rest.lua`), so those are not conflicts.
 
-| Key          | Action                                                    |
-| ------------ | --------------------------------------------------------- |
-| `<leader>rr` | `Run: current file` (saves first)                         |
-| `<leader>rt` | `Run: test crate/project` (languages without `test` warn) |
-| `<leader>rl` | run the last command again                                |
-| `<leader>ro` | reopen this file's own output (never another file's)      |
-| `<leader>rq` | close the output (`q` inside the output does the same)    |
+| Key          | Action                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `<leader>rr` | `Run: current file` (saves first)                                                         |
+| `<leader>rt` | `Run: test crate/project` (languages without `test` warn)                                 |
+| `<leader>rl` | run the last command again                                                                |
+| `<leader>rR` | `Run: current file with args` (prompt; remembered per file, reused by `rr`, empty clears) |
+| `<leader>rx` | stop the running job (this file's, else the newest)                                       |
+| `<leader>ro` | toggle this file's own output (never another file's)                                      |
+| `<leader>rq` | close the output (`q` inside the output does the same)                                    |
 
 Behavior: ONE reused bottom window (each run replaces the previous terminal
 buffer); focus stays in the code window; winbar shows `⟳ / ✓ / ✗ cmd · time`; a
@@ -305,8 +307,9 @@ a lualine component in `plugins/ui/lualine.lua` (`runner.status()` /
 `statusColor()`).
 
 **Add a language**: create `utils/runner/languages/<name>.lua` returning
-`{ filetypes, resolve(ctx) -> cmd, cwd, test? (same shape), testNearest?, testInFile?, errorformat?, errorRoot?(ctx) }`,
-then add `"<name>"` to `languageModules` in `utils/runner/init.lua`. `ctx` =
+`{ filetypes, resolve(ctx) -> cmd, cwd, test? (same shape), testNearest?, testInFile?, errorformat?, errorRoot?(ctx), argsSeparator? }`
+(`argsSeparator` goes before the `rR` args, e.g. `"--"` for `cargo run`), then
+add `"<name>"` to `languageModules` in `utils/runner/init.lua`. `ctx` =
 `{ file, dir, root(marker) }`. A `test*` function may return `nil` to abort
 (after a `vim.notify`). Rules learned:
 
