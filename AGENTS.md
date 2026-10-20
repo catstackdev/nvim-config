@@ -291,7 +291,7 @@ One set of keys runs the current file in any language. Keymaps live in
 | `<leader>rr` | `Run: current file` (saves first)                         |
 | `<leader>rt` | `Run: test crate/project` (languages without `test` warn) |
 | `<leader>rl` | run the last command again                                |
-| `<leader>ro` | reopen the last output (after `rq`)                       |
+| `<leader>ro` | reopen this file's own output (never another file's)      |
 | `<leader>rq` | close the output (`q` inside the output does the same)    |
 
 Behavior: ONE reused bottom window (each run replaces the previous terminal

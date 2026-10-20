@@ -29,6 +29,8 @@ local languages = {}
 local lastRun = nil
 local runId = 0
 local output = { win = nil, buf = nil }
+-- Per file: its latest terminal buffer and status, so <leader>ro shows the right output
+local runs = {} ---@type table<string, { id: integer, buf: integer, status: table? }>
 -- File the output was deliberately reopened from; it must not auto-close right away
 local keepOpenFor = nil
 
@@ -87,17 +89,21 @@ function M.statusColor()
 end
 
 -- Reuse one output window; each run replaces the previous terminal buffer
-local function openOutputWindow()
+-- Only the same file's previous output is replaced; other files keep theirs
+local function openOutputWindow(file)
 	local origin = vim.api.nvim_get_current_win()
 	if not isValidWin(output.win) then
-		vim.cmd("botright 15new")
+		-- split the code window (not botright) so a sidebar like nvim-tree keeps its full height
+		vim.cmd("belowright 15new")
 		output.win = vim.api.nvim_get_current_win()
+		vim.wo[output.win].winfixheight = true
 	else
 		vim.api.nvim_set_current_win(output.win)
 		vim.cmd("enew")
 	end
-	local previous = output.buf
+	local previous = runs[file] and runs[file].buf
 	output.buf = vim.api.nvim_get_current_buf()
+	vim.bo[output.buf].bufhidden = "hide"
 	if previous and previous ~= output.buf and vim.api.nvim_buf_is_valid(previous) then
 		vim.api.nvim_buf_delete(previous, { force = true })
 	end
@@ -126,22 +132,30 @@ local function execute(run)
 	local startedAt = vim.uv.hrtime()
 	local label = shortLabel(run.cmd)
 
-	local origin = openOutputWindow()
+	local origin = openOutputWindow(run.file)
 	local win, buf = output.win, output.buf
-	setStatus(win, "DiagnosticWarn", "⟳", label)
+	runs[run.file] = { id = thisRun, buf = buf }
+	-- every run keeps its own file's status; the shared bar follows only the newest run
+	local function report(hl, icon, text)
+		runs[run.file].status = { hl = hl, icon = icon, text = text }
+		if thisRun == runId then
+			setStatus(win, hl, icon, text)
+		end
+	end
+	report("DiagnosticWarn", "⟳", label)
 
 	vim.fn.jobstart(run.cmd, {
 		term = true,
 		cwd = run.cwd,
 		on_exit = function(_, code)
 			vim.schedule(function()
-				if thisRun ~= runId then
-					return -- a newer run replaced this one
+				if not runs[run.file] or runs[run.file].id ~= thisRun then
+					return -- a newer run of this file replaced this one
 				end
 				local seconds = (vim.uv.hrtime() - startedAt) / 1e9
 				local ok = code == 0
 				local summary = string.format("%s · %s · %.1fs", label, ok and "ok" or ("exit " .. code), seconds)
-				setStatus(win, ok and "DiagnosticOk" or "DiagnosticError", ok and "✓" or "✗", summary)
+				report(ok and "DiagnosticOk" or "DiagnosticError", ok and "✓" or "✗", summary)
 				local visible = isValidWin(win) and vim.api.nvim_win_get_buf(win) == buf
 				if not visible then
 					-- output is closed: still tell the user how it went
@@ -235,21 +249,28 @@ function M.runLast()
 end
 
 -- Bring back the last run's output without running anything again
+-- Shows only the current file's own output, never another file's
 function M.open()
-	if isValidWin(output.win) then
+	local mine = runs[vim.fn.expand("%:p")]
+	if not mine or not vim.api.nvim_buf_is_valid(mine.buf) then
+		vim.notify("This file has no output yet: <leader>rr to run it", vim.log.levels.WARN)
 		return
 	end
-	if not output.buf or not vim.api.nvim_buf_is_valid(output.buf) then
-		vim.notify("Nothing has been run yet", vim.log.levels.WARN)
+	local buf, status = mine.buf, mine.status
+	if isValidWin(output.win) and vim.api.nvim_win_get_buf(output.win) == buf then
 		return
 	end
 	local origin = vim.api.nvim_get_current_win()
 	keepOpenFor = vim.api.nvim_buf_get_name(0)
-	vim.cmd("botright 15split")
-	output.win = vim.api.nvim_get_current_win()
-	vim.api.nvim_win_set_buf(output.win, output.buf)
-	if lastStatus then
-		setStatus(output.win, lastStatus.hl, lastStatus.icon, lastStatus.text)
+	if not isValidWin(output.win) then
+		vim.cmd("belowright 15split")
+		output.win = vim.api.nvim_get_current_win()
+		vim.wo[output.win].winfixheight = true
+	end
+	vim.api.nvim_win_set_buf(output.win, buf)
+	output.buf = buf
+	if status then
+		setStatus(output.win, status.hl, status.icon, status.text)
 	end
 	vim.api.nvim_win_call(output.win, function()
 		vim.cmd("normal! G")
