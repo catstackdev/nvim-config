@@ -123,7 +123,7 @@ function M.setup()
 			desc = "Location List",
 		},
 		{
-			"<leader>sm",
+			"<leader>s'",
 			function()
 				Snacks.picker.marks()
 			end,

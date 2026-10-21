@@ -31,6 +31,13 @@ local runId = 0
 local output = { win = nil, buf = nil }
 -- Per file: its latest terminal buffer and status, so <leader>ro shows the right output
 local runs = {} ---@type table<string, { id: integer, buf: integer, job: integer?, stopped: boolean, status: table? }>
+
+-- Runs are keyed by real path: nvim re-resolves a buffer's path through symlinks
+-- (stowed dirs, /var vs /private/var) after a cwd change, so one file can be
+-- spelled two ways between launching and looking its run up
+local function fileKey(path)
+	return vim.uv.fs_realpath(path) or path
+end
 -- Program arguments remembered per file, used by every <leader>rr of that file
 local runArgs = {} ---@type table<string, string>
 -- File the output was deliberately reopened from; it must not auto-close right away
@@ -62,13 +69,61 @@ local function refreshStatusline()
 	end
 end
 
-local function setStatus(win, hl, icon, text)
-	lastStatus = { hl = hl, icon = icon, text = text }
-	if isValidWin(win) then
-		local safe = text:gsub("%%", "%%%%")
-		vim.wo[win].winbar = string.format("%%#%s# %s %s %%*", hl, icon, safe)
+local SPINNER_FRAMES = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+local SPINNER_INTERVAL_MS = 100
+local RUNNING_ICON = "⟳"
+local spinner = { timer = nil, frame = 1 }
+
+local function currentIcon()
+	if lastStatus and lastStatus.icon == RUNNING_ICON then
+		return SPINNER_FRAMES[spinner.frame]
+	end
+	return lastStatus and lastStatus.icon or ""
+end
+
+local function paintStatus(win)
+	if lastStatus then
+		local safe = lastStatus.text:gsub("%%", "%%%%")
+		local bar = string.format("%%#%s# %s %s %%*", lastStatus.hl, currentIcon(), safe)
+		for _, target in ipairs({ win, output.zoomWin }) do
+			if isValidWin(target) then
+				vim.wo[target].winbar = bar
+			end
+		end
 	end
 	refreshStatusline()
+end
+
+local function stopSpinner()
+	if spinner.timer then
+		spinner.timer:stop()
+		spinner.timer:close()
+		spinner.timer = nil
+	end
+end
+
+local function startSpinner(win)
+	stopSpinner()
+	spinner.frame = 1
+	spinner.timer = vim.uv.new_timer()
+	spinner.timer:start(
+		SPINNER_INTERVAL_MS,
+		SPINNER_INTERVAL_MS,
+		vim.schedule_wrap(function()
+			spinner.frame = spinner.frame % #SPINNER_FRAMES + 1
+			paintStatus(win)
+		end)
+	)
+end
+
+local function setStatus(win, hl, icon, text, short)
+	lastStatus = { hl = hl, icon = icon, text = text, short = short }
+	if icon == RUNNING_ICON then
+		startSpinner(win)
+	else
+		stopSpinner()
+	end
+	paintStatus(win)
 end
 
 -- "cargo test", or "bash e.sh" for a long absolute file path
@@ -81,13 +136,25 @@ local function shortLabel(cmd)
 	)
 end
 
--- lualine component: text of the last run, "" before the first one
+-- The current file's own run status; nil for a file that has not been run
+local function currentFileStatus()
+	local mine = runs[fileKey(vim.fn.expand("%:p"))]
+	return mine and mine.status or nil
+end
+
+-- lualine component: short result ("✓ 1.2s") of this file's run, "" for a file never run
 function M.status()
-	return lastStatus and (lastStatus.icon .. " " .. lastStatus.text) or ""
+	local status = currentFileStatus()
+	if not status then
+		return ""
+	end
+	local icon = status.icon == RUNNING_ICON and SPINNER_FRAMES[spinner.frame] or status.icon
+	return icon .. " " .. status.short
 end
 
 function M.statusColor()
-	return lastStatus and lastStatus.hl or "Normal"
+	local status = currentFileStatus()
+	return status and status.hl or "Normal"
 end
 
 -- Reuse one output window; each run replaces the previous terminal buffer
@@ -126,7 +193,7 @@ local function openOutputWindow(file)
 		vim.api.nvim_set_current_win(output.win)
 		vim.cmd("enew")
 	end
-	local previous = runs[file] and runs[file].buf
+	local previous = runs[fileKey(file)] and runs[fileKey(file)].buf
 	styleOutputWindow(output.win)
 	output.buf = vim.api.nvim_get_current_buf()
 	vim.bo[output.buf].bufhidden = "hide"
@@ -152,6 +219,22 @@ local function fillQuickfix(run, buf)
 	end
 end
 
+-- Terminal buffers keep scrolling while they flush the last output, so set the
+-- view now and once more after the flush settles
+local TOP_SETTLE_MS = 150
+
+local function showTop(win)
+	local function apply()
+		if isValidWin(win) then
+			vim.api.nvim_win_call(win, function()
+				vim.fn.winrestview({ topline = 1, lnum = 1, col = 0 })
+			end)
+		end
+	end
+	apply()
+	vim.defer_fn(apply, TOP_SETTLE_MS)
+end
+
 local function execute(run)
 	runId = runId + 1
 	local thisRun = runId
@@ -160,33 +243,41 @@ local function execute(run)
 
 	local origin = openOutputWindow(run.file)
 	local win, buf = output.win, output.buf
-	runs[run.file] = { id = thisRun, buf = buf, job = nil, stopped = false }
+	runs[fileKey(run.file)] = { id = thisRun, buf = buf, job = nil, stopped = false }
 	-- every run keeps its own file's status; the shared bar follows only the newest run
-	local function report(hl, icon, text)
-		runs[run.file].status = { hl = hl, icon = icon, text = text }
+	local function report(hl, icon, text, short)
+		runs[fileKey(run.file)].status = { hl = hl, icon = icon, text = text, short = short }
 		if thisRun == runId then
-			setStatus(win, hl, icon, text)
+			setStatus(win, hl, icon, text, short)
 		end
 	end
-	report("DiagnosticWarn", "⟳", label)
+	report("DiagnosticWarn", RUNNING_ICON, label, "running")
 
 	local job = vim.fn.jobstart(run.cmd, {
 		term = true,
 		cwd = run.cwd,
 		on_exit = function(_, code)
 			vim.schedule(function()
-				if not runs[run.file] or runs[run.file].id ~= thisRun then
+				if not runs[fileKey(run.file)] or runs[fileKey(run.file)].id ~= thisRun then
 					return -- a newer run of this file replaced this one
 				end
 				local seconds = (vim.uv.hrtime() - startedAt) / 1e9
-				if runs[run.file].stopped then
-					report("DiagnosticWarn", "■", string.format("%s · stopped · %.1fs", label, seconds))
+				if runs[fileKey(run.file)].stopped then
+					report("DiagnosticWarn", "■", string.format("%s · stopped · %.1fs", label, seconds), "stopped")
 					return
 				end
 				local ok = code == 0
 				local summary = string.format("%s · %s · %.1fs", label, ok and "ok" or ("exit " .. code), seconds)
-				report(ok and "DiagnosticOk" or "DiagnosticError", ok and "✓" or "✗", summary)
+				report(
+					ok and "DiagnosticOk" or "DiagnosticError",
+					ok and "✓" or "✗",
+					summary,
+					string.format(ok and "%.1fs" or ("exit " .. code .. " · %.1fs"), seconds)
+				)
 				local visible = isValidWin(win) and vim.api.nvim_win_get_buf(win) == buf
+				if visible then
+					showTop(win) -- finished: start reading from the first line
+				end
 				if not visible then
 					-- output is closed: still tell the user how it went
 					vim.notify(
@@ -200,7 +291,7 @@ local function execute(run)
 			end)
 		end,
 	})
-	runs[run.file].job = job
+	runs[fileKey(run.file)].job = job
 	styleOutputWindow(win) -- starting the terminal job resets number/signcolumn
 	vim.keymap.set("n", "q", M.close, { buffer = buf, silent = true, desc = "Close runner" })
 	vim.api.nvim_win_call(win, function()
@@ -241,7 +332,7 @@ local function launch(action)
 	if not cmd then
 		return -- the language module already said why (e.g. cursor not in a test)
 	end
-	local args = action == "resolve" and runArgs[file] or nil
+	local args = action == "resolve" and runArgs[fileKey(file)] or nil
 	if args and args ~= "" then
 		if language.argsSeparator then
 			table.insert(cmd, language.argsSeparator)
@@ -282,18 +373,18 @@ end
 -- Ask for the program arguments of this file (empty clears them), then run it
 function M.runWithArgs()
 	local file = vim.fn.expand("%:p")
-	vim.ui.input({ prompt = "Args: ", default = runArgs[file] or "" }, function(input)
+	vim.ui.input({ prompt = "Args: ", default = runArgs[fileKey(file)] or "" }, function(input)
 		if input == nil then
 			return -- cancelled
 		end
-		runArgs[file] = vim.trim(input)
+		runArgs[fileKey(file)] = vim.trim(input)
 		launch("resolve")
 	end)
 end
 
 -- Kill the running job of this file, else of the newest run
 function M.stop()
-	local mine = runs[vim.fn.expand("%:p")]
+	local mine = runs[fileKey(vim.fn.expand("%:p"))]
 	local target = mine and mine.job and mine or nil
 	if not target then
 		for _, run in pairs(runs) do
@@ -321,7 +412,7 @@ end
 -- Bring back the last run's output without running anything again
 -- Shows only the current file's own output, never another file's
 function M.open()
-	local mine = runs[vim.fn.expand("%:p")]
+	local mine = runs[fileKey(vim.fn.expand("%:p"))]
 	if not mine or not vim.api.nvim_buf_is_valid(mine.buf) then
 		vim.notify("This file has no output yet: <leader>rr to run it", vim.log.levels.WARN)
 		return
@@ -341,28 +432,51 @@ function M.open()
 	styleOutputWindow(output.win) -- set_buf restores the buffer's old window options
 	output.buf = buf
 	if status then
-		setStatus(output.win, status.hl, status.icon, status.text)
+		setStatus(output.win, status.hl, status.icon, status.text, status.short)
 	end
-	vim.api.nvim_win_call(output.win, function()
-		vim.cmd("normal! G")
-	end)
+	if status and status.icon == RUNNING_ICON then
+		vim.api.nvim_win_call(output.win, function()
+			vim.cmd("normal! G")
+		end)
+	else
+		showTop(output.win)
+	end
 	vim.api.nvim_set_current_win(origin)
 end
 
--- A passed run is done with once you move on to another file; a failed or
--- still-running one stays open so you can fix errors with the output in view.
+-- Moving on to another file closes the output, passed or failed. The exception
+-- is a file that is one of the failed run's own error locations (a quickfix
+-- jump), so you can fix errors with the output in view.
+local function isErrorLocation(bufnr)
+	for _, item in ipairs(vim.fn.getqflist()) do
+		if item.bufnr == bufnr and item.valid == 1 then
+			return true
+		end
+	end
+	return false
+end
+
+-- symlinked dirs (stow, /var vs /private/var) spell the same file differently
+local function samePath(a, b)
+	return (vim.uv.fs_realpath(a) or a) == (vim.uv.fs_realpath(b) or b)
+end
+
 vim.api.nvim_create_autocmd("BufEnter", {
 	group = vim.api.nvim_create_augroup("RunnerAutoClose", { clear = true }),
-	desc = "Runner: close output of a passed run when switching file",
+	desc = "Runner: close output when switching to another file",
 	callback = function(event)
-		if not (isValidWin(output.win) and lastRun and lastStatus and lastStatus.hl == "DiagnosticOk") then
+		if not (isValidWin(output.win) and lastRun and lastStatus) then
 			return
 		end
 		local name = vim.api.nvim_buf_get_name(event.buf)
 		if name == keepOpenFor then
 			return
 		end
-		local isOtherFile = vim.bo[event.buf].buftype == "" and name ~= "" and name ~= lastRun.file
+		local failed = lastStatus.hl == "DiagnosticError"
+		if failed and isErrorLocation(event.buf) then
+			return
+		end
+		local isOtherFile = vim.bo[event.buf].buftype == "" and name ~= "" and not samePath(name, lastRun.file)
 		if isOtherFile and vim.api.nvim_get_current_win() ~= output.win then
 			keepOpenFor = nil
 			M.close()
@@ -372,7 +486,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 -- One key: hide this file's output when it is showing, otherwise bring it back
 function M.toggle()
-	local mine = runs[vim.fn.expand("%:p")]
+	local mine = runs[fileKey(vim.fn.expand("%:p"))]
 	if isValidWin(output.win) and (not mine or vim.api.nvim_win_get_buf(output.win) == mine.buf) then
 		M.close()
 	else
@@ -381,10 +495,64 @@ function M.toggle()
 end
 
 function M.close()
+	if isValidWin(output.zoomWin) then
+		vim.api.nvim_win_close(output.zoomWin, true)
+	end
+	output.zoomWin = nil
 	if isValidWin(output.win) then
 		vim.api.nvim_win_close(output.win, true)
 	end
 	output.win = nil
+end
+
+function M.isVisible()
+	return isValidWin(output.win)
+end
+
+function M.isZoomed()
+	return isValidWin(output.zoomWin)
+end
+
+-- True when the focused window is the runner output or its fullscreen float
+function M.isFocused()
+	local current = vim.api.nvim_get_current_win()
+	return current == output.zoomWin or current == output.win
+end
+
+-- Toggle the output between its split and a fullscreen float that covers
+-- everything (code, sidebar, their titles). Resizing the split can't do that:
+-- every other window keeps a minimum height and its winbar.
+function M.toggleMaximize()
+	if isValidWin(output.zoomWin) then
+		local origin = output.zoomOrigin
+		vim.api.nvim_win_close(output.zoomWin, true)
+		output.zoomWin = nil
+		if isValidWin(origin) then
+			vim.api.nvim_set_current_win(origin)
+		end
+		return
+	end
+	if not (isValidWin(output.win) and output.buf and vim.api.nvim_buf_is_valid(output.buf)) then
+		vim.notify("No runner output is open: <leader>ro to show it", vim.log.levels.INFO)
+		return
+	end
+	output.zoomOrigin = vim.api.nvim_get_current_win()
+	local statuslineRows = vim.o.laststatus > 0 and 1 or 0
+	output.zoomWin = vim.api.nvim_open_win(output.buf, true, {
+		relative = "editor",
+		row = 0,
+		col = 0,
+		width = vim.o.columns,
+		height = vim.o.lines - vim.o.cmdheight - statuslineRows,
+		style = "minimal",
+		border = "none",
+		zindex = 200,
+	})
+	styleOutputWindow(output.zoomWin)
+	paintStatus(output.win)
+	vim.api.nvim_win_call(output.zoomWin, function()
+		vim.fn.winrestview({ topline = 1, lnum = 1, col = 0 })
+	end)
 end
 
 return M

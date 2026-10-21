@@ -9,6 +9,7 @@ keymap.set("n", "<leader>rl", runner.runLast, { desc = "Run: last command again"
 keymap.set("n", "<leader>rR", runner.runWithArgs, { desc = "Run: current file with args" })
 keymap.set("n", "<leader>rx", runner.stop, { desc = "Run: stop running job" })
 keymap.set("n", "<leader>ro", runner.toggle, { desc = "Run: toggle output" })
+keymap.set("n", "<leader>rm", runner.toggleMaximize, { desc = "Run: maximize/restore output" })
 keymap.set("n", "<leader>rq", runner.close, { desc = "Run: close output" })
 
 -- neotest has no Rust adapter (neotest-rust is archived), so in Rust buffers the
