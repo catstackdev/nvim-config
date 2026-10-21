@@ -210,6 +210,13 @@ function M.setup()
 			desc = "Git Status",
 		},
 		{
+			"<leader>gS",
+			function()
+				Snacks.picker.git_stash()
+			end,
+			desc = "Git Stash",
+		},
+		{
 			"<leader>gc",
 			function()
 				Snacks.picker.git_diff({
@@ -384,7 +391,7 @@ function M.setup()
 			desc = "Select Scratch Buffer",
 		},
 		{
-			"<leader>n",
+			"<leader>nn",
 			function()
 				Snacks.notifier.show_history()
 			end,

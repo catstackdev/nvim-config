@@ -62,7 +62,7 @@ return {
 					vim.tbl_extend("force", buf_opts, { desc = "Rest: Copy cURL" }))
 				map("n", "<leader>rL", "<cmd>Rest logs<CR>", 
 					vim.tbl_extend("force", buf_opts, { desc = "Rest: Show Logs" }))
-				map("n", "<leader>rt", "<cmd>Rest toggle_view<CR>", 
+				map("n", "<leader>rv", "<cmd>Rest toggle_view<CR>", 
 					vim.tbl_extend("force", buf_opts, { desc = "Rest: Toggle View" }))
 			end,
 		})
