@@ -11,7 +11,7 @@ keymap.set("n", "<leader>fx", function()
 		return
 	end
 
-	local stat = vim.loop.fs_stat(file)
+	local stat = vim.uv.fs_stat(file)
 	if not stat then
 		vim.notify("Cannot get file status", vim.log.levels.ERROR)
 		return
