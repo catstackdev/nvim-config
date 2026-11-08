@@ -8,6 +8,30 @@ return {
 		local prettier_config = vim.fn.expand("~/.prettierrc.yaml")
 		local home_dir = vim.fn.expand("~")
 
+		local function resolve_executable(name, opts)
+			opts = opts or {}
+
+			local path = vim.fn.exepath(name)
+
+			-- Prefer non-Mason executable
+			if path ~= "" and not path:find("/mason/", 1, true) then
+				return path
+			end
+
+			-- Try custom fallback paths
+			for _, fallback in ipairs(opts.fallbacks or {}) do
+				if vim.fn.executable(fallback) == 1 then
+					return fallback
+				end
+			end
+
+			-- Last resort: Mason or PATH
+			if path ~= "" then
+				return path
+			end
+
+			return name
+		end
 		conform.setup({
 			formatters_by_ft = {
 				javascript = { "prettier" },
@@ -30,11 +54,13 @@ return {
 				rust = { "rustfmt" },
 				sql = { "sql_formatter" }, -- Fixed: use underscore not hyphen
 				shell = { "shfmt" },
+				alloy = { "alloy_fmt" },
 				-- terraform = { "terraform_fmt" }, -- Disabled: terraform CLI not installed
 				-- Disable shfmt for zsh - it can't handle Zsh-specific syntax
 				-- like glob qualifiers (N), extended globs, etc.
 				-- zsh = { "shfmt" },
 			},
+
 			-- Force prettier to always use global config instead of project-level
 			formatters = {
 				prettier = {
@@ -49,9 +75,30 @@ return {
 						}
 					end,
 				},
+				rustfmt = {
+					command = function()
+						return resolve_executable("rustfmt", {
+							fallbacks = {
+								vim.fn.expand("~/.cargo/bin/rustfmt"),
+								"/opt/homebrew/opt/rustup/bin/rustfmt",
+							},
+						})
+					end,
+				},
 				-- Configure shfmt for shell scripts (not zsh)
 				shfmt = {
 					prepend_args = { "-i", "2", "-ci" }, -- 2 space indent, indent switch cases
+				},
+				-- `alloy fmt` prints formatted output to stdout
+				alloy_fmt = {
+					command = "alloy",
+					args = { "fmt", "$FILENAME" },
+					stdin = false,
+				},
+				stylua = {
+					command = function()
+						return resolve_executable("stylua")
+					end,
 				},
 			},
 			format_on_save = {
