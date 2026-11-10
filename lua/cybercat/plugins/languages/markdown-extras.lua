@@ -46,7 +46,8 @@ return {
 	{
 		"iamcco/markdown-preview.nvim",
 		ft = "markdown",
-		build = "cd app && npm install",
+		-- build = "cd app && npm install",
+		build = "cd app && npm install && git -C .. restore -- app/yarn.lock",
 		config = function()
 			vim.g.mkdp_auto_close = 0 -- keep preview open when leaving buffer
 			vim.g.mkdp_theme = "dark"
@@ -54,8 +55,26 @@ return {
 			vim.g.mkdp_browser = "chromium"
 			vim.g.mkdp_echo_preview_url = 1 -- print URL in cmdline so you know the port
 			vim.g.mkdp_page_title = "${name}"
-			-- Midnight-blue palette; must be an absolute path
-			vim.g.mkdp_markdown_css = vim.fn.stdpath("config") .. "/markdown-preview/midnight.css"
+			-- mkdp_markdown_css REPLACES the plugin's markdown.css instead of adding to it, so
+			-- serve the plugin's own stylesheet with the midnight theme appended
+			-- (absolute path required)
+			local plugin_css = vim.fn.stdpath("data") .. "/lazy/markdown-preview.nvim/app/_static/markdown.css"
+			local theme_css = vim.fn.stdpath("config") .. "/markdown-preview/midnight.css"
+			local merged_css = vim.fn.stdpath("cache") .. "/markdown-preview-midnight.css"
+			local base = vim.fn.readfile(plugin_css)
+			vim.list_extend(base, vim.fn.readfile(theme_css))
+			-- the previewer is served over http, so the shared wallpaper is inlined as a data URI
+			local bg_file = io.open(vim.fn.expand("~/dotfiles/assets/bg/elven_mage_dragon_catttt.webp"), "rb")
+			if bg_file then
+				local encoded = vim.base64.encode(bg_file:read("*a"))
+				bg_file:close()
+				table.insert(
+					base,
+					('main[data-theme], :root { --mn-bg-image: url("data:image/webp;base64,%s"); }'):format(encoded)
+				)
+			end
+			vim.fn.writefile(base, merged_css)
+			vim.g.mkdp_markdown_css = merged_css
 		end,
 		keys = {
 			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview" },

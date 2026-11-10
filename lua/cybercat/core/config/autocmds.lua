@@ -269,9 +269,18 @@ vim.api.nvim_create_autocmd("BufRead", {
 			return
 		end
 		vim.b.zk_executed = true -- Mark as executed
+		local bufnr = vim.api.nvim_get_current_buf()
 		-- Use `vim.defer_fn` to add a slight delay before executing `zk`
 		vim.defer_fn(function()
-			vim.cmd("normal zk")
+			-- Run only inside this markdown buffer's own window: the current window may
+			-- be another one by now (e.g. nvim-tree), and `zk` does `edit!` there.
+			local winid = vim.fn.bufwinid(bufnr)
+			if winid == -1 then
+				return
+			end
+			vim.api.nvim_win_call(winid, function()
+				vim.cmd("normal zk")
+			end)
 			-- This write was disabling my inlay hints
 			-- vim.cmd("silent write")
 			vim.notify("Folded keymaps", vim.log.levels.INFO)

@@ -80,6 +80,7 @@ return {
 				"llm-ls", -- #lsp server for ai llm
 				"js-debug-adapter",
 				"debugpy", -- Python debugger (for FastAPI debugging)
+				"codelldb", -- Rust/C debugger
 			},
 			run_on_start = true, -- run on startup
 		})

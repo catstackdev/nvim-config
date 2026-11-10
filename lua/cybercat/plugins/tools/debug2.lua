@@ -2,7 +2,7 @@
 --   ui.lua          dap-ui layout, signs, auto open/close
 --   keymaps.lua     <leader>d* keys
 --   eval_float.lua  <leader>de value popup
---   go.lua / python.lua / javascript.lua   one debugger per language
+--   go.lua / python.lua / javascript.lua / rust.lua   one debugger per language
 return {
 	{
 		"mfussenegger/nvim-dap",
@@ -25,6 +25,7 @@ return {
 			require("cybercat.core.debug.go").setup()
 			require("cybercat.core.debug.python").setup()
 			require("cybercat.core.debug.javascript").setup()
+			require("cybercat.core.debug.rust").setup()
 		end,
 	},
 }

@@ -13,6 +13,7 @@ return {
 			red = "#FF4A4A",
 			fg = "#c3ccdc",
 			bg = "#112638",
+			bg_light = "#1d3b55", -- section b, so the arrow separator is visible against c
 			inactive_bg = "#2c3043",
 			semilightgray = "#828997",
 		}
@@ -20,27 +21,27 @@ return {
 		local my_lualine_theme = {
 			normal = {
 				a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
-				b = { bg = colors.bg, fg = colors.fg },
+				b = { bg = colors.bg_light, fg = colors.fg },
 				c = { bg = colors.bg, fg = colors.fg },
 			},
 			insert = {
 				a = { bg = colors.green, fg = colors.bg, gui = "bold" },
-				b = { bg = colors.bg, fg = colors.fg },
+				b = { bg = colors.bg_light, fg = colors.fg },
 				c = { bg = colors.bg, fg = colors.fg },
 			},
 			visual = {
 				a = { bg = colors.violet, fg = colors.bg, gui = "bold" },
-				b = { bg = colors.bg, fg = colors.fg },
+				b = { bg = colors.bg_light, fg = colors.fg },
 				c = { bg = colors.bg, fg = colors.fg },
 			},
 			command = {
 				a = { bg = colors.yellow, fg = colors.bg, gui = "bold" },
-				b = { bg = colors.bg, fg = colors.fg },
+				b = { bg = colors.bg_light, fg = colors.fg },
 				c = { bg = colors.bg, fg = colors.fg },
 			},
 			replace = {
 				a = { bg = colors.red, fg = colors.bg, gui = "bold" },
-				b = { bg = colors.bg, fg = colors.fg },
+				b = { bg = colors.bg_light, fg = colors.fg },
 				c = { bg = colors.bg, fg = colors.fg },
 			},
 			inactive = {
@@ -129,6 +130,8 @@ return {
 				-- one statusline spanning the full editor width instead of
 				-- one per split, so the full directory path always has room
 				globalstatus = true,
+				-- powerline arrows between sections (nerd font U+E0B0 / U+E0B2)
+				section_separators = { left = "", right = "" },
 			},
 			sections = {
 				lualine_b = {

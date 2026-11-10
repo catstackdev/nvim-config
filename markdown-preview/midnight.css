@@ -1,134 +1,146 @@
-/* Midnight-blue theme for markdown-preview.nvim (matches go-learning docs) */
+/* Midnight-blue theme for markdown-preview.nvim.
+ *
+ * The previewer styles itself entirely through CSS variables (page.css,
+ * markdown.css, highlight.css), so this file only does two things:
+ *   1. defines the palette once,
+ *   2. points the previewer's variables and syntax classes at it.
+ * The previewer puts data-theme on <main>, so `main[data-theme]` (higher
+ * specificity than its `[data-theme="dark"]` rules) wins whatever order the
+ * stylesheets load in, and no !important is needed.
+ */
+
 :root {
-  --bg: #0b1026;
-  --bg-sidebar: #070b1c;
-  --bg-code: #111a3a;
-  --border: #1f2a52;
-  --text: #c9d4f0;
-  --text-muted: #8190b8;
-  --heading: #e6ecff;
-  --accent: #5b8cff;
-  --accent-soft: #7aa2ff;
+  /* palette: edit here only */
+  --mn-bg: #0b1026;
+  --mn-bg-alt: #070b1c;
+  --mn-bg-code: #111a3a;
+  --mn-border: #1f2a52;
+  --mn-text: #c9d4f0;
+  --mn-muted: #8190b8;
+  --mn-heading: #e6ecff;
+  --mn-accent: #5b8cff;
+  --mn-accent-soft: #7aa2ff;
+
+  --mn-comment: #5d6b99;
+  --mn-keyword: #c792ea;
+  --mn-string: #9ece6a;
+  --mn-number: #ff9e64;
+  --mn-function: #7aa2ff;
+  --mn-type: #4fd6be;
 }
 
-/* The previewer themes through CSS variables set on [data-theme] and body
-   (page.css / markdown.css / highlight.css), so override those first. */
-:root,
-html,
-body,
-[data-theme],
-[data-theme='dark'],
-[data-theme='light'] {
+/* Blurred wallpaper behind everything. --mn-bg-image is NOT defined here:
+ * the browser loads this over http, so a file path can't work; markdown-extras.lua
+ * appends `:root { --mn-bg-image: url(data:...) }` from ~/dotfiles/assets/bg/. */
+:root {
+  --mn-glass: rgba(11, 16, 38, 0.35);
+  --mn-glass-alt: rgba(7, 11, 28, 0.6);
+  --mn-glass-code: rgba(17, 26, 58, 0.65);
+  --mn-bg-blur: 5px;
+}
+
+html {
+  background: var(--mn-bg-alt); /* fallback while the image decodes */
+}
+
+body {
+  background: transparent;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--mn-bg-image) center / cover no-repeat;
+  filter: blur(var(--mn-bg-blur)) brightness(0.8);
+  transform: scale(1.06); /* hides the soft edges blur leaves */
+}
+
+main[data-theme] {
+  background-color: transparent;
+}
+
+main[data-theme] #page-header,
+main[data-theme] .markdown-body {
+  backdrop-filter: blur(6px);
+}
+
+/* previewer variables -> palette */
+main[data-theme] {
   /* page.css */
-  --foreground-color: var(--text);
-  --background-color: var(--bg);
-  --secondary-background-color: var(--bg);
-  --border-color: var(--border);
+  --foreground-color: var(--mn-text);
+  --background-color: var(--mn-glass);
+  --secondary-background-color: transparent;
+  --border-color: var(--mn-border);
   /* markdown.css */
-  --color-text-primary: var(--text);
-  --color-text-tertiary: var(--text-muted);
-  --color-text-link: var(--accent);
-  --color-bg-primary: var(--bg);
-  --color-bg-secondary: var(--bg);
-  --color-bg-tertiary: var(--bg-code);
-  --color-border-primary: var(--border);
-  --color-border-secondary: var(--border);
-  --color-border-tertiary: var(--text-muted);
-  --color-markdown-blockquote-border: var(--accent);
-  --color-markdown-table-border: var(--border);
-  --color-markdown-table-tr-border: var(--border);
-  --color-markdown-code-bg: var(--bg-code);
+  --color-text-primary: var(--mn-text);
+  --color-text-tertiary: var(--mn-muted);
+  --color-text-link: var(--mn-accent);
+  --color-bg-primary: var(--mn-glass);
+  --color-bg-secondary: var(--mn-glass-alt);
+  --color-bg-tertiary: var(--mn-glass-code);
+  --color-border-primary: var(--mn-border);
+  --color-border-secondary: var(--mn-border);
+  --color-border-tertiary: var(--mn-muted);
+  --color-markdown-blockquote-border: var(--mn-accent);
+  --color-markdown-table-border: var(--mn-border);
+  --color-markdown-table-tr-border: var(--mn-border);
+  --color-markdown-code-bg: var(--mn-glass-code);
 }
 
-main,
-#page-ctn {
-  background-color: var(--bg) !important;
+/* the few things the variables don't reach */
+main[data-theme] .markdown-body :is(h1, h2, h3, h4, h5, h6, strong) {
+  color: var(--mn-heading);
 }
 
-body,
-.markdown-body {
-  background-color: var(--bg) !important;
-  color: var(--text) !important;
+main[data-theme] .markdown-body a:hover {
+  color: var(--mn-accent-soft);
 }
 
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6,
-.markdown-body strong {
-  color: var(--heading) !important;
-  border-color: var(--border) !important;
+main[data-theme] .markdown-body blockquote {
+  background: var(--mn-glass-code);
+  color: var(--mn-muted);
 }
 
-.markdown-body a {
-  color: var(--accent) !important;
-}
-.markdown-body a:hover {
-  color: var(--accent-soft) !important;
+main[data-theme] .markdown-body :not(pre) > code {
+  color: var(--mn-accent-soft);
 }
 
-.markdown-body blockquote {
-  background: var(--bg-code) !important;
-  border-left: 4px solid var(--accent) !important;
-  color: var(--text-muted) !important;
-}
-
-.markdown-body hr {
-  background-color: var(--border) !important;
-  border-color: var(--border) !important;
-}
-
-.markdown-body code,
-.markdown-body tt {
-  background: var(--bg-code) !important;
-  color: var(--accent-soft) !important;
-}
-.markdown-body pre,
-.markdown-body .highlight pre,
-.markdown-body pre > code {
-  background: var(--bg-code) !important;
-  color: var(--text) !important;
-}
-.markdown-body pre {
-  border: 1px solid var(--border);
+main[data-theme] .markdown-body pre {
+  border: 1px solid var(--mn-border);
   border-radius: 6px;
 }
 
-.markdown-body table th,
-.markdown-body table td {
-  border: 1px solid var(--border) !important;
-}
-.markdown-body table tr {
-  background-color: var(--bg) !important;
-  border-top: 1px solid var(--border) !important;
-}
-.markdown-body table tr:nth-child(2n) {
-  background-color: var(--bg-sidebar) !important;
+/* zebra rows: the previewer's own stripe colour is a grey */
+main[data-theme] .markdown-body table tr:nth-child(2n) {
+  background-color: var(--mn-glass-alt);
 }
 
-/* Prism-like tokens (highlight.js classes used by the previewer) */
-.hljs-comment {
-  color: #5d6b99 !important;
+/* syntax highlighting (highlight.js classes) */
+main[data-theme] .hljs-comment,
+main[data-theme] .hljs-quote {
+  color: var(--mn-comment);
 }
-.hljs-keyword,
-.hljs-selector-tag {
-  color: #c792ea !important;
+main[data-theme] .hljs-keyword,
+main[data-theme] .hljs-selector-tag {
+  color: var(--mn-keyword);
 }
-.hljs-string,
-.hljs-attr {
-  color: #9ece6a !important;
+main[data-theme] .hljs-string,
+main[data-theme] .hljs-attr,
+main[data-theme] .hljs-tag .hljs-attr {
+  color: var(--mn-string);
 }
-.hljs-number,
-.hljs-literal {
-  color: #ff9e64 !important;
+main[data-theme] .hljs-number,
+main[data-theme] .hljs-literal {
+  color: var(--mn-number);
 }
-.hljs-title,
-.hljs-function {
-  color: #7aa2ff !important;
+main[data-theme] .hljs-title,
+main[data-theme] .hljs-function,
+main[data-theme] .hljs-class .hljs-title {
+  color: var(--mn-function);
 }
-.hljs-built_in,
-.hljs-type {
-  color: #4fd6be !important;
+main[data-theme] .hljs-built_in,
+main[data-theme] .hljs-type {
+  color: var(--mn-type);
 }

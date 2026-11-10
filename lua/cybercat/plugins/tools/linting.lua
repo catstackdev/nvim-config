@@ -76,7 +76,7 @@ return {
 			typescriptreact = { "eslint_d", "cspell" },
 			svelte = { "eslint_d", "cspell" },
 			-- Python: ruff is much faster than pylint (Rust-based)
-			-- go = { "golangci_lint" },
+			go = { "golangcilint" },
 			-- Good for AI development where you iterate quickly
 			python = { "ruff", "mypy" },
 			markdown = { "cspell" },
@@ -93,7 +93,7 @@ return {
 		-- 	end,
 		-- })
 
-		vim.keymap.set("n", "<leader>l", function()
+		vim.keymap.set("n", "<leader>lf", function()
 			lint.try_lint()
 		end, { desc = "Trigger linting for current file" })
 
@@ -115,20 +115,24 @@ return {
 			callback = function()
 				-- Debounce: cancel pending lint, fire 500ms after save
 				lint_timer:stop()
-				lint_timer:start(500, 0, vim.schedule_wrap(function()
-					if not cspell_enabled then
-						local buf_ft = vim.bo.filetype
-						local linters = lint.linters_by_ft[buf_ft] or {}
-						local active_linters = vim.tbl_filter(function(linter)
-							return linter ~= "cspell"
-						end, linters)
-						if #active_linters > 0 then
-							lint.try_lint(active_linters)
+				lint_timer:start(
+					500,
+					0,
+					vim.schedule_wrap(function()
+						if not cspell_enabled then
+							local buf_ft = vim.bo.filetype
+							local linters = lint.linters_by_ft[buf_ft] or {}
+							local active_linters = vim.tbl_filter(function(linter)
+								return linter ~= "cspell"
+							end, linters)
+							if #active_linters > 0 then
+								lint.try_lint(active_linters)
+							end
+						else
+							lint.try_lint()
 						end
-					else
-						lint.try_lint()
-					end
-				end))
+					end)
+				)
 			end,
 		})
 	end,

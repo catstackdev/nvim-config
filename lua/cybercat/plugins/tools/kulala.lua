@@ -1,5 +1,8 @@
 return {
 	"mistweaverco/kulala.nvim",
+	-- Off: kulala-core 1.x asks for a license token on download, and `api` sends
+	-- .http files already. Remove this line to bring the plugin back.
+	enabled = false,
 	-- Load before session save/restore so VimLeavePre and SessionLoadPost hooks are registered.
 	event = { "SessionLoadPost", "VimLeavePre" },
 	keys = {

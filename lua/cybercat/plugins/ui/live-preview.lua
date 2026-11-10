@@ -5,6 +5,11 @@ return { -- render SVG/Markdown/HTML in the browser with live updates
 		{
 			"<leader>lp",
 			function()
+				-- live-preview.nvim hardcodes a github css; markdown-preview.nvim loads
+				-- the midnight-blue theme (markdown-preview/midnight.css)
+				if vim.bo.filetype == "markdown" then
+					return vim.cmd("MarkdownPreviewToggle")
+				end
 				if require("livepreview").is_running() then
 					vim.cmd("LivePreview close")
 				else
@@ -13,7 +18,7 @@ return { -- render SVG/Markdown/HTML in the browser with live updates
 			end,
 			-- shadowed by webgpu_inspect's buffer-local <leader>ip (palette) in wgsl/glsl/ts
 			-- buffers; buffer-local mappings win there, so no real collision
-			desc = "Toggle browser preview (svg/md/html)",
+			desc = "Toggle browser preview (md: midnight theme; svg/html: live-preview)",
 		},
 		{
 			"<leader>lP",

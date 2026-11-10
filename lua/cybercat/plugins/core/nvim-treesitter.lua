@@ -11,8 +11,14 @@ return {
 			{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "master" },
 			"windwp/nvim-ts-autotag",
 			"nvim-treesitter/nvim-treesitter-refactor",
+			"LiadOz/nvim-dap-repl-highlights", -- syntax colours in the debug REPL (parser: dap_repl)
 		},
 		config = function()
+			-- Must run before treesitter.setup, or the dap_repl parser is not found.
+			pcall(function()
+				require("nvim-dap-repl-highlights").setup()
+			end)
+
 			-- import nvim-treesitter plugin
 			local treesitter = require("nvim-treesitter.configs")
 
@@ -112,6 +118,7 @@ return {
 
 					-- 🚀 Backend / Systems
 					"go",
+					"dap_repl", -- debug REPL highlighting (nvim-dap-repl-highlights)
 					"python",
 					"rust",
 					-- "java",
