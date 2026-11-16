@@ -59,3 +59,48 @@ keymap.set("n", "<leader>cb", function()
 		vim.cmd("echo 'Not a script. Shebang line not found.'")
 	end
 end, { desc = "[P]BASH, execute file" })
+
+-- file path copy to clipboard, works in nvim-tree and normal buffer
+local function yank_path(absolute)
+	local path
+
+	if vim.bo.filetype == "NvimTree" then
+		local api = require("nvim-tree.api")
+		local node = api.tree.get_node_under_cursor()
+
+		if not node then
+			return
+		end
+
+		path = node.absolute_path
+
+		if node.type == "directory" then
+			path = path .. "/"
+		end
+	else
+		path = vim.fn.expand("%:p")
+
+		if path == "" then
+			return
+		end
+	end
+
+	if not absolute then
+		local home = vim.env.HOME
+
+		if path:sub(1, #home) == home then
+			path = "~" .. path:sub(#home + 1)
+		end
+	end
+
+	vim.fn.setreg("+", path)
+	vim.notify("Copied: " .. path)
+end
+
+keymap.set("n", "<leader>yp", function()
+	yank_path(false)
+end, { desc = "Yank file/folder path (~)" })
+
+keymap.set("n", "<leader>yP", function()
+	yank_path(true)
+end, { desc = "Yank absolute file/folder path" })

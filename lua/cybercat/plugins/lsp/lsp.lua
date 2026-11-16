@@ -90,5 +90,15 @@ return {
 		-- })
 
 		vim.lsp.config("*", { capabilities = capabilities })
+		vim.api.nvim_create_user_command("LspInfo", function()
+			vim.cmd("checkhealth vim.lsp")
+		end, {
+			desc = "Alias for :checkhealth vim.lsp",
+		})
+		vim.api.nvim_create_user_command("LspClients", function()
+			vim.print(vim.lsp.get_clients({ bufnr = 0 }))
+		end, {
+			desc = "Show LSP clients attached to current buffer",
+		})
 	end,
 }

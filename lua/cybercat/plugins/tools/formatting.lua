@@ -75,6 +75,30 @@ return {
 						}
 					end,
 				},
+				-- sql_formatter = {
+				-- 	command = function()
+				-- 		return resolve_executable("sql-formatter")
+				-- 	end,
+				-- 	prepend_args = {
+				-- 		"--language",
+				-- 		"postgresql",
+				-- 	},
+				-- },
+				sql_formatter = {
+					command = function()
+						return resolve_executable("sql-formatter")
+					end,
+
+					args = function(self, ctx)
+						local local_config =
+							vim.fs.find(".sql-formatter.json", { path = ctx.dirname, upward = true })[1]
+
+						return {
+							"--config",
+							local_config or vim.fn.expand("~/.config/sql-formatter/.sql-formatter.json"),
+						}
+					end,
+				},
 				rustfmt = {
 					command = function()
 						return resolve_executable("rustfmt", {

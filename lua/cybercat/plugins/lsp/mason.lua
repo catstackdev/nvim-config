@@ -52,6 +52,7 @@ return {
 				"rust_analyzer", -- Rust language server
 				"glsl_analyzer", -- glsl language server
 				"wgsl_analyzer", -- webgpu language server
+				"postgres_lsp",
 			},
 			-- auto-install configured servers (with lspconfig)
 			automatic_installation = true, -- not the same as ensure_installed
